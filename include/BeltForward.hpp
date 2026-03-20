@@ -9,9 +9,10 @@
 
 class BeltForward: public Belt {
 private:
-    Util::Animation m_Animation;
+    std::shared_ptr<Util::Animation> m_Animation;
 public:
-    BeltForward(int x, int y, int r);
+    BeltForward(int x, int y, int r, float rate);
+    void Update();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_BELTFORWARD_HPP

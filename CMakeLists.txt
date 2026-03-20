@@ -48,6 +48,14 @@ add_executable(${PROJECT_NAME}
         include/BeltForward.hpp
         include/BeltLeft.hpp
         include/BeltRight.hpp
+        src/BeltForward.cpp
+        include/Global.hpp
+        include/Miner.hpp
+        include/ItemAcceptor.hpp
+        include/ItemEjector.hpp
+        src/ItemEjector.cpp
+        src/Miner.cpp
+        src/ItemAcceptor.cpp
 )
 
 if(MSVC)

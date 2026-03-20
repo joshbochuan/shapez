@@ -6,10 +6,8 @@
 #include <stdexcept>
 #include <string>
 
-Shape::Shape(std::string code, glm::vec2 pos)
-    : Item(pos, ItemType::SHAPE) {
-    this->pos = pos;
-
+Shape::Shape(std::string code)
+    : Item(ItemType::SHAPE) {
     int layer = 0, i = 0, r=0;
     while (i < code.length()) {
         if (code[i] == ':') {
@@ -35,15 +33,13 @@ Shape::Shape(std::string code, glm::vec2 pos)
 
     // todo: renders the dark circle
     // this->SetDrawable(
-    //     std::make_shared<Util::Image>("../Resources/shapes/" + code + (string)layer + ".png"));
-    this->SetZIndex(6);
-    // this->Start();
+    //     std::make_shared<Util::Image>("../Resources/shapes/circle.png"));
+    this->SetZIndex(5);
 }
 
 void Shape::Update() {
     for (int i=0; i<this->quads.size(); i++) {
-        this->quads[i]->m_Transform.translation.x = this->m_Transform.translation.x;
-        this->quads[i]->m_Transform.translation.y = this->m_Transform.translation.y;
-        this->quads[i]->Update();
+        this->quads[i]->m_Transform.translation = this->m_Transform.translation;
+        this->quads[i]->m_Transform.scale = this->m_Transform.scale;
     }
 }

@@ -9,7 +9,9 @@
 class Machine: public Util::GameObject {
 public:
     int x, y, r; // world x, y coordinates and rotation
-    Machine(int x, int y, int r);
+    float rate;
+    Machine(int x, int y, int r, float rate);
+    virtual void Update() = 0;
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_MACHINE_HPP

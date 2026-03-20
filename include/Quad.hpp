@@ -14,7 +14,6 @@ public:
     int r; // rotation, 0-3 in corresponding places
     int layer; // layer, 0 is bottom, 3 is top
     Quad(std::string code, int r, int layer);
-    void Update();
 };
 
 #endif //SHAPEZ_QUAD_HPP

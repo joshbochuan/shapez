@@ -4,8 +4,9 @@
 
 #include "Machine.hpp"
 
-Machine::Machine(int x, int y, int r) {
+Machine::Machine(int x, int y, int r, float rate) {
     this->x = x;
     this->y = y;
     this->r = r;
+    this->rate = rate;
 }

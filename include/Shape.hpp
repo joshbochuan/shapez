@@ -10,10 +10,9 @@
 #include <string>
 
 class Shape: public Item {
-// private:
 public:
     std::vector<std::shared_ptr<Quad>> quads;
-    Shape(std::string code, glm::vec2 pos);
+    Shape(std::string code);
     void Update();
 };
 

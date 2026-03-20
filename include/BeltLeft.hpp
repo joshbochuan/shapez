@@ -9,7 +9,7 @@
 
 class BeltLeft: public Belt {
 private:
-    Util::Animation m_Animation;
+    std::shared_ptr<Util::Animation> m_Animation;
 public:
     BeltLeft(int x, int y, int r);
 };

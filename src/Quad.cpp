@@ -19,11 +19,5 @@ Quad::Quad(std::string code, int r, int layer): Util::GameObject() {
     this->SetDrawable(std::make_shared<Util::Image>(path));
     this->m_Transform.translation = glm::vec2({0, 0});
     this->m_Transform.rotation = M_PI*(-0.5)*(double)r;
-    this->SetZIndex(5+layer);
-    std::cout << "quad created with code " << this->code << " and layer " << this->layer << std::endl;
-    std::cout << path << std::endl;
-}
-
-void Quad::Update() {
-
+    this->SetZIndex(6+layer);
 }

@@ -1,5 +1,6 @@
 #include "App.hpp"
 
+#include "Global.hpp"
 #include "Shape.hpp"
 #include "Util/Image.hpp"
 #include "Util/Input.hpp"
@@ -9,21 +10,53 @@
 
 void App::Start() {
     LOG_TRACE("Start");
+    /* z-index:
+    0 - background
+    1 - world ore back color
+    2 - world ore sprite
+    3 - grid
+    4 - belts
+    5 - item background
+    6 - item first layer
+    7 - item second layer
+    8 - item third layer
+    9 - item forth layer
+    10 - machines
 
-    m_Shape = std::make_shared<Shape>("CrCrCcCc:RrRrRrRr:WwWwWwWw:RgSgRgSg", glm::vec2({0, 0}));
-    m_Shape->m_Transform.translation.x = 0;
-    m_Shape->m_Transform.translation.y = 0;
+    */
 
-    m_Root.AddChild(m_Shape);
+    m_Shape = std::make_shared<Shape>("CrCrCcCc:RrRrRrRr:WwWwWwWw:RgSgRgSg");
+    m_Shape->m_Transform.scale = glm::vec2(0.3, 0.3);
+
+    m_Belt = std::make_shared<BeltForward>(0, 0, 0, 0.02);
+    m_Belt->acceptor->item = m_Shape;
+    m_Belt->AddChild(m_Shape);
+
+    m_Root.AddChild(m_Belt);
 
     m_CurrentState = State::UPDATE;
 }
 
 void App::Update() {
-    
     //TODO: do your things here and delete this line <3
 
+    int camSpeed = 5;
+    if (Util::Input::IsKeyPressed(Util::Keycode::W)) {
+        cam.translation.y += camSpeed;
+    }
+    if (Util::Input::IsKeyPressed(Util::Keycode::S)) {
+        cam.translation.y -= camSpeed;
+    }
+    if (Util::Input::IsKeyPressed(Util::Keycode::A)) {
+        cam.translation.x -= camSpeed;
+    }
+    if (Util::Input::IsKeyPressed(Util::Keycode::D)) {
+        cam.translation.x += camSpeed;
+    }
+
+    m_Belt->Update();
     m_Root.Update();
+
 
     /*
      * Do not touch the code below as they serve the purpose for

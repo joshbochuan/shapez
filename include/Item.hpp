@@ -6,17 +6,18 @@
 #define REPLACE_WITH_YOUR_PROJECT_NAME_ITEM_HPP
 #include "Util/GameObject.hpp"
 
+enum class ItemType {
+    SHAPE,
+    COLOR
+};
+
 class Item: public Util::GameObject {
-public:
-
-    enum class ItemType {
-        SHAPE,
-        COLOR
-    };
-
-    glm::vec2 pos;
+private:
     ItemType type;
-    Item(glm::vec2 pos, ItemType type);
+public:
+    Item(ItemType type);
+    ItemType getType();
+    virtual void Update() = 0;
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_ITEM_HPP

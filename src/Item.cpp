@@ -3,8 +3,12 @@
 //
 
 #include "Item.hpp"
+#include "Util/GameObject.hpp"
 
-Item::Item(glm::vec2 pos, ItemType type) {
-    this->pos = pos;
+Item::Item(ItemType type) {
     this->type = type;
 };
+
+ItemType Item::getType() {
+    return this->type;
+}

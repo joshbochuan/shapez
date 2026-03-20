@@ -6,12 +6,15 @@
 #define REPLACE_WITH_YOUR_PROJECT_NAME_BELT_HPP
 #include "Machine.hpp"
 #include "Item.hpp"
+#include "Util/Animation.hpp"
+#include "ItemAcceptor.hpp"
+#include "ItemEjector.hpp"
 
 class Belt: public Machine {
 public:
-    Belt(int x, int y, int r);
-    std::shared_ptr<Item> acceptSlot, ejectSlot;
-    float acceptProgress, ejectProgress;
+    Belt(int x, int y, int r, float rate);
+    std::shared_ptr<ItemAcceptor> acceptor;
+    std::shared_ptr<ItemEjector> ejector;
     void Update();
 };
 
