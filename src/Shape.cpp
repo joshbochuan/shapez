@@ -7,7 +7,7 @@
 #include <string>
 
 Shape::Shape(std::string code, glm::vec2 pos)
-    : Item(pos) {
+    : Item(pos, ItemType::SHAPE) {
     this->pos = pos;
 
     int layer = 0, i = 0, r=0;

@@ -8,8 +8,15 @@
 
 class Item: public Util::GameObject {
 public:
+
+    enum class ItemType {
+        SHAPE,
+        COLOR
+    };
+
     glm::vec2 pos;
-    Item(glm::vec2 pos);
+    ItemType type;
+    Item(glm::vec2 pos, ItemType type);
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_ITEM_HPP

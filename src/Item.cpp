@@ -4,6 +4,7 @@
 
 #include "Item.hpp"
 
-Item::Item(glm::vec2 pos) {
+Item::Item(glm::vec2 pos, ItemType type) {
     this->pos = pos;
+    this->type = type;
 };

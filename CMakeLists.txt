@@ -45,6 +45,9 @@ add_executable(${PROJECT_NAME}
         src/Item.cpp
         src/Belt.cpp
         src/Machine.cpp
+        include/BeltForward.hpp
+        include/BeltLeft.hpp
+        include/BeltRight.hpp
 )
 
 if(MSVC)

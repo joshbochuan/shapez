@@ -10,7 +10,7 @@
 void App::Start() {
     LOG_TRACE("Start");
 
-    m_Shape = std::make_shared<Shape>("CuRrRrSg:Rr--Ww--", glm::vec2({0, 0}));
+    m_Shape = std::make_shared<Shape>("CrCrCcCc:RrRrRrRr:WwWwWwWw:RgSgRgSg", glm::vec2({0, 0}));
     m_Shape->m_Transform.translation.x = 0;
     m_Shape->m_Transform.translation.y = 0;
 
