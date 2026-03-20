@@ -10,9 +10,18 @@
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
 
+enum class BeltType {
+    LEFT,
+    RIGHT,
+    FORWARD
+};
+
 class Belt: public Machine {
+private:
+    BeltType type;
+    std::shared_ptr<Util::Animation> m_Animation;
 public:
-    Belt(int x, int y, int r, float rate);
+    Belt(int x, int y, int r, float rate, BeltType type);
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;
     void Update();

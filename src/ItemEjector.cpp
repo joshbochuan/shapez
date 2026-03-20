@@ -3,9 +3,9 @@
 //
 #include "ItemEjector.hpp"
 
-ItemEjector::ItemEjector(float rate) {
+ItemEjector::ItemEjector(int x, int y, int r, float rate)
+    : Machine(x, y, r, rate) {
     this->item = nullptr;
-    this->rate = rate;
     this->progress = 0;
 }
 

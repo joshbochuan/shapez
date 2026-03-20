@@ -4,9 +4,9 @@
 
 #include "ItemAcceptor.hpp"
 
-ItemAcceptor::ItemAcceptor(float rate) {
+ItemAcceptor::ItemAcceptor(int x, int y, int r, float rate)
+    : Machine(x, y, r, rate) {
     this->item = nullptr;
-    this->rate = rate;
     this->progress = 0;
 }
 

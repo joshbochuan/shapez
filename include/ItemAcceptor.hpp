@@ -7,12 +7,11 @@
 #include "Item.hpp"
 #include "ItemEjector.hpp"
 
-class ItemAcceptor {
+class ItemAcceptor: public Machine {
 public:
     std::shared_ptr<Item> item;
     float progress;
-    float rate;
-    ItemAcceptor(float rate);
+    ItemAcceptor(int x, int y, int r, float rate);
     void Update();
 };
 

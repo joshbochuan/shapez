@@ -28,18 +28,18 @@ void App::Start() {
     m_Shape = std::make_shared<Shape>("CrCrCcCc:RrRrRrRr:WwWwWwWw:RgSgRgSg");
     m_Shape->m_Transform.scale = glm::vec2(0.3, 0.3);
 
-    m_Belt = std::make_shared<BeltForward>(0, 0, 0, 0.02);
+    m_Belt = std::make_shared<Belt>(0, 0, 3, 0.02, BeltType::RIGHT);
     m_Belt->acceptor->item = m_Shape;
     m_Belt->AddChild(m_Shape);
 
     m_Root.AddChild(m_Belt);
 
+    cam.scale = glm::vec2(0.5, 0.5);
+
     m_CurrentState = State::UPDATE;
 }
 
 void App::Update() {
-    //TODO: do your things here and delete this line <3
-
     int camSpeed = 5;
     if (Util::Input::IsKeyPressed(Util::Keycode::W)) {
         cam.translation.y += camSpeed;

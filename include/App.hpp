@@ -6,7 +6,6 @@
 #include "Util/Renderer.hpp"
 #include "Shape.hpp"
 #include "Belt.hpp"
-#include "BeltForward.hpp"
 
 class App {
 public:
@@ -24,7 +23,7 @@ public:
 
     void End(); // NOLINT(readability-convert-member-functions-to-static)
 
-    std::shared_ptr<BeltForward> m_Belt;
+    std::shared_ptr<Belt> m_Belt;
     std::shared_ptr<Shape> m_Shape;
     std::shared_ptr<Quad> m_Quad;
 
