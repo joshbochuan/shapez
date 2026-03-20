@@ -35,6 +35,16 @@ add_executable(${PROJECT_NAME}
     ${SRC_DIR}/main.cpp
     ${SRC_FILES}
     ${HEADER_FILES}
+        include/Shape.hpp
+        include/Quad.hpp
+        src/Shape.cpp
+        src/Quad.cpp
+        include/Machine.hpp
+        include/Belt.hpp
+        include/Item.hpp
+        src/Item.cpp
+        src/Belt.cpp
+        src/Machine.cpp
 )
 
 if(MSVC)
