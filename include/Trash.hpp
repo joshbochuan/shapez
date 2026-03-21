@@ -10,7 +10,7 @@
 class Trash: public Machine {
 public:
     std::vector<std::shared_ptr<ItemAcceptor>> m_Acceptors;
-    Trash(int x, int y, float rate);
+    Trash(int x, int y);
     void Update();
 };
 

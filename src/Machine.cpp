@@ -4,7 +4,7 @@
 
 #include "Machine.hpp"
 
-Machine::Machine(int x, int y, int r, float rate) {
+Machine::Machine(int x, int y, int r, float& rate) : rate(rate) {
     this->x = x;
     this->y = y;
     this->r = r;

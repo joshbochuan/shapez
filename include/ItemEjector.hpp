@@ -11,7 +11,7 @@ class ItemEjector: public Machine {
 public:
     std::shared_ptr<Item> item;
     float progress;
-    ItemEjector(int x, int y, int r, float rate);
+    ItemEjector(int x, int y, int r);
     void Update();
 };
 

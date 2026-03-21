@@ -4,8 +4,8 @@
 #include "ItemEjector.hpp"
 #include "Global.hpp"
 
-ItemEjector::ItemEjector(int x, int y, int r, float rate)
-    : Machine(x, y, r, rate) {
+ItemEjector::ItemEjector(int x, int y, int r)
+    : Machine(x, y, r, BELT_RATE) {
     this->item = nullptr;
     this->progress = 0;
 }

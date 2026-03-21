@@ -9,8 +9,8 @@
 class Machine: public Util::GameObject {
 public:
     int x, y, r; // world x, y coordinates and rotation
-    float rate;
-    Machine(int x, int y, int r, float rate);
+    float& rate;
+    Machine(int x, int y, int r, float& rate);
     virtual void Update() = 0;
 };
 

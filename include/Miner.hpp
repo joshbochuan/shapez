@@ -10,9 +10,10 @@
 
 class Miner: public Machine {
 private:
-    std::shared_ptr<Item> product;
+    float cooldown;
 public:
-    Miner(int x, int y, int r, float rate, std::shared_ptr<Item> product);
+    std::shared_ptr<Item> product;
+    Miner(int x, int y, int r, std::shared_ptr<Item> product);
     void Update();
     std::shared_ptr<ItemEjector> ejector;
 };

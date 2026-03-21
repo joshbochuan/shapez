@@ -12,7 +12,7 @@ public:
     std::shared_ptr<Item> item;
     float progress;
     bool takesShape, takesColor;
-    ItemAcceptor(int x, int y, int r, float rate);
+    ItemAcceptor(int x, int y, int r);
     void Update();
 };
 

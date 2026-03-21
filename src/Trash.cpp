@@ -7,16 +7,16 @@
 #include "Util/Image.hpp"
 #include <iostream>
 
-Trash::Trash(int x, int y, float rate)
-    : Machine(x, y, 0, rate) {
+Trash::Trash(int x, int y)
+    : Machine(x, y, 0, BELT_RATE) {
     // acceptor on all side
     for (int i=0; i<4; i++) {
-        this->m_Acceptors.push_back(std::make_shared<ItemAcceptor>(x, y, i, rate));
+        this->m_Acceptors.push_back(std::make_shared<ItemAcceptor>(x, y, i));
         acceptors[std::make_tuple(x, y, i)] = this->m_Acceptors[i];
         this->AddChild(this->m_Acceptors[i]);
     }
     this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/trash.png"));
-    this->SetZIndex(10);
+    this->SetZIndex(46 + (x+y)%2);
 }
 
 void Trash::Update() {

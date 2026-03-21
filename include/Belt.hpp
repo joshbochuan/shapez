@@ -21,7 +21,7 @@ private:
     BeltType type;
     std::shared_ptr<Util::Animation> m_Animation;
 public:
-    Belt(int x, int y, int r, float rate, BeltType type);
+    Belt(int x, int y, int r, BeltType type);
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;
     void Update();

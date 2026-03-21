@@ -54,6 +54,12 @@ add_executable(${PROJECT_NAME}
         src/ItemAcceptor.cpp
         include/Trash.hpp
         src/Trash.cpp
+        include/Rotator.hpp
+        src/Rotator.cpp
+        include/Cutter.hpp
+        src/Cutter.cpp
+        include/Hub.hpp
+        src/Hub.cpp
 )
 
 if(MSVC)

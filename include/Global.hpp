@@ -25,4 +25,11 @@ inline Util::Transform cam;
 inline std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<ItemAcceptor>, TriHash> acceptors;
 inline std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<ItemEjector>, TriHash> ejectors;
 
+inline float FPS = 60;
+inline float BELT_RATE = 2.0/FPS;
+inline float BELTTURN_RATE = (4.0/M_PI) * 2.0 / FPS;
+inline float MINE_RATE = 0.5/FPS;
+inline float CUT_RATE = 0.5/FPS;
+inline float ROTATE_RATE = 1.0/FPS;
+
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_CAM_HPP

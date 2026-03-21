@@ -23,24 +23,25 @@ static std::vector<std::string> getBeltSprites(BeltType type) {
     return sprites;
 }
 
-Belt::Belt(int x, int y, int r, float rate, BeltType type)
-    : Machine(x, y, r, rate), m_Animation(std::make_shared<Util::Animation>(
+Belt::Belt(int x, int y, int r, BeltType type)
+    : Machine(x, y, r, BELT_RATE), m_Animation(std::make_shared<Util::Animation>(
         getBeltSprites(type),
-        true, 30, true, 0)) {
+        true, 15, true, 0)) {
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
+    this->SetZIndex(10 + (x+y)%2);
     SetDrawable(m_Animation);
     this->type = type;
-    this->acceptor = std::make_shared<ItemAcceptor>(x, y, r, rate);
+    this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
     acceptors[std::make_tuple(x, y, r)] = this->acceptor;
     this->AddChild(this->acceptor);
     if (type == BeltType::LEFT)  { r = (r + 1) % 4; }
     if (type == BeltType::RIGHT) { r = (r - 1) % 4; }
-    this->ejector = std::make_shared<ItemEjector>(x, y, r, rate);
+    this->ejector = std::make_shared<ItemEjector>(x, y, r);
     ejectors[std::make_tuple(x, y, r)] = this->ejector;
     this->AddChild(this->ejector);
     if (type != BeltType::FORWARD) {
-        this->acceptor->rate *= 4/M_PI;
-        this->ejector->rate *= 4/M_PI;
+        this->acceptor->rate = BELTTURN_RATE;
+        this->ejector->rate = BELTTURN_RATE;
     }
 }
 
@@ -48,8 +49,8 @@ void Belt::Update() {
     // add progress to both accept progress and eject progress
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
-    this->m_Transform.scale.x = cam.scale.x + 0.01; // adding tiny size to avoid gap
-    this->m_Transform.scale.y = cam.scale.y + 0.01;
+    this->m_Transform.scale.x = cam.scale.x * 1.02; // adding tiny size to avoid gap
+    this->m_Transform.scale.y = cam.scale.y * 1.02;
 
     // if item can be transferred from input slot to output slot
     if ((acceptor->item != nullptr) && (acceptor->progress >= 1) && (ejector->item == nullptr)) {

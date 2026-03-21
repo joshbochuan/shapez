@@ -5,8 +5,8 @@
 #include "ItemAcceptor.hpp"
 #include "Global.hpp"
 
-ItemAcceptor::ItemAcceptor(int x, int y, int r, float rate)
-    : Machine(x, y, r, rate) {
+ItemAcceptor::ItemAcceptor(int x, int y, int r)
+    : Machine(x, y, r, BELT_RATE) {
     this->item = nullptr;
     this->progress = 0;
     this->takesColor = true;

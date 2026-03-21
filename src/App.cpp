@@ -7,35 +7,76 @@
 #include "Util/Keycode.hpp"
 #include "Util/Logger.hpp"
 #include "Util/Renderer.hpp"
+#include "Rotator.hpp"
+#include "Cutter.hpp"
+#include "Hub.hpp"
 
 void App::Start() {
     LOG_TRACE("Start");
     /* z-index:
     0 - background
-    1 - world ore back color
-    2 - world ore sprite
-    3 - grid
-    4 - belts
-    5 - item background
-    6 - item first layer
-    7 - item second layer
-    8 - item third layer
-    9 - item forth layer
-    10 - machines
-
+    1~9 - world
+    10~19 - machine below (mainly belts)
+    20~39 - shapes
+    40~99 - machine above
+    100+ - ui
     */
 
-    m_Machines.push_back(std::make_shared<Miner>(-1, 0, 3, 0.02, std::make_shared<Shape>("CuCuCuCu")));
-    m_Machines.push_back(std::make_shared<Trash>(1, -2, 0.02));
-    m_Machines.push_back(std::make_shared<Belt>(0, 0, 3, 0.02, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(1, 0, 3, 0.02, BeltType::RIGHT));
-    m_Machines.push_back(std::make_shared<Belt>(1, -1, 2, 0.02, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Trash>(2, -1, 0.02));
-    m_Machines.push_back(std::make_shared<Miner>(-1, -1, 3, 0.02, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-1, 1, 0, 0.02, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-2, 1, 0, 0.02, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-2, 0, 1, 0.02, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-2, -1, 1, 0.02, nullptr));
+    // hub test
+    m_Machines.push_back(std::make_shared<Hub>());
+    m_Machines.push_back(std::make_shared<Belt>(-2, 2, 2, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(-1, 2, 2, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(0, 2, 2, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(1, 2, 2, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
+    m_Machines.push_back(std::make_shared<Miner>(-1, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
+    m_Machines.push_back(std::make_shared<Miner>(0, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
+    m_Machines.push_back(std::make_shared<Miner>(1, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
+    // belt, mine, trash test
+    m_Machines.push_back(std::make_shared<Miner>(-1, 7, 3, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Trash>(1, 5));
+    m_Machines.push_back(std::make_shared<Belt>(0, 7, 3, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(1, 7, 3, BeltType::RIGHT));
+    m_Machines.push_back(std::make_shared<Belt>(1, 6, 2, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Trash>(2, 6));
+    m_Machines.push_back(std::make_shared<Miner>(-1, 6, 3, nullptr));
+    m_Machines.push_back(std::make_shared<Miner>(-1, 8, 0, nullptr));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 8, 0, nullptr));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 7, 1, nullptr));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 6, 1, nullptr));
+
+    // rotator test
+    m_Machines.push_back(std::make_shared<Miner>(5, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
+    m_Machines.push_back(std::make_shared<Miner>(6, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
+    m_Machines.push_back(std::make_shared<Miner>(7, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
+    m_Machines.push_back(std::make_shared<Miner>(8, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
+    m_Machines.push_back(std::make_shared<Belt>(5, 1, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(6, 1, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(7, 1, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(8, 1, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Rotator>(5, 2, 0, RotatorType::ROTATE_CW));
+    m_Machines.push_back(std::make_shared<Rotator>(6, 2, 0, RotatorType::ROTATE_CW));
+    m_Machines.push_back(std::make_shared<Rotator>(7, 2, 0, RotatorType::ROTATE_180));
+    m_Machines.push_back(std::make_shared<Rotator>(8, 2, 0, RotatorType::ROTATE_CCW));
+    m_Machines.push_back(std::make_shared<Rotator>(5, 3, 0, RotatorType::ROTATE_CW));
+    m_Machines.push_back(std::make_shared<Belt>(6, 3, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(7, 3, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(8, 3, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(5, 4, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Trash>(5, 5));
+    m_Machines.push_back(std::make_shared<Trash>(6, 4));
+    m_Machines.push_back(std::make_shared<Trash>(7, 4));
+    m_Machines.push_back(std::make_shared<Trash>(8, 4));
+
+    // cutter test
+    m_Machines.push_back(std::make_shared<Miner>(-5, 0, 0, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
+    m_Machines.push_back(std::make_shared<Belt>(-5, 1, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Cutter>(-5, 2, 0));
+    m_Machines.push_back(std::make_shared<Belt>(-5, 3, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(-4, 3, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Trash>(-5, 4));
+    m_Machines.push_back(std::make_shared<Trash>(-4, 4));
+
 
     for (int i=0; i<m_Machines.size(); i++) {
         m_Root.AddChild(m_Machines[i]);
@@ -61,6 +102,11 @@ void App::Update() {
         cam.translation.x += camSpeed / cam.scale.x;
     }
 
+    /* test
+    if (Util::Input::IsKeyPressed(Util::Keycode::U)) {cam.scale.x += 0.05; cam.scale.y += 0.05;}
+    if (Util::Input::IsKeyPressed(Util::Keycode::I)) {cam.scale.x -= 0.05; cam.scale.y -= 0.05;}
+    */
+
     if (Util::Input::IfScroll()) {
         auto delta = Util::Input::GetScrollDistance();
 
@@ -69,6 +115,7 @@ void App::Update() {
 
         cam.scale.x += delta.y * 0.05;
         cam.scale.y += delta.y * 0.05;
+
         cam.scale.x = std::clamp(cam.scale.x, 0.1f, 2.0f);
         cam.scale.y = std::clamp(cam.scale.y, 0.1f, 2.0f);
 

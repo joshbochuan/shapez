@@ -35,7 +35,7 @@ Shape::Shape(std::string code)
     // todo: renders the dark circle
     // this->SetDrawable(
     //     std::make_shared<Util::Image>("../Resources/shapes/circle.png"));
-    this->SetZIndex(5);
+    this->SetZIndex(20);
 }
 
 void Shape::Update() {
@@ -52,4 +52,10 @@ std::string Shape::getCode() {
 
 std::shared_ptr<Item> Shape::copy() {
     return std::make_shared<Shape>(this->code);
+}
+
+bool Shape::operator==(std::shared_ptr<Item> rhs) {
+    if (rhs->getType() != ItemType::SHAPE) {return false;}
+    std::shared_ptr<Shape> other = std::dynamic_pointer_cast<Shape>(rhs);
+    return (this->getCode() == other->getCode());
 }
