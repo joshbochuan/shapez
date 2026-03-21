@@ -5,6 +5,7 @@
 #include "Shape.hpp"
 #include <stdexcept>
 #include <string>
+#include "Util/Image.hpp"
 
 Shape::Shape(std::string code)
     : Item(ItemType::SHAPE) {
@@ -32,9 +33,8 @@ Shape::Shape(std::string code)
         this->AddChild(this->quads[i]);
     }
 
-    // todo: renders the dark circle
-    // this->SetDrawable(
-    //     std::make_shared<Util::Image>("../Resources/shapes/circle.png"));
+    this->SetDrawable(
+        std::make_shared<Util::Image>("../Resources/shapes/shape.png"));
     this->SetZIndex(20);
 }
 
