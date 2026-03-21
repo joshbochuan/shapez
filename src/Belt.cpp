@@ -34,8 +34,9 @@ Belt::Belt(int x, int y, int r, BeltType type)
     this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
     acceptors[std::make_tuple(x, y, r)] = this->acceptor;
     this->AddChild(this->acceptor);
-    if (type == BeltType::LEFT)  { r = (r + 1) % 4; }
-    if (type == BeltType::RIGHT) { r = (r - 1) % 4; }
+    if (type == BeltType::LEFT)  { r = ((r + 1) % 4); }
+    if (type == BeltType::RIGHT) { r = ((r - 1 + 4) % 4); }
+    std::cout << r << std::endl;
     this->ejector = std::make_shared<ItemEjector>(x, y, r);
     ejectors[std::make_tuple(x, y, r)] = this->ejector;
     this->AddChild(this->ejector);

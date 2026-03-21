@@ -21,6 +21,7 @@ public:
     virtual std::string getCode() = 0;
     virtual std::shared_ptr<Item> copy() = 0;
     virtual bool operator==(std::shared_ptr<Item> rhs) = 0;
+    virtual void MinerZIndex(float index) = 0;
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_ITEM_HPP

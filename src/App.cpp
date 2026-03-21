@@ -21,6 +21,17 @@ void App::Start() {
     40~99 - machine above
     100+ - ui
     */
+    background = std::make_shared<Util::GameObject>();
+    background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
+    background->m_Transform.scale = glm::vec2(256, 256);
+    background->SetZIndex(0);
+    m_Root.AddChild(background);
+
+    vignette = std::make_shared<Util::GameObject>();
+    vignette->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/vignette.lossless.png"));
+    vignette->m_Transform.scale = glm::vec2(20.0f/3.0f, 20.0f/3.0f);
+    vignette->SetZIndex(100);
+    m_Root.AddChild(vignette);
 
     // hub test
     m_Machines.push_back(std::make_shared<Hub>());
@@ -76,6 +87,41 @@ void App::Start() {
     m_Machines.push_back(std::make_shared<Belt>(-4, 3, 0, BeltType::FORWARD));
     m_Machines.push_back(std::make_shared<Trash>(-5, 4));
     m_Machines.push_back(std::make_shared<Trash>(-4, 4));
+
+    // arknights player behavior
+    std::shared_ptr<Belt> belt;
+    belt = std::make_shared<Belt>(5, -3, 0, BeltType::RIGHT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
+    belt->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(6, -3, 3, BeltType::RIGHT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
+    belt->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(6, -4, 2, BeltType::RIGHT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
+    belt->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(5, -4, 1, BeltType::RIGHT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
+    belt->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(4, -2, 0, BeltType::LEFT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
+    belt->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(3, -2, 1, BeltType::LEFT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
+    belt->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(3, -3, 2, BeltType::LEFT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
+    belt->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(4, -3, 3, BeltType::LEFT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
+    belt->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
 
 
     for (int i=0; i<m_Machines.size(); i++) {

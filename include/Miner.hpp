@@ -11,6 +11,7 @@
 class Miner: public Machine {
 private:
     float cooldown;
+    std::shared_ptr<Util::GameObject> cover;
 public:
     std::shared_ptr<Item> product;
     Miner(int x, int y, int r, std::shared_ptr<Item> product);

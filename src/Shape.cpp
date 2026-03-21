@@ -5,7 +5,10 @@
 #include "Shape.hpp"
 #include <stdexcept>
 #include <string>
+
+#include "Machine.hpp"
 #include "Util/Image.hpp"
+#include <iostream>
 
 Shape::Shape(std::string code)
     : Item(ItemType::SHAPE) {
@@ -35,7 +38,7 @@ Shape::Shape(std::string code)
 
     this->SetDrawable(
         std::make_shared<Util::Image>("../Resources/shapes/shape.png"));
-    this->SetZIndex(20);
+    Item::SetZIndex(20);
 }
 
 void Shape::Update() {
@@ -58,4 +61,12 @@ bool Shape::operator==(std::shared_ptr<Item> rhs) {
     if (rhs->getType() != ItemType::SHAPE) {return false;}
     std::shared_ptr<Shape> other = std::dynamic_pointer_cast<Shape>(rhs);
     return (this->getCode() == other->getCode());
+}
+
+void Shape::MinerZIndex(float index) {
+    SetZIndex(index);
+    for (int i=0; i<this->quads.size(); i++) {
+        std::cout << "y" << std::endl;
+        this->quads[i]->SetZIndex(index+i+1);
+    }
 }

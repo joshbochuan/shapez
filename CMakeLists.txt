@@ -60,6 +60,7 @@ add_executable(${PROJECT_NAME}
         src/Cutter.cpp
         include/Hub.hpp
         src/Hub.cpp
+        include/Text.hpp
 )
 
 if(MSVC)

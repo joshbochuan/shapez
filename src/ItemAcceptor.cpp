@@ -27,7 +27,7 @@ void ItemAcceptor::Update() {
         case 1: dx = -1; dy = 0; break;
         case 2: dx = 0; dy = -1; break;
         case 3: dx = 1; dy = 0; break;
-        default: throw std::invalid_argument("illegal miner rotation " + std::to_string(r));
+        default: throw std::invalid_argument("illegal acceptor rotation " + std::to_string(r));
     }
 
     if (item != nullptr) {

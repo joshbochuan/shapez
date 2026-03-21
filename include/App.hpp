@@ -25,6 +25,8 @@ public:
 
     void End(); // NOLINT(readability-convert-member-functions-to-static)
 
+    std::shared_ptr<Util::GameObject> background;
+    std::shared_ptr<Util::GameObject> vignette;
     std::vector<std::shared_ptr<Machine>> m_Machines;
 
     // std::unordered_map<glm::vec2, std::shared_ptr<Machine>> machines;

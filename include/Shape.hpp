@@ -19,6 +19,7 @@ public:
     std::string getCode();
     std::shared_ptr<Item> copy();
     bool operator==(std::shared_ptr<Item> rhs) override;
+    void MinerZIndex(float index);
 };
 
 
