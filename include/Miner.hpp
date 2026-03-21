@@ -13,6 +13,8 @@ private:
     std::shared_ptr<Item> product;
 public:
     Miner(int x, int y, int r, float rate, std::shared_ptr<Item> product);
+    void Update();
+    std::shared_ptr<ItemEjector> ejector;
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_MINER_HPP

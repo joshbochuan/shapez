@@ -52,6 +52,8 @@ add_executable(${PROJECT_NAME}
         src/ItemEjector.cpp
         src/Miner.cpp
         src/ItemAcceptor.cpp
+        include/Trash.hpp
+        src/Trash.cpp
 )
 
 if(MSVC)

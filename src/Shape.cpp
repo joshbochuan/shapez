@@ -8,6 +8,7 @@
 
 Shape::Shape(std::string code)
     : Item(ItemType::SHAPE) {
+    this->code = code;
     int layer = 0, i = 0, r=0;
     while (i < code.length()) {
         if (code[i] == ':') {
@@ -41,5 +42,14 @@ void Shape::Update() {
     for (int i=0; i<this->quads.size(); i++) {
         this->quads[i]->m_Transform.translation = this->m_Transform.translation;
         this->quads[i]->m_Transform.scale = this->m_Transform.scale;
+        this->quads[i]->SetVisible(this->m_Visible);
     }
+}
+
+std::string Shape::getCode() {
+    return this->code;
+}
+
+std::shared_ptr<Item> Shape::copy() {
+    return std::make_shared<Shape>(this->code);
 }

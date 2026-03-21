@@ -18,6 +18,8 @@ public:
     Item(ItemType type);
     ItemType getType();
     virtual void Update() = 0;
+    virtual std::string getCode() = 0;
+    virtual std::shared_ptr<Item> copy() = 0;
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_ITEM_HPP

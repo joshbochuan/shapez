@@ -10,10 +10,14 @@
 #include <string>
 
 class Shape: public Item {
+private:
+    std::string code;
 public:
     std::vector<std::shared_ptr<Quad>> quads;
     Shape(std::string code);
     void Update();
+    std::string getCode();
+    std::shared_ptr<Item> copy();
 };
 
 
