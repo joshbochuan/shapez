@@ -10,6 +10,7 @@
 #include "Rotator.hpp"
 #include "Cutter.hpp"
 #include "Hub.hpp"
+#include "Balancer.hpp"
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -32,6 +33,21 @@ void App::Start() {
     vignette->m_Transform.scale = glm::vec2(20.0f/3.0f, 20.0f/3.0f);
     vignette->SetZIndex(100);
     m_Root.AddChild(vignette);
+
+    // balancer test
+    m_Machines.push_back(std::make_shared<Miner>(-8, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Miner>(-7, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Miner>(-6, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Miner>(-5, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Belt>(-8, -8, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(-7, -8, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(-6, -8, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(-5, -8, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Balancer>(-8, -7, 0));
+    m_Machines.push_back(std::make_shared<Balancer>(-6, -7, 0));
+    m_Machines.push_back(std::make_shared<Balancer>(-7, -6, 0));
+    m_Machines.push_back(std::make_shared<Belt>(-7, -5, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Trash>(-7, -4));
 
     // hub test
     m_Machines.push_back(std::make_shared<Hub>());

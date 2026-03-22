@@ -4,6 +4,7 @@
 
 #include "ItemAcceptor.hpp"
 #include "Global.hpp"
+#include <iostream>
 
 ItemAcceptor::ItemAcceptor(int x, int y, int r)
     : Machine(x, y, r, BELT_RATE) {
@@ -11,7 +12,42 @@ ItemAcceptor::ItemAcceptor(int x, int y, int r)
     this->progress = 0;
     this->takesColor = true;
     this->takesShape = true;
+
+    /*
+    acceptors[std::make_tuple(x, y, r)] = static_cast<std::shared_ptr<ItemAcceptor>>(this);
+    std::tuple<int, int, int> key;
+    switch (r) {
+        case 0: key = std::make_tuple(x, y+1, r); break;
+        case 1: key = std::make_tuple(x-1, y, r); break;
+        case 2: key = std::make_tuple(x, y-1, r); break;
+        case 3: key = std::make_tuple(x+1, y, r); break;
+        default: throw std::invalid_argument("invalid acceptor rotation " + std::to_string(r));
+    }
+
+
+    if (ejectors[key] != nullptr) {
+        next = ejectors[key];
+        std::shared_ptr<ItemEjector> ejector = next.lock();
+        if (ejector != nullptr) {
+            ejector->RemoveChild(ejector->item);
+            ejector->item = nullptr;
+            ejector->progress = 0;
+            ejector->prev = static_cast<std::shared_ptr<ItemAcceptor>>(this);
+        }
+
+    }
+    */
 }
+
+/*
+ItemAcceptor::~ItemAcceptor() {
+    std::shared_ptr<ItemEjector> ejector = next.lock();
+    if (ejector == nullptr) {return;}
+    if (ejector->item != nullptr) {ejector->RemoveChild(ejector->item);}
+    ejector->item = nullptr;
+    ejector->progress = 1;
+}
+*/
 
 void ItemAcceptor::Update() {
     if (item == nullptr) {return;}

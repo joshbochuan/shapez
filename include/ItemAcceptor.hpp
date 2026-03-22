@@ -7,12 +7,16 @@
 #include "Item.hpp"
 #include "ItemEjector.hpp"
 
+class ItemEjector;
+
 class ItemAcceptor: public Machine {
 public:
     std::shared_ptr<Item> item;
     float progress;
     bool takesShape, takesColor;
+    std::weak_ptr<ItemEjector> next;
     ItemAcceptor(int x, int y, int r);
+    // ~ItemAcceptor();
     void Update();
 };
 

@@ -62,6 +62,8 @@ add_executable(${PROJECT_NAME}
         src/Hub.cpp
         include/Text.hpp
         include/BigNumStr.hpp
+        include/Balancer.hpp
+        src/Balancer.cpp
 )
 
 if(MSVC)

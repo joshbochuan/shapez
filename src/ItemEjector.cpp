@@ -8,7 +8,38 @@ ItemEjector::ItemEjector(int x, int y, int r)
     : Machine(x, y, r, BELT_RATE) {
     this->item = nullptr;
     this->progress = 0;
+
+    /*
+    ejectors[std::make_tuple(x, y, r)] = static_cast<std::shared_ptr<ItemEjector>>(this);
+    std::tuple<int, int, int> key;
+    switch (r) {
+        case 0: key = std::make_tuple(x, y-1, r); break;
+        case 1: key = std::make_tuple(x+1, y, r); break;
+        case 2: key = std::make_tuple(x, y+1, r); break;
+        case 3: key = std::make_tuple(x-1, y, r); break;
+        default: throw std::invalid_argument("invalid ejector rotation " + std::to_string(r));
+    }
+
+    if (acceptors[key] != nullptr) {
+        prev = acceptors[key];
+        std::shared_ptr<ItemAcceptor> acceptor = prev.lock();
+        if (acceptor->item != nullptr) {acceptor->RemoveChild(acceptor->item);}
+        acceptor->item = nullptr;
+        acceptor->progress = 0;
+        acceptor->next = static_cast<std::shared_ptr<ItemEjector>>(this);
+    }
+    */
 }
+
+/*
+ItemEjector::~ItemEjector() {
+    std::shared_ptr<ItemAcceptor> acceptor = prev.lock();
+    if (acceptor == nullptr) {return;}
+    if (acceptor->item != nullptr) {acceptor->RemoveChild(acceptor->item);}
+    acceptor->item = nullptr;
+    acceptor->progress = 0;
+}
+*/
 
 void ItemEjector::Update() {
     if (item == nullptr) {return;}
