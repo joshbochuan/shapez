@@ -12,7 +12,7 @@ Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product)
     this->cooldown = 0;
     this->product = product;
     if (product != nullptr) {
-        this->product->MinerZIndex(44);
+        this->product->MachineItemZIndex(44);
         this->AddChild(this->product);
     }
     this->ejector = std::make_shared<ItemEjector>(x, y, r);

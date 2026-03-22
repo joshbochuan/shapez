@@ -6,23 +6,43 @@
 #include "Util/Image.hpp"
 #include "Shape.hpp"
 #include "Util/Text.hpp"
+#include "BigNumStr.hpp"
 
 Hub::Hub()
     : Machine(0, 0, 0, BELT_RATE) {
     this->level = 1;
     this->targetItem = std::make_shared<Shape>("CuCuCuCu"); // first level
     this->progress = 0;
-    this->targetAmount = 30; // first level target amount
+    this->targetAmount = 3000; // first level target amount
+
+    this->targetItem->MachineItemZIndex(51);
+    this->AddChild(this->targetItem);
 
     this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/hub.png"));
     this->SetZIndex(50);
 
     levelTxt = std::make_shared<Text>("LVL", 40, Util::Color::FromRGB(255, 255, 255));
-    levelNum = std::make_shared<Text>("1", 64, Util::Color::FromRGB(255, 255, 255));
+    levelNumTxt = std::make_shared<Text>("1", 64, Util::Color::FromRGB(255, 255, 255));
+    deliverTxt = std::make_shared<Text>("DELIVER", 64, Util::Color::FromRGB(100, 102, 110));
+    progressTxt = std::make_shared<Text>(BigNumStr(progress), 160, Util::Color::FromRGB(100, 102, 110));
+    targetTxt = std::make_shared<Text>("/ " + BigNumStr(targetAmount), 80, Util::Color::FromRGB(164, 166, 176));
+    toUnlockTxt = std::make_shared<Text>("TO UNLOCK", 64, Util::Color::FromRGB(100, 102, 110));
+    lockedItemTxt = std::make_shared<Text>("IDK", 56, Util::Color::FromRGB(253, 7, 82));
+
     this->AddChild(levelTxt);
-    this->AddChild(levelNum);
+    this->AddChild(levelNumTxt);
+    this->AddChild(targetTxt);
+    this->AddChild(progressTxt);
+    this->AddChild(toUnlockTxt);
+    this->AddChild(lockedItemTxt);
+    this->AddChild(deliverTxt);
     levelTxt->SetZIndex(51);
-    levelNum->SetZIndex(51);
+    levelNumTxt->SetZIndex(51);
+    deliverTxt->SetZIndex(51);
+    progressTxt->SetZIndex(51);
+    targetTxt->SetZIndex(51);
+    toUnlockTxt->SetZIndex(51);
+    lockedItemTxt->SetZIndex(51);
 
     m_Acceptors.push_back(std::make_shared<ItemAcceptor>(-2, -2, 0));
     m_Acceptors.push_back(std::make_shared<ItemAcceptor>(-1, -2, 0));
@@ -50,27 +70,12 @@ Hub::Hub()
 }
 
 void Hub::Update() {
-    this->m_Transform.translation.x = std::round(((192.0*x) - cam.translation.x) * cam.scale.x);
-    this->m_Transform.translation.y = std::round(((192.0*y) - cam.translation.y) * cam.scale.y);
-    this->m_Transform.scale.x = cam.scale.x * 1.12; // adding tiny size to avoid gap
-    this->m_Transform.scale.y = cam.scale.y * 1.12;
-
-    levelTxt->m_Transform.translation.x = m_Transform.translation.x - cam.scale.x * 244;
-    levelTxt->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 292;
-    levelTxt->m_Transform.scale.x = cam.scale.x * 1;
-    levelTxt->m_Transform.scale.y = cam.scale.y * 1;
-
-    levelNum->m_Transform.translation.x = m_Transform.translation.x - cam.scale.x * 244;
-    levelNum->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 240;
-    levelNum->m_Transform.scale.x = cam.scale.x * 1;
-    levelNum->m_Transform.scale.y = cam.scale.y * 1;
-
     for (int i=0; i<m_Acceptors.size(); i++) {
         m_Acceptors[i]->Update();
         if (m_Acceptors[i]->item == nullptr) {continue;}
         if (m_Acceptors[i]->progress < 1) {continue;}
 
-        if (targetItem == m_Acceptors[i]->item) {progress++;}
+        if (targetItem->getCode() == m_Acceptors[i]->item->getCode()) {progress++;}
 
         m_Acceptors[i]->item->Update();
         m_Acceptors[i]->RemoveChild(this->m_Acceptors[i]->item);
@@ -82,7 +87,48 @@ void Hub::Update() {
     if (progress >= targetAmount) {
         progress = 0;
         level++;
-        levelNum->m_Text->SetText(std::to_string(level));
+        levelNumTxt->m_Text->SetText(std::to_string(level));
+        targetTxt->m_Text->SetText("/ " + BigNumStr(targetAmount));
     }
+    progressTxt->m_Text->SetText(BigNumStr(progress));
 
+    this->m_Transform.translation.x = std::round(((192.0f*static_cast<float>(x)) - cam.translation.x) * cam.scale.x);
+    this->m_Transform.translation.y = std::round(((192.0f*static_cast<float>(y)) - cam.translation.y) * cam.scale.y);
+    this->m_Transform.scale.x = cam.scale.x * 1.12f;
+    this->m_Transform.scale.y = cam.scale.y * 1.12f;
+
+    targetItem->m_Transform.translation.x = m_Transform.translation.x - cam.scale.x * 128;
+    targetItem->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 32;
+    targetItem->m_Transform.scale = cam.scale * 0.6f;
+    targetItem->Update();
+
+    levelTxt->m_Transform.translation.x = m_Transform.translation.x - cam.scale.x * 244;
+    levelTxt->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 292;
+    levelTxt->m_Transform.scale = cam.scale;
+
+    levelNumTxt->m_Transform.translation.x = m_Transform.translation.x - cam.scale.x * 244;
+    levelNumTxt->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 240;
+    levelNumTxt->m_Transform.scale = cam.scale;
+
+    deliverTxt->m_Transform.translation.x = m_Transform.translation.x + cam.scale.x * 0;
+    deliverTxt->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 256;
+    deliverTxt->m_Transform.scale = cam.scale;
+
+    progressTxt->m_Transform.translation.x = m_Transform.translation.x + cam.scale.x * 32;
+    progressTxt->m_Transform.translation.x += progressTxt->m_Text->GetSize().x * 0.5f * cam.scale.x;
+    progressTxt->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 88;
+    progressTxt->m_Transform.scale = cam.scale;
+
+    targetTxt->m_Transform.translation.x = m_Transform.translation.x + cam.scale.x * 32;
+    targetTxt->m_Transform.translation.x += targetTxt->m_Text->GetSize().x * 0.5f * cam.scale.x;
+    targetTxt->m_Transform.translation.y = m_Transform.translation.y - cam.scale.y * 32;
+    targetTxt->m_Transform.scale = cam.scale;
+
+    toUnlockTxt->m_Transform.translation.x = m_Transform.translation.x + cam.scale.x * 0;
+    toUnlockTxt->m_Transform.translation.y = m_Transform.translation.y - cam.scale.y * 160;
+    toUnlockTxt->m_Transform.scale = cam.scale;
+
+    lockedItemTxt->m_Transform.translation.x = m_Transform.translation.x - cam.scale.x * 0;
+    lockedItemTxt->m_Transform.translation.y = m_Transform.translation.y - cam.scale.y * 256;
+    lockedItemTxt->m_Transform.scale = cam.scale;
 }

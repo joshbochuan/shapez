@@ -39,9 +39,9 @@ void App::Start() {
     m_Machines.push_back(std::make_shared<Belt>(-1, 2, 2, BeltType::FORWARD));
     m_Machines.push_back(std::make_shared<Belt>(0, 2, 2, BeltType::FORWARD));
     m_Machines.push_back(std::make_shared<Belt>(1, 2, 2, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Miner>(-2, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
-    m_Machines.push_back(std::make_shared<Miner>(-1, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
-    m_Machines.push_back(std::make_shared<Miner>(0, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 3, 2, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Miner>(-1, 3, 2, std::make_shared<Shape>("RrRrRrRr")));
+    m_Machines.push_back(std::make_shared<Miner>(0, 3, 2, std::make_shared<Shape>("CuCuCuCu")));
     m_Machines.push_back(std::make_shared<Miner>(1, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
     // belt, mine, trash test
     m_Machines.push_back(std::make_shared<Miner>(-1, 7, 3, std::make_shared<Shape>("CuCuCuCu")));

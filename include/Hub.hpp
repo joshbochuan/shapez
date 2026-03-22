@@ -19,7 +19,13 @@ public:
     std::vector<std::shared_ptr<ItemAcceptor>> m_Acceptors;
     Hub();
     void Update();
-    std::shared_ptr<Text> levelTxt, levelNum, progressTxt;
+    std::shared_ptr<Text> levelTxt;
+    std::shared_ptr<Text> levelNumTxt;
+    std::shared_ptr<Text> progressTxt;
+    std::shared_ptr<Text> targetTxt;
+    std::shared_ptr<Text> deliverTxt;
+    std::shared_ptr<Text> toUnlockTxt;
+    std::shared_ptr<Text> lockedItemTxt;
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_HUB_HPP
