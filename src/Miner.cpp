@@ -16,7 +16,6 @@ Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product)
         this->AddChild(this->product);
     }
     this->ejector = std::make_shared<ItemEjector>(x, y, r);
-    ejectors[std::make_tuple(x, y, r)] = this->ejector;
     this->AddChild(this->ejector);
     this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/miner.png"));
     this->m_Transform.rotation = M_PI * 0.5 * r;
@@ -25,6 +24,16 @@ Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product)
     cover->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/miner-cover.png"));
     cover->SetZIndex(40);
     this->AddChild(cover);
+}
+
+void Miner::Init() {
+    MapMachines[{x, y}] = shared_from_this();
+    ejector->Init();
+}
+
+void Miner::Delete() {
+    MapMachines.erase({x, y});
+    ejector->Delete();
 }
 
 void Miner::Update() {

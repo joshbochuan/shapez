@@ -18,7 +18,9 @@ public:
     int progress; // how much of the item is thrown into the hub already
     std::vector<std::shared_ptr<ItemAcceptor>> m_Acceptors;
     Hub();
+    void Init();
     void Update();
+    void Delete();
     std::shared_ptr<Text> levelTxt;
     std::shared_ptr<Text> levelNumTxt;
     std::shared_ptr<Text> progressTxt;

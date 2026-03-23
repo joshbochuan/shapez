@@ -15,10 +15,8 @@ Rotator::Rotator(int x, int y, int r, RotatorType type)
     this->acceptor = std::make_shared<ItemAcceptor>(this->x, this->y, this->r);
     this->acceptor->takesColor = false;
     this->AddChild(this->acceptor);
-    acceptors[std::make_tuple(x, y, r)] = this->acceptor;
     this->ejector = std::make_shared<ItemEjector>(this->x, this->y, this->r);
     this->AddChild(this->ejector);
-    ejectors[std::make_tuple(x, y, r)] = this->ejector;
     switch (this->type) {
         case RotatorType::ROTATE_CW: this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/rotater.png")); break;
         case RotatorType::ROTATE_180: this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/rotater-rotate180.png")); break;
@@ -83,6 +81,18 @@ std::shared_ptr<Shape> RotateCCW(std::shared_ptr<Shape> shape) {
         if (i < layerCnt-1) {code += ':';}
     }
     return std::make_shared<Shape>(code);
+}
+
+void Rotator::Init() {
+    MapMachines[{x, y}] = shared_from_this();
+    acceptor->Init();
+    ejector->Init();
+}
+
+void Rotator::Delete() {
+    MapMachines.erase({x, y});
+    acceptor->Delete();
+    ejector->Delete();
 }
 
 void Rotator::Update() {

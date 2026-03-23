@@ -32,18 +32,27 @@ Belt::Belt(int x, int y, int r, BeltType type)
     SetDrawable(m_Animation);
     this->type = type;
     this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
-    acceptors[std::make_tuple(x, y, r)] = this->acceptor;
     this->AddChild(this->acceptor);
     if (type == BeltType::LEFT)  { r = ((r + 1) % 4); }
     if (type == BeltType::RIGHT) { r = ((r - 1 + 4) % 4); }
-    std::cout << r << std::endl;
     this->ejector = std::make_shared<ItemEjector>(x, y, r);
-    ejectors[std::make_tuple(x, y, r)] = this->ejector;
     this->AddChild(this->ejector);
     if (type != BeltType::FORWARD) {
         this->acceptor->rate = BELTTURN_RATE;
         this->ejector->rate = BELTTURN_RATE;
     }
+}
+
+void Belt::Init() {
+    MapMachines[{x, y}] = shared_from_this();
+    acceptor->Init();;
+    ejector->Init();;
+}
+
+void Belt::Delete() {
+    MapMachines.erase({x, y});
+    acceptor->Delete();
+    ejector->Delete();
 }
 
 void Belt::Update() {
@@ -124,3 +133,4 @@ void Belt::Update() {
         ejector->item->Update();
     }
 }
+

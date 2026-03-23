@@ -12,44 +12,39 @@ ItemAcceptor::ItemAcceptor(int x, int y, int r)
     this->progress = 0;
     this->takesColor = true;
     this->takesShape = true;
+}
 
-    /*
-    acceptors[std::make_tuple(x, y, r)] = static_cast<std::shared_ptr<ItemAcceptor>>(this);
+void ItemAcceptor::Init() {
+    initialized = true;
+    MapAcceptors[{x, y, r}] = std::dynamic_pointer_cast<ItemAcceptor>(shared_from_this());
     std::tuple<int, int, int> key;
     switch (r) {
-        case 0: key = std::make_tuple(x, y+1, r); break;
-        case 1: key = std::make_tuple(x-1, y, r); break;
-        case 2: key = std::make_tuple(x, y-1, r); break;
-        case 3: key = std::make_tuple(x+1, y, r); break;
+        case 0: key = {x, y-1, r}; break;
+        case 1: key = {x+1, y, r}; break;
+        case 2: key = {x, y+1, r}; break;
+        case 3: key = {x-1, y, r}; break;
         default: throw std::invalid_argument("invalid acceptor rotation " + std::to_string(r));
     }
 
-
-    if (ejectors[key] != nullptr) {
-        next = ejectors[key];
-        std::shared_ptr<ItemEjector> ejector = next.lock();
-        if (ejector != nullptr) {
-            ejector->RemoveChild(ejector->item);
-            ejector->item = nullptr;
-            ejector->progress = 0;
-            ejector->prev = static_cast<std::shared_ptr<ItemAcceptor>>(this);
-        }
-
-    }
-    */
+    prev = MapEjectors[key];
+    if (prev == nullptr) {return;}
+    if (prev->item != nullptr) {prev->RemoveChild(prev->item);}
+    prev->item = nullptr;
+    prev->progress = 0;
+    prev->next = std::dynamic_pointer_cast<ItemAcceptor>(shared_from_this());
 }
 
-/*
-ItemAcceptor::~ItemAcceptor() {
-    std::shared_ptr<ItemEjector> ejector = next.lock();
-    if (ejector == nullptr) {return;}
-    if (ejector->item != nullptr) {ejector->RemoveChild(ejector->item);}
-    ejector->item = nullptr;
-    ejector->progress = 1;
+void ItemAcceptor::Delete() {
+    MapAcceptors.erase({x, y, r});
+    if (prev == nullptr) {return;}
+    if (prev->item != nullptr) {prev->RemoveChild(prev->item);}
+    prev->item = nullptr;
+    prev->progress = 0;
+    prev->next = nullptr;
 }
-*/
 
 void ItemAcceptor::Update() {
+    if (!initialized) {throw std::invalid_argument("acceptor not initialized");}
     if (item == nullptr) {return;}
     if (progress < 1) {progress += rate;}
 

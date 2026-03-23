@@ -11,6 +11,7 @@
 #include "Cutter.hpp"
 #include "Hub.hpp"
 #include "Balancer.hpp"
+#include <iostream>
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -108,39 +109,40 @@ void App::Start() {
     std::shared_ptr<Belt> belt;
     belt = std::make_shared<Belt>(5, -3, 0, BeltType::RIGHT);
     belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
-    belt->AddChild(belt->acceptor->item);
+    belt->acceptor->AddChild(belt->acceptor->item);
     m_Machines.push_back(belt);
     belt = std::make_shared<Belt>(6, -3, 3, BeltType::RIGHT);
     belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
-    belt->AddChild(belt->acceptor->item);
+    belt->acceptor->AddChild(belt->acceptor->item);
     m_Machines.push_back(belt);
     belt = std::make_shared<Belt>(6, -4, 2, BeltType::RIGHT);
     belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
-    belt->AddChild(belt->acceptor->item);
+    belt->acceptor->AddChild(belt->acceptor->item);
     m_Machines.push_back(belt);
     belt = std::make_shared<Belt>(5, -4, 1, BeltType::RIGHT);
     belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
-    belt->AddChild(belt->acceptor->item);
+    belt->acceptor->AddChild(belt->acceptor->item);
     m_Machines.push_back(belt);
     belt = std::make_shared<Belt>(4, -2, 0, BeltType::LEFT);
     belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
-    belt->AddChild(belt->acceptor->item);
+    belt->acceptor->AddChild(belt->acceptor->item);
     m_Machines.push_back(belt);
     belt = std::make_shared<Belt>(3, -2, 1, BeltType::LEFT);
     belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
-    belt->AddChild(belt->acceptor->item);
+    belt->acceptor->AddChild(belt->acceptor->item);
     m_Machines.push_back(belt);
     belt = std::make_shared<Belt>(3, -3, 2, BeltType::LEFT);
     belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
-    belt->AddChild(belt->acceptor->item);
+    belt->acceptor->AddChild(belt->acceptor->item);
     m_Machines.push_back(belt);
     belt = std::make_shared<Belt>(4, -3, 3, BeltType::LEFT);
     belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
-    belt->AddChild(belt->acceptor->item);
+    belt->acceptor->AddChild(belt->acceptor->item);
     m_Machines.push_back(belt);
 
 
     for (int i=0; i<m_Machines.size(); i++) {
+        m_Machines[i]->Init();
         m_Root.AddChild(m_Machines[i]);
     }
 
@@ -173,7 +175,8 @@ void App::Update() {
         auto delta = Util::Input::GetScrollDistance();
 
         // todo: temporary fix, delete when they fix ts scroll wheel
-        if (delta.y >= 10) {delta.y = 0;}
+        // fix: change PTSD/src/Util/Input.cpp
+        // if (delta.y >= 10) {delta.y = 0;}
 
         cam.scale.x += delta.y * 0.05;
         cam.scale.y += delta.y * 0.05;
@@ -193,17 +196,26 @@ void App::Update() {
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;
     int dx, dy;
-    for (const auto& pair : ejectors) {
+    for (const auto& pair : MapEjectors) {
         ejector = pair.second;
+
+        if (ejector == nullptr) {continue;}
         if (ejector->item == nullptr) {continue;}
         if (ejector->progress < 1) {continue;}
+
+        /*
         switch (ejector->r) {
             case 0: dx = 0; dy = 1; break;
             case 1: dx = -1; dy = 0; break;
             case 2: dx = 0; dy = -1; break;
             case 3: dx = 1; dy = 0; break;
+            default: throw std::invalid_argument("illegal ejector rotation " + std::to_string(ejector->r));
         }
-        acceptor = acceptors[{ejector->x+dx, ejector->y+dy, ejector->r}];
+        acceptor = MapAcceptors[{ejector->x+dx, ejector->y+dy, ejector->r}];
+        */
+
+        acceptor = ejector->next;
+
         if (acceptor == nullptr) {continue;}
         if (acceptor->item != nullptr) {continue;}
         if ((ejector->item->getType() == ItemType::COLOR) && (!acceptor->takesColor)) {continue;}
@@ -218,7 +230,6 @@ void App::Update() {
     }
 
     m_Root.Update();
-
 
     /*
      * Do not touch the code below as they serve the purpose for

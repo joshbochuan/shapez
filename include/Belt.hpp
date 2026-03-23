@@ -24,7 +24,9 @@ public:
     Belt(int x, int y, int r, BeltType type);
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;
+    void Init();
     void Update();
+    void Delete();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_BELT_HPP

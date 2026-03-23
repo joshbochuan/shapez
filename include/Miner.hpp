@@ -15,7 +15,9 @@ private:
 public:
     std::shared_ptr<Item> product;
     Miner(int x, int y, int r, std::shared_ptr<Item> product);
+    void Init();
     void Update();
+    void Delete();
     std::shared_ptr<ItemEjector> ejector;
 };
 

@@ -3,45 +3,46 @@
 //
 #include "ItemEjector.hpp"
 #include "Global.hpp"
+#include <iostream>
 
 ItemEjector::ItemEjector(int x, int y, int r)
     : Machine(x, y, r, BELT_RATE) {
     this->item = nullptr;
     this->progress = 0;
+    this->next = nullptr;
+}
 
-    /*
-    ejectors[std::make_tuple(x, y, r)] = static_cast<std::shared_ptr<ItemEjector>>(this);
+void ItemEjector::Init() {
+    initialized = true;
+    MapEjectors[{x, y, r}] = std::dynamic_pointer_cast<ItemEjector>(shared_from_this());
     std::tuple<int, int, int> key;
     switch (r) {
-        case 0: key = std::make_tuple(x, y-1, r); break;
-        case 1: key = std::make_tuple(x+1, y, r); break;
-        case 2: key = std::make_tuple(x, y+1, r); break;
-        case 3: key = std::make_tuple(x-1, y, r); break;
+        case 0: key = {x, y+1, r}; break;
+        case 1: key = {x-1, y, r}; break;
+        case 2: key = {x, y-1, r}; break;
+        case 3: key = {x+1, y, r}; break;
         default: throw std::invalid_argument("invalid ejector rotation " + std::to_string(r));
     }
 
-    if (acceptors[key] != nullptr) {
-        prev = acceptors[key];
-        std::shared_ptr<ItemAcceptor> acceptor = prev.lock();
-        if (acceptor->item != nullptr) {acceptor->RemoveChild(acceptor->item);}
-        acceptor->item = nullptr;
-        acceptor->progress = 0;
-        acceptor->next = static_cast<std::shared_ptr<ItemEjector>>(this);
-    }
-    */
+    next = MapAcceptors[key];
+    if (next == nullptr) {return;}
+    if (next->item != nullptr) {next->RemoveChild(next->item);}
+    next->item = nullptr;
+    next->progress = 0;
+    next->prev = std::dynamic_pointer_cast<ItemEjector>(shared_from_this());
 }
 
-/*
-ItemEjector::~ItemEjector() {
-    std::shared_ptr<ItemAcceptor> acceptor = prev.lock();
-    if (acceptor == nullptr) {return;}
-    if (acceptor->item != nullptr) {acceptor->RemoveChild(acceptor->item);}
-    acceptor->item = nullptr;
-    acceptor->progress = 0;
+void ItemEjector::Delete() {
+    MapAcceptors.erase({x, y, r});
+    if (next == nullptr) {return;}
+    if (next->item != nullptr) {next->RemoveChild(next->item);}
+    next->item = nullptr;
+    next->progress = 0;
+    next->prev = nullptr;
 }
-*/
 
 void ItemEjector::Update() {
+    if (!initialized) {throw std::invalid_argument("ejector not initialized");}
     if (item == nullptr) {return;}
     if (progress < 1) {progress += rate;}
 

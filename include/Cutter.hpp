@@ -16,7 +16,9 @@ public:
     std::shared_ptr<ItemEjector> ejectorA;
     std::shared_ptr<ItemEjector> ejectorB;
     Cutter(int x, int y, int r);
+    void Init();
     void Update();
+    void Delete();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_CUTTER_HPP

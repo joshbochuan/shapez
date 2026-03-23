@@ -10,14 +10,17 @@
 class ItemEjector;
 
 class ItemAcceptor: public Machine {
+private:
+    bool initialized = false;
 public:
     std::shared_ptr<Item> item;
     float progress;
     bool takesShape, takesColor;
-    std::weak_ptr<ItemEjector> next;
+    std::shared_ptr<ItemEjector> prev;
     ItemAcceptor(int x, int y, int r);
-    // ~ItemAcceptor();
+    void Init();
     void Update();
+    void Delete();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_ITEMACCEPTOR_HPP

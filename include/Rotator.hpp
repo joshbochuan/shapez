@@ -22,7 +22,9 @@ public:
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;
     Rotator(int x, int y, int r, RotatorType type);
+    void Init();
     void Update();
+    void Delete();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_ROTATOR_HPP

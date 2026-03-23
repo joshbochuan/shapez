@@ -15,7 +15,9 @@ public:
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;
     Balancer(int x, int y, int r);
+    void Init();
     void Update();
+    void Delete();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_BALANCER_HPP

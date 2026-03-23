@@ -20,16 +20,16 @@ Balancer::Balancer(int x, int y, int r)
             this->ejectorB = std::make_shared<ItemEjector>(x+1, y, r);
             break;
         case 1:
-            this->acceptorB = std::make_shared<ItemAcceptor>(x, y-1, r);
-            this->ejectorB = std::make_shared<ItemEjector>(x, y-1, r);
+            this->acceptorB = std::make_shared<ItemAcceptor>(x, y+1, r);
+            this->ejectorB = std::make_shared<ItemEjector>(x, y+1, r);
             break;
         case 2:
             this->acceptorB = std::make_shared<ItemAcceptor>(x-1, y, r);
             this->ejectorB = std::make_shared<ItemEjector>(x-1, y, r);
             break;
         case 3:
-            this->acceptorB = std::make_shared<ItemAcceptor>(x, y+1, r);
-            this->ejectorB = std::make_shared<ItemEjector>(x, y+1, r);
+            this->acceptorB = std::make_shared<ItemAcceptor>(x, y-1, r);
+            this->ejectorB = std::make_shared<ItemEjector>(x, y-1, r);
             break;
         default: throw std::invalid_argument("illegal balancer rotation " + std::to_string(r));
     }
@@ -38,13 +38,28 @@ Balancer::Balancer(int x, int y, int r)
     this->AddChild(this->acceptorB);
     this->AddChild(this->ejectorA);
     this->AddChild(this->ejectorB);
-    acceptors[std::make_tuple(acceptorA->x, acceptorA->y, acceptorA->r)] = acceptorA;
-    acceptors[std::make_tuple(acceptorB->x, acceptorB->y, acceptorB->r)] = acceptorB;
-    ejectors[std::make_tuple(ejectorA->x, ejectorA->y, ejectorA->r)] = ejectorA;
-    ejectors[std::make_tuple(ejectorB->x, ejectorB->y, ejectorB->r)] = ejectorB;
 
     acceptPriority = 0;
     ejectPriority = 0;
+}
+
+void Balancer::Init() {
+    MapMachines[{x, y}] = shared_from_this();
+    MapMachines[{ejectorB->x, ejectorB->y}] = shared_from_this();
+    acceptorA->Init();
+    acceptorB->Init();
+    ejectorA->Init();
+    ejectorB->Init();
+}
+
+void Balancer::Delete() {
+    // similar to free for traditional pointers
+    MapMachines.erase({x, y});
+    MapMachines.erase({ejectorB->x, ejectorB->y});
+    acceptorA->Delete();
+    acceptorB->Delete();
+    ejectorA->Delete();
+    ejectorB->Delete();
 }
 
 void Balancer::Update() {
@@ -80,10 +95,11 @@ void Balancer::Update() {
 
     std::shared_ptr<Item> item;
     float progress;
-    if ((acceptorA->item!=nullptr && acceptorA->progress>=1)
-        && (acceptorB->item!=nullptr && acceptorB->progress>=1)
-        && (ejectorA->item==nullptr)
-        && (ejectorB->item==nullptr)) { // 2 in 2 out
+    const bool aA = acceptorA->item != nullptr && acceptorA->progress >= 1;
+    const bool aB = acceptorB->item != nullptr && acceptorB->progress >= 1;
+    const bool eA = ejectorA->item==nullptr && ejectorA->next!=nullptr;
+    const bool eB = ejectorB->item==nullptr && ejectorB->next!=nullptr;
+    if ((aA && aB) && (eA && eB)) { // 2 in 2 out
         ejectorA->item = acceptorA->item;
         ejectorA->AddChild(ejectorA->item);
         ejectorA->progress = acceptorA->progress-1;
@@ -97,12 +113,9 @@ void Balancer::Update() {
         acceptorB->item = nullptr;
         acceptorB->progress = 0;
     }
-    else if (((acceptorA->item!=nullptr && acceptorA->progress>=1)
-        ^ (acceptorB->item!=nullptr && acceptorB->progress>=1))
-        && ((ejectorA->item==nullptr)
-        && (ejectorB->item==nullptr))) {
+    else if ((aA ^ aB) && (eA && eB)) {
         // 1 in 2 out
-        if (acceptorA->item!=nullptr && acceptorA->progress>=1) {
+        if (aA) {
             item = acceptorA->item;
             progress = acceptorA->progress;
             acceptPriority = 1;
@@ -131,10 +144,7 @@ void Balancer::Update() {
             ejectPriority = 1;
         }
     }
-    else if (((acceptorA->item!=nullptr && acceptorA->progress>=1)
-        && (acceptorB->item!=nullptr && acceptorB->progress>=1))
-        && ((ejectorA->item==nullptr)
-        ^ (ejectorB->item==nullptr))) {
+    else if ((aA && aB) && (eA ^ eB)) {
         // 2 in 1 out
         if (acceptPriority) { // B
             item = acceptorB->item;
@@ -152,7 +162,7 @@ void Balancer::Update() {
             acceptorA->item = nullptr;
             acceptorA->progress = 0;
         }
-        if (ejectorA->item==nullptr) {
+        if (eA) {
             ejectorA->item = item;
             ejectorA->progress = progress-1;
             ejectorA->AddChild(item);
@@ -165,11 +175,8 @@ void Balancer::Update() {
             ejectPriority = 0;
         }
     }
-    else if (((acceptorA->item!=nullptr && acceptorA->progress>=1)
-        ^ (acceptorB->item!=nullptr && acceptorB->progress>=1))
-        && ((ejectorA->item==nullptr)
-        ^ (ejectorB->item==nullptr))) { // 1 in 1 out
-        if (acceptorA->item!=nullptr && acceptorA->progress>=1) {
+    else if ((aA ^ aB) && (eA ^ eB)) { // 1 in 1 out
+        if (aA) {
             item = acceptorA->item;
             progress = acceptorA->progress;
             acceptPriority = 1;
@@ -185,7 +192,7 @@ void Balancer::Update() {
             acceptorB->item = nullptr;
             acceptorB->progress = 0;
         }
-        if (ejectorA->item==nullptr) {
+        if (eA) {
             ejectorA->item = item;
             ejectorA->progress = progress-1;
             ejectorA->AddChild(item);
@@ -203,3 +210,4 @@ void Balancer::Update() {
     ejectorA->Update();
     ejectorB->Update();
 }
+

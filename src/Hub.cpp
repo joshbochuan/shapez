@@ -62,10 +62,28 @@ Hub::Hub()
     m_Acceptors.push_back(std::make_shared<ItemAcceptor>(-2, -2, 3));
 
     std::shared_ptr<ItemAcceptor> a;
+    for (int i=0; i<m_Acceptors.size(); i++) {this->AddChild(m_Acceptors[i]);}
+}
+
+void Hub::Init() {
+    for (int i=-2; i<2; i++) {
+        for (int j=-2; j<2; j++) {
+            MapMachines[{i, j}] = shared_from_this();
+        }
+    }
     for (int i=0; i<m_Acceptors.size(); i++) {
-        a = m_Acceptors[i];
-        acceptors[std::make_tuple(a->x, a->y, a->r)] = a;
-        this->AddChild(a);
+        m_Acceptors[i]->Init();
+    }
+}
+
+void Hub::Delete() {
+    for (int i=-2; i<2; i++) {
+        for (int j=-2; j<2; j++) {
+            MapMachines.erase({i, j});
+        }
+    }
+    for (int i=0; i<m_Acceptors.size(); i++) {
+        m_Acceptors[i]->Delete();
     }
 }
 
@@ -132,3 +150,4 @@ void Hub::Update() {
     lockedItemTxt->m_Transform.translation.y = m_Transform.translation.y - cam.scale.y * 256;
     lockedItemTxt->m_Transform.scale = cam.scale;
 }
+

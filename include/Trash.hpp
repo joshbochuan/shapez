@@ -11,7 +11,9 @@ class Trash: public Machine {
 public:
     std::vector<std::shared_ptr<ItemAcceptor>> m_Acceptors;
     Trash(int x, int y);
+    void Init();
     void Update();
+    void Delete();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_TRASH_HPP

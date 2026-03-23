@@ -66,7 +66,6 @@ bool Shape::operator==(std::shared_ptr<Item> rhs) {
 void Shape::MachineItemZIndex(float index) {
     SetZIndex(index);
     for (int i=0; i<this->quads.size(); i++) {
-        std::cout << "y" << std::endl;
         this->quads[i]->SetZIndex(index+i+1);
     }
 }

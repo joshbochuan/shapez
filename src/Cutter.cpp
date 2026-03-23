@@ -23,9 +23,6 @@ Cutter::Cutter(int x, int y, int r)
     this->AddChild(acceptor);
     this->AddChild(ejectorA);
     this->AddChild(ejectorB);
-    acceptors[std::make_tuple(acceptor->x, acceptor->y, acceptor->r)] = acceptor;
-    ejectors[std::make_tuple(ejectorA->x, ejectorA->y, ejectorA->r)] = ejectorA;
-    ejectors[std::make_tuple(ejectorB->x, ejectorB->y, ejectorB->r)] = ejectorB;
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/cutter.png"));
     this->SetZIndex(40 + (x+y)%2);
@@ -50,6 +47,22 @@ std::pair<std::shared_ptr<Shape>, std::shared_ptr<Shape>> Cut(const std::shared_
     left = std::make_shared<Shape>(codeLeft);
     right = std::make_shared<Shape>(codeRight);
     return std::make_pair(left, right);
+}
+
+void Cutter::Init() {
+    MapMachines[{x, y}] = shared_from_this();
+    MapMachines[{ejectorB->x, ejectorB->y}] = shared_from_this();
+    acceptor->Init();
+    ejectorA->Init();
+    ejectorB->Init();
+}
+
+void Cutter::Delete() {
+    MapMachines.erase({x, y});
+    MapMachines.erase({ejectorB->x, ejectorB->y});
+    acceptor->Delete();
+    ejectorA->Delete();
+    ejectorB->Delete();
 }
 
 void Cutter::Update() {
@@ -100,3 +113,5 @@ void Cutter::Update() {
     ejectorA->Update();
     ejectorB->Update();
 }
+
+

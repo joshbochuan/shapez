@@ -12,11 +12,20 @@ Trash::Trash(int x, int y)
     // acceptor on all side
     for (int i=0; i<4; i++) {
         this->m_Acceptors.push_back(std::make_shared<ItemAcceptor>(x, y, i));
-        acceptors[std::make_tuple(x, y, i)] = this->m_Acceptors[i];
         this->AddChild(this->m_Acceptors[i]);
     }
     this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/trash.png"));
     this->SetZIndex(46 + (x+y)%2);
+}
+
+void Trash::Init() {
+    MapMachines[{x, y}] = shared_from_this();
+    for (int i=0; i<4; i++) {m_Acceptors[i]->Init();}
+}
+
+void Trash::Delete() {
+    MapMachines.erase({x, y});
+    for (int i=0; i<4; i++) {m_Acceptors[i]->Delete();}
 }
 
 void Trash::Update() {
