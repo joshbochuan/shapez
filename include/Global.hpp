@@ -10,6 +10,7 @@
 #include <utility>
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
+#include "Machine.hpp"
 
 struct PairHash {
     std::size_t operator()(const std::pair<int,int>& t) const {

@@ -8,7 +8,7 @@
 #include <iostream>
 
 Trash::Trash(int x, int y)
-    : Machine(x, y, 0, BELT_RATE) {
+    : Machine(x, y, 0, BELT_RATE, MachineName::TRASH) {
     // acceptor on all side
     for (int i=0; i<4; i++) {
         this->m_Acceptors.push_back(std::make_shared<ItemAcceptor>(x, y, i));

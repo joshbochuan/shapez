@@ -8,7 +8,7 @@
 #include <iostream>
 
 Cutter::Cutter(int x, int y, int r)
-    : Machine(x, y, r, CUT_RATE) {
+    : Machine(x, y, r, CUT_RATE, MachineName::CUTTER) {
     this->cooldown = 0;
     this->acceptor = std::make_shared<ItemAcceptor>(this->x, this->y, this->r);
     this->acceptor->takesColor = false;

@@ -8,7 +8,7 @@
 #include <iostream>
 
 Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product)
-    : Machine(x, y, r, MINE_RATE) {
+    : Machine(x, y, r, MINE_RATE, MachineName::MINER) {
     this->cooldown = 0;
     this->product = product;
     if (product != nullptr) {

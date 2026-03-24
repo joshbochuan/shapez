@@ -64,6 +64,8 @@ add_executable(${PROJECT_NAME}
         include/BigNumStr.hpp
         include/Balancer.hpp
         src/Balancer.cpp
+        include/Tunnel.hpp
+        src/Tunnel.cpp
 )
 
 if(MSVC)

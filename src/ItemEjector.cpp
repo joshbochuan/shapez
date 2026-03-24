@@ -5,8 +5,10 @@
 #include "Global.hpp"
 #include <iostream>
 
-ItemEjector::ItemEjector(int x, int y, int r)
-    : Machine(x, y, r, BELT_RATE) {
+ItemEjector::ItemEjector(int x, int y, int r): rate(BELT_RATE){
+    this->x = x;
+    this->y = y;
+    this->r = r;
     this->item = nullptr;
     this->progress = 0;
     this->next = nullptr;

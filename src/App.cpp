@@ -11,6 +11,7 @@
 #include "Cutter.hpp"
 #include "Hub.hpp"
 #include "Balancer.hpp"
+#include "Tunnel.hpp"
 #include <iostream>
 
 void App::Start() {
@@ -34,6 +35,14 @@ void App::Start() {
     vignette->m_Transform.scale = glm::vec2(20.0f/3.0f, 20.0f/3.0f);
     vignette->SetZIndex(100);
     m_Root.AddChild(vignette);
+
+    // tunnel test
+    m_Machines.push_back(std::make_shared<Miner>(0, -7, 3, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Belt>(1, -7, 3, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Tunnel>(2, -7, 3, TunnelType::IN, false));
+    m_Machines.push_back(std::make_shared<Tunnel>(5, -7, 3, TunnelType::OUT, false));
+    m_Machines.push_back(std::make_shared<Belt>(6, -7, 3, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Trash>(7, -7));
 
     // balancer test
     m_Machines.push_back(std::make_shared<Miner>(-8, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
@@ -202,17 +211,6 @@ void App::Update() {
         if (ejector == nullptr) {continue;}
         if (ejector->item == nullptr) {continue;}
         if (ejector->progress < 1) {continue;}
-
-        /*
-        switch (ejector->r) {
-            case 0: dx = 0; dy = 1; break;
-            case 1: dx = -1; dy = 0; break;
-            case 2: dx = 0; dy = -1; break;
-            case 3: dx = 1; dy = 0; break;
-            default: throw std::invalid_argument("illegal ejector rotation " + std::to_string(ejector->r));
-        }
-        acceptor = MapAcceptors[{ejector->x+dx, ejector->y+dy, ejector->r}];
-        */
 
         acceptor = ejector->next;
 

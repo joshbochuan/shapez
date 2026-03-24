@@ -9,7 +9,7 @@
 #include <iostream>
 
 Rotator::Rotator(int x, int y, int r, RotatorType type)
-    : Machine(x, y, r, ROTATE_RATE) {
+    : Machine(x, y, r, ROTATE_RATE, MachineName::ROTATOR) {
     this->type = type;
     this->cooldown = 0;
     this->acceptor = std::make_shared<ItemAcceptor>(this->x, this->y, this->r);
@@ -24,6 +24,7 @@ Rotator::Rotator(int x, int y, int r, RotatorType type)
         default: throw std::invalid_argument("Invalid rotator type");
     }
     this->SetZIndex(44 + (x+y)%2);
+    this->m_Transform.rotation = M_PI * 0.5 * r;
 }
 
 std::shared_ptr<Shape> RotateCW(std::shared_ptr<Shape> shape) {

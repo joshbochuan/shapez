@@ -5,15 +5,17 @@
 #ifndef REPLACE_WITH_YOUR_PROJECT_NAME_ITEMEJECTOR_HPP
 #define REPLACE_WITH_YOUR_PROJECT_NAME_ITEMEJECTOR_HPP
 #include "Item.hpp"
-#include "Machine.hpp"
+#include "Util/GameObject.hpp"
 #include "ItemAcceptor.hpp"
 
 class ItemAcceptor;
 
-class ItemEjector: public Machine {
+class ItemEjector: public Util::GameObject, public std::enable_shared_from_this<ItemEjector> {
 private:
     bool initialized = false;
 public:
+    int x, y, r;
+    float& rate;
     std::shared_ptr<Item> item;
     float progress;
     std::shared_ptr<ItemAcceptor> next;

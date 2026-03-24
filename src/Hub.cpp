@@ -9,7 +9,7 @@
 #include "BigNumStr.hpp"
 
 Hub::Hub()
-    : Machine(0, 0, 0, BELT_RATE) {
+    : Machine(0, 0, 0, BELT_RATE, MachineName::HUB) {
     this->level = 1;
     this->targetItem = std::make_shared<Shape>("CuCuCuCu"); // first level
     this->progress = 0;

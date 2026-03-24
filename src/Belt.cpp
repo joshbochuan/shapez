@@ -24,7 +24,7 @@ static std::vector<std::string> getBeltSprites(BeltType type) {
 }
 
 Belt::Belt(int x, int y, int r, BeltType type)
-    : Machine(x, y, r, BELT_RATE), m_Animation(std::make_shared<Util::Animation>(
+    : Machine(x, y, r, BELT_RATE, MachineName::BELT), m_Animation(std::make_shared<Util::Animation>(
         getBeltSprites(type),
         true, 15, true, 0)) {
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);

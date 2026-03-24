@@ -6,12 +6,15 @@
 #include "Global.hpp"
 #include <iostream>
 
-ItemAcceptor::ItemAcceptor(int x, int y, int r)
-    : Machine(x, y, r, BELT_RATE) {
+ItemAcceptor::ItemAcceptor(int x, int y, int r) : rate(BELT_RATE) {
+    this->x = x;
+    this->y = y;
+    this->r = r;
     this->item = nullptr;
     this->progress = 0;
     this->takesColor = true;
     this->takesShape = true;
+    this->prev = nullptr;
 }
 
 void ItemAcceptor::Init() {

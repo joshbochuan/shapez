@@ -6,7 +6,7 @@
 #include "Util/Image.hpp"
 
 Balancer::Balancer(int x, int y, int r)
-    : Machine(x, y, r, BELT_RATE) {
+    : Machine(x, y, r, BELT_RATE, MachineName::BALANCER) {
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/balancer.png"));
     this->SetZIndex(60 + (x+y)%2);
