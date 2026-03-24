@@ -8,6 +8,9 @@
 #include "Belt.hpp"
 #include "Miner.hpp"
 #include "Trash.hpp"
+#include "Machine.hpp"
+#include "Rotator.hpp"
+#include "Tunnel.hpp"
 
 class App {
 public:
@@ -28,8 +31,12 @@ public:
     std::shared_ptr<Util::GameObject> background;
     std::shared_ptr<Util::GameObject> vignette;
     std::vector<std::shared_ptr<Machine>> m_Machines;
-
-    // std::unordered_map<glm::vec2, std::shared_ptr<Machine>> machines;
+    MachineName m_MachineHeld = MachineName::NONE; // the machine user is currently trying to place
+    int m_MachineHeldR = 0; // rotation of m_MachineHeld
+    // belts, rotators and tunnels have variants
+    BeltType beltType = BeltType::FORWARD;
+    RotatorType rotatorType = RotatorType::ROTATE_CW;
+    TunnelType tunnelType = TunnelType::IN;
 
 private:
     void ValidTask();

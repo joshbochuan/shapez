@@ -12,6 +12,9 @@ ItemEjector::ItemEjector(int x, int y, int r): rate(BELT_RATE){
     this->item = nullptr;
     this->progress = 0;
     this->next = nullptr;
+    SetVisible(false);
+    SetZIndex(10+(x+y)%2);
+    m_Transform.rotation = 0.5f * M_PI * r;
 }
 
 void ItemEjector::Init() {
@@ -32,25 +35,30 @@ void ItemEjector::Init() {
     next->item = nullptr;
     next->progress = 0;
     next->prev = std::dynamic_pointer_cast<ItemEjector>(shared_from_this());
+    SetVisible(true);
+    next->SetVisible(true);
 }
 
 void ItemEjector::Delete() {
-    MapAcceptors.erase({x, y, r});
+    MapEjectors.erase({x, y, r});
     if (next == nullptr) {return;}
     if (next->item != nullptr) {next->RemoveChild(next->item);}
     next->item = nullptr;
     next->progress = 0;
     next->prev = nullptr;
+    next->SetVisible(false);
 }
 
 void ItemEjector::Update() {
     if (!initialized) {throw std::invalid_argument("ejector not initialized");}
-    if (item == nullptr) {return;}
-    if (progress < 1) {progress += rate;}
 
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
-    this->m_Transform.scale = cam.scale;
+    this->m_Transform.scale = cam.scale * 1.02f;
+
+    if (item == nullptr) {return;}
+    if (progress < 1) {progress += rate;}
+
     int dx, dy;
     glm::vec2 p1, p2;
     switch (r) {

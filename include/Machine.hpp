@@ -7,12 +7,16 @@
 #include "Util/GameObject.hpp"
 
 enum class MachineName {
+    NONE,
     BALANCER,
     BELT,
     CUTTER,
     HUB,
     MINER,
+    MIXER,
+    PAINTER,
     ROTATOR,
+    STACKER,
     TRASH,
     TUNNEL
 };

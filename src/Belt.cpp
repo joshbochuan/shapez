@@ -27,16 +27,18 @@ Belt::Belt(int x, int y, int r, BeltType type)
     : Machine(x, y, r, BELT_RATE, MachineName::BELT), m_Animation(std::make_shared<Util::Animation>(
         getBeltSprites(type),
         true, 15, true, 0)) {
+    if (MapMachines[{x, y}] != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetZIndex(10 + (x+y)%2);
     SetDrawable(m_Animation);
     this->type = type;
     this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
-    this->AddChild(this->acceptor);
     if (type == BeltType::LEFT)  { r = ((r + 1) % 4); }
     if (type == BeltType::RIGHT) { r = ((r - 1 + 4) % 4); }
     this->ejector = std::make_shared<ItemEjector>(x, y, r);
-    this->AddChild(this->ejector);
+
     if (type != BeltType::FORWARD) {
         this->acceptor->rate = BELTTURN_RATE;
         this->ejector->rate = BELTTURN_RATE;
@@ -47,12 +49,16 @@ void Belt::Init() {
     MapMachines[{x, y}] = shared_from_this();
     acceptor->Init();;
     ejector->Init();;
+    this->AddChild(this->acceptor);
+    this->AddChild(this->ejector);
 }
 
 void Belt::Delete() {
     MapMachines.erase({x, y});
     acceptor->Delete();
     ejector->Delete();
+    RemoveChild(acceptor);
+    RemoveChild(ejector);
 }
 
 void Belt::Update() {

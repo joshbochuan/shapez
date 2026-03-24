@@ -15,6 +15,9 @@ ItemAcceptor::ItemAcceptor(int x, int y, int r) : rate(BELT_RATE) {
     this->takesColor = true;
     this->takesShape = true;
     this->prev = nullptr;
+    SetVisible(false);
+    SetZIndex(10+(x+y)%2);
+    m_Transform.rotation = 0.5f * M_PI * r;
 }
 
 void ItemAcceptor::Init() {
@@ -35,6 +38,8 @@ void ItemAcceptor::Init() {
     prev->item = nullptr;
     prev->progress = 0;
     prev->next = std::dynamic_pointer_cast<ItemAcceptor>(shared_from_this());
+    SetVisible(true);
+    prev->SetVisible(true);
 }
 
 void ItemAcceptor::Delete() {
@@ -44,16 +49,19 @@ void ItemAcceptor::Delete() {
     prev->item = nullptr;
     prev->progress = 0;
     prev->next = nullptr;
+    prev->SetVisible(false);
 }
 
 void ItemAcceptor::Update() {
     if (!initialized) {throw std::invalid_argument("acceptor not initialized");}
-    if (item == nullptr) {return;}
-    if (progress < 1) {progress += rate;}
 
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
-    this->m_Transform.scale = cam.scale;
+    this->m_Transform.scale = cam.scale * 1.02f;
+
+    if (item == nullptr) {return;}
+    if (progress < 1) {progress += rate;}
+
     int dx, dy;
     glm::vec2 p1, p2;
     switch (r) {

@@ -9,6 +9,9 @@
 
 Trash::Trash(int x, int y)
     : Machine(x, y, 0, BELT_RATE, MachineName::TRASH) {
+    if (MapMachines[{x, y}] != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
     // acceptor on all side
     for (int i=0; i<4; i++) {
         this->m_Acceptors.push_back(std::make_shared<ItemAcceptor>(x, y, i));

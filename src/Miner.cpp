@@ -9,6 +9,9 @@
 
 Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product)
     : Machine(x, y, r, MINE_RATE, MachineName::MINER) {
+    if (MapMachines[{x, y}] != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
     this->cooldown = 0;
     this->product = product;
     if (product != nullptr) {

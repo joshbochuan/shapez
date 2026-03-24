@@ -9,6 +9,21 @@
 
 Cutter::Cutter(int x, int y, int r)
     : Machine(x, y, r, CUT_RATE, MachineName::CUTTER) {
+    if (MapMachines[{x, y}] != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
+    std::shared_ptr<Machine> tmp;
+    switch (r) {
+        case 0: tmp = MapMachines[{x+1, y}]; break;
+        case 1: tmp = MapMachines[{x, y+1}]; break;
+        case 2: tmp = MapMachines[{x-1, y}]; break;
+        case 3: tmp = MapMachines[{x, y-1}]; break;
+        default: throw std::invalid_argument("invalid balancer rotation " + std::to_string(r));
+    }
+    if (tmp != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
+
     this->cooldown = 0;
     this->acceptor = std::make_shared<ItemAcceptor>(this->x, this->y, this->r);
     this->acceptor->takesColor = false;

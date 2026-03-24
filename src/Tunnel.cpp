@@ -8,6 +8,9 @@
 
 Tunnel::Tunnel(int x, int y, int r, TunnelType type, bool upgraded)
     : Machine(x, y, r, BELT_RATE, MachineName::TUNNEL) {
+    if (MapMachines[{x, y}] != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
     this->type = type;
     this->acceptor = nullptr;
     this->ejector = nullptr;
@@ -60,22 +63,14 @@ void Tunnel::Pair() {
 
     int maxDistance = 5;
     if (upgraded) {maxDistance = 9;}
-    if (type == TunnelType::IN) {std::cout << "in\n";}
-    else {std::cout << "out\n";}
     for (int i=1; i <= maxDistance; i++) {
         machineOther = MapMachines[{x+(i*dx), y+(i*dy)}];
-        std::cout << "0\n";
         if (machineOther == nullptr) {continue;}
-        std::cout << "1\n";
         if (machineOther->getName() != MachineName::TUNNEL) {continue;}
-        std::cout << "2\n";
         potentialOther = std::dynamic_pointer_cast<Tunnel>(machineOther);
         if (potentialOther->upgraded != upgraded) {continue;}
-        std::cout << "3\n";
         if (potentialOther->r != r) {continue;}
-        std::cout << "4\n";
         if (potentialOther->type == type) {break;} // no possible connection behind
-        std::cout << "5\n";
 
         other = potentialOther;
         distance = i;
@@ -97,7 +92,7 @@ void Tunnel::Delete() {
     MapMachines.erase({x, y});
     if (acceptor != nullptr) {acceptor->Delete();}
     if (ejector != nullptr) {ejector->Delete();}
-    other->Pair(); // re-pair the tunnel on the other side
+    if (other != nullptr) {other->Pair();}
     other = nullptr;
 }
 

@@ -10,6 +10,9 @@
 
 Rotator::Rotator(int x, int y, int r, RotatorType type)
     : Machine(x, y, r, ROTATE_RATE, MachineName::ROTATOR) {
+    if (MapMachines[{x, y}] != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
     this->type = type;
     this->cooldown = 0;
     this->acceptor = std::make_shared<ItemAcceptor>(this->x, this->y, this->r);

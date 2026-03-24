@@ -13,6 +13,7 @@
 #include "Balancer.hpp"
 #include "Tunnel.hpp"
 #include <iostream>
+#include <cmath>
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -22,6 +23,7 @@ void App::Start() {
     10~19 - machine below (mainly belts)
     20~39 - shapes
     40~99 - machine above
+    100 - post-processing
     100+ - ui
     */
     background = std::make_shared<Util::GameObject>();
@@ -148,6 +150,7 @@ void App::Start() {
     belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
     belt->acceptor->AddChild(belt->acceptor->item);
     m_Machines.push_back(belt);
+    belt = nullptr;
 
 
     for (int i=0; i<m_Machines.size(); i++) {
@@ -161,6 +164,136 @@ void App::Start() {
 }
 
 void App::Update() {
+    // user machine placement
+    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)) {
+        m_MachineHeld = MachineName::NONE;
+        m_MachineHeldR = 0;
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_1)) {
+        m_MachineHeld = MachineName::BELT;
+        beltType = BeltType::FORWARD;
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_2)) {
+        m_MachineHeld = MachineName::BALANCER;
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_3)) {
+        m_MachineHeld = MachineName::TUNNEL;
+        tunnelType = TunnelType::IN;
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_4)) {
+        m_MachineHeld = MachineName::MINER;
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_5)) {
+        m_MachineHeld = MachineName::CUTTER;
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_6)) {
+        m_MachineHeld = MachineName::ROTATOR;
+        rotatorType = RotatorType::ROTATE_CW;
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_7)) {
+        m_MachineHeld = MachineName::STACKER;
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_8)) {
+        m_MachineHeld = MachineName::MIXER;
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_9)) {
+        m_MachineHeld = MachineName::PAINTER;
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_0)) {
+        m_MachineHeld = MachineName::TRASH;
+    }
+    if (Util::Input::IsKeyDown(Util::Keycode::R) && m_MachineHeld != MachineName::NONE) {
+        m_MachineHeldR = (m_MachineHeldR + 3) % 4;
+    }
+
+    // handle variants
+    if (Util::Input::IsKeyDown(Util::Keycode::T)) {
+        if (m_MachineHeld == MachineName::BELT) {
+            if (beltType == BeltType::FORWARD) {beltType = BeltType::LEFT;}
+            else if (beltType == BeltType::LEFT) {beltType = BeltType::RIGHT;}
+            else if (beltType == BeltType::RIGHT) {beltType = BeltType::FORWARD;}
+        }
+        else if (m_MachineHeld == MachineName::ROTATOR) {
+            if (rotatorType == RotatorType::ROTATE_CW) {rotatorType = RotatorType::ROTATE_180;}
+            else if (rotatorType == RotatorType::ROTATE_180) {rotatorType = RotatorType::ROTATE_CCW;}
+            else if (rotatorType == RotatorType::ROTATE_CCW) {rotatorType = RotatorType::ROTATE_CW;}
+        }
+        else if (m_MachineHeld == MachineName::TUNNEL) {
+            if (tunnelType == TunnelType::IN) {tunnelType = TunnelType::OUT;}
+            else {tunnelType = TunnelType::IN;}
+        }
+    }
+
+    int mouseX = std::floor((((Util::Input::GetCursorPosition().x / cam.scale.x) + cam.translation.x))/192.0f);
+    int mouseY = std::floor((((Util::Input::GetCursorPosition().y / cam.scale.y) + cam.translation.y))/192.0f);
+
+    std::shared_ptr<Machine> MachineToAdd = nullptr;
+    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {
+        if (m_MachineHeld == MachineName::BELT) {
+            try {MachineToAdd = std::make_shared<Belt>(mouseX, mouseY, m_MachineHeldR, beltType);}
+            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+        }
+        if (m_MachineHeld == MachineName::BALANCER) {
+            try {MachineToAdd = std::make_shared<Balancer>(mouseX, mouseY, m_MachineHeldR);}
+            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+        }
+        if (m_MachineHeld == MachineName::TUNNEL) {
+            try {MachineToAdd = std::make_shared<Tunnel>(mouseX, mouseY, m_MachineHeldR, tunnelType, false);}
+            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+        }
+        if (m_MachineHeld == MachineName::MINER) {
+            try {MachineToAdd = std::make_shared<Miner>(mouseX, mouseY, m_MachineHeldR, std::make_shared<Shape>("CuCuCuCu"));}
+            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+        }
+        if (m_MachineHeld == MachineName::CUTTER) {
+            try {MachineToAdd = std::make_shared<Cutter>(mouseX, mouseY, m_MachineHeldR);}
+            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+        }
+        if (m_MachineHeld == MachineName::ROTATOR) {
+            try {MachineToAdd = std::make_shared<Rotator>(mouseX, mouseY, m_MachineHeldR, rotatorType);}
+            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+        }
+        if (m_MachineHeld == MachineName::STACKER) {
+            /*
+            try {MachineToAdd = std::make_shared<Stacker>(mouseX, mouseY, m_MachineHeldR, BeltType::FORWARD);}
+            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            */
+        }
+        if (m_MachineHeld == MachineName::MIXER) {
+            /*
+            try {MachineToAdd = std::make_shared<Belt>(mouseX, mouseY, m_MachineHeldR, BeltType::FORWARD);}
+            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            */
+        }
+        if (m_MachineHeld == MachineName::PAINTER) {
+            /*
+            try {MachineToAdd = std::make_shared<Belt>(mouseX, mouseY, m_MachineHeldR, BeltType::FORWARD);}
+            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            */
+        }
+        if (m_MachineHeld == MachineName::TRASH) {
+            try {MachineToAdd = std::make_shared<Trash>(mouseX, mouseY);}
+            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+        }
+        if (MachineToAdd != nullptr) {
+            MachineToAdd->Init();
+            m_Machines.push_back(MachineToAdd);
+            m_Root.AddChild(MachineToAdd);
+            MachineToAdd = nullptr;
+        }
+    }
+
+    std::shared_ptr<Machine> MachineToRemove = MapMachines[{mouseX, mouseY}];
+    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)
+        && MachineToRemove != nullptr
+        && MachineToRemove->getName() != MachineName::HUB) {
+            m_Machines.erase(std::remove(m_Machines.begin(), m_Machines.end(), MachineToRemove), m_Machines.end());
+            m_Root.RemoveChild(MachineToRemove);
+            MachineToRemove->Delete();
+    }
+    MachineToRemove = nullptr;
+
+    // camera movement
     float camSpeed = 10;
     if (Util::Input::IsKeyPressed(Util::Keycode::W)) {
         cam.translation.y += camSpeed / cam.scale.y;
@@ -174,19 +307,11 @@ void App::Update() {
     if (Util::Input::IsKeyPressed(Util::Keycode::D)) {
         cam.translation.x += camSpeed / cam.scale.x;
     }
-
-    /* test
-    if (Util::Input::IsKeyPressed(Util::Keycode::U)) {cam.scale.x += 0.05; cam.scale.y += 0.05;}
-    if (Util::Input::IsKeyPressed(Util::Keycode::I)) {cam.scale.x -= 0.05; cam.scale.y -= 0.05;}
-    */
-
     if (Util::Input::IfScroll()) {
         auto delta = Util::Input::GetScrollDistance();
 
-        // todo: temporary fix, delete when they fix ts scroll wheel
         // fix: change PTSD/src/Util/Input.cpp
         // if (delta.y >= 10) {delta.y = 0;}
-
         cam.scale.x += delta.y * 0.05;
         cam.scale.y += delta.y * 0.05;
 

@@ -4,12 +4,32 @@
 #include "Balancer.hpp"
 #include "Global.hpp"
 #include "Util/Image.hpp"
+#include "Util/Animation.hpp"
+#include <cmath>
+#include <iostream>
 
 Balancer::Balancer(int x, int y, int r)
     : Machine(x, y, r, BELT_RATE, MachineName::BALANCER) {
+    if (MapMachines[{x, y}] != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
+    std::shared_ptr<Machine> tmp;
+    switch (r) {
+        case 0: tmp = MapMachines[{x+1, y}]; break;
+        case 1: tmp = MapMachines[{x, y+1}]; break;
+        case 2: tmp = MapMachines[{x-1, y}]; break;
+        case 3: tmp = MapMachines[{x, y-1}]; break;
+        default: throw std::invalid_argument("invalid balancer rotation " + std::to_string(r));
+    }
+    if (tmp != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
+
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/balancer.png"));
-    this->SetZIndex(60 + (x+y)%2);
+
+    // cooking up a better X-index for 2-wide objects
+    this->SetZIndex(60 + fmod((4.0f*x+y), 16.0f)/16.0f);
 
     this->acceptorA = std::make_shared<ItemAcceptor>(x, y, r);
     this->ejectorA = std::make_shared<ItemEjector>(x, y, r);
@@ -39,6 +59,19 @@ Balancer::Balancer(int x, int y, int r)
     this->AddChild(this->ejectorA);
     this->AddChild(this->ejectorB);
 
+    /*
+    std::vector<std::string> tops, bottoms;
+    for (int i = 0; i <= 13; i++) {
+        tops.push_back("../Resources/sprites/belt/built/forward_" + std::to_string(i) + "_top.png");
+        bottoms.push_back("../Resources/sprites/belt/built/forward_" + std::to_string(i) + "_bottom.png");
+    }
+    */
+
+    acceptorA->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/belt/built/forward_0_bottom.png"));
+    acceptorB->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/belt/built/forward_0_bottom.png"));
+    ejectorA->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/belt/built/forward_0_top.png"));
+    ejectorB->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/belt/built/forward_0_top.png"));
+
     acceptPriority = 0;
     ejectPriority = 0;
 }
@@ -50,6 +83,8 @@ void Balancer::Init() {
     acceptorB->Init();
     ejectorA->Init();
     ejectorB->Init();
+    std::cout << acceptorA.use_count() << " " << ejectorA.use_count() << " ";
+    std::cout << acceptorB.use_count() << " " << ejectorB.use_count() << std::endl;
 }
 
 void Balancer::Delete() {
@@ -60,9 +95,16 @@ void Balancer::Delete() {
     acceptorB->Delete();
     ejectorA->Delete();
     ejectorB->Delete();
+    RemoveChild(acceptorA);
+    RemoveChild(acceptorB);
+    RemoveChild(ejectorA);
+    RemoveChild(ejectorB);
+    std::cout << acceptorA.use_count() << " " << ejectorA.use_count() << " ";
+    std::cout << acceptorB.use_count() << " " << ejectorB.use_count() << std::endl;
 }
 
 void Balancer::Update() {
+
     switch (r) {
         case 0:
             this->m_Transform.translation.x = std::round(((192.0*(1+x)) - cam.translation.x) * cam.scale.x);
