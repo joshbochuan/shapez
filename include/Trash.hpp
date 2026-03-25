@@ -6,6 +6,9 @@
 #define REPLACE_WITH_YOUR_PROJECT_NAME_TRASH_HPP
 #include "Machine.hpp"
 #include "ItemAcceptor.hpp"
+#include "Util/Image.hpp"
+
+inline std::shared_ptr<Util::Image> trashTexture;
 
 class Trash: public Machine {
 public:

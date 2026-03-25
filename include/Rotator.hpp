@@ -7,6 +7,11 @@
 #include "Machine.hpp"
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
+#include "Util/Image.hpp"
+
+inline std::shared_ptr<Util::Image> rotatorCWTexture;
+inline std::shared_ptr<Util::Image> rotator180Texture;
+inline std::shared_ptr<Util::Image> rotatorCCWTexture;
 
 enum class RotatorType {
     ROTATE_CW,

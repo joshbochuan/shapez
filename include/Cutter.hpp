@@ -7,6 +7,9 @@
 #include "Machine.hpp"
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
+#include "Util/Image.hpp"
+
+inline std::shared_ptr<Util::Image> cutterTexture;
 
 class Cutter: public Machine {
 private:

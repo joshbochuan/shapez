@@ -7,6 +7,11 @@
 #include "Machine.hpp"
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
+#include "Util/Image.hpp"
+
+inline std::shared_ptr<Util::Image> balancerTexture;
+inline std::vector<std::shared_ptr<Util::Image>> balancerInTextures; // belt in
+inline std::vector<std::shared_ptr<Util::Image>> balancerOutTextures;
 
 class Balancer: public Machine {
 private:

@@ -7,6 +7,9 @@
 
 #include "Util/GameObject.hpp"
 #include <string>
+#include "Util/Image.hpp"
+
+inline std::unordered_map<std::string, std::shared_ptr<Util::Image>> quadTextures;
 
 class Quad: public Util::GameObject {
 public:

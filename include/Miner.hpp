@@ -7,6 +7,9 @@
 #include "Global.hpp"
 #include "Item.hpp"
 #include "Machine.hpp"
+#include "Util/Image.hpp"
+
+inline std::shared_ptr<Util::Image> minerTexture, minerCoverTexture;
 
 class Miner: public Machine {
 private:

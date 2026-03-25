@@ -6,33 +6,15 @@
 #include <iostream>
 #include "Belt.hpp"
 #include "Global.hpp"
-
-// In Belt.cpp, before the constructor
-static std::vector<std::string> getBeltSprites(BeltType type) {
-    std::string dir;
-    switch (type) {
-        case BeltType::LEFT:  dir = "left";    break;
-        case BeltType::RIGHT: dir = "right";   break;
-        default:              dir = "forward";  break;
-    }
-
-    std::vector<std::string> sprites;
-    for (int i = 0; i <= 13; i++) {
-        sprites.push_back("../Resources/sprites/belt/built/" + dir + "_" + std::to_string(i) + ".png");
-    }
-    return sprites;
-}
+#include "Util/Time.hpp"
 
 Belt::Belt(int x, int y, int r, BeltType type)
-    : Machine(x, y, r, BELT_RATE, MachineName::BELT), m_Animation(std::make_shared<Util::Animation>(
-        getBeltSprites(type),
-        true, 15, true, 0)) {
+    : Machine(x, y, r, BELT_RATE, MachineName::BELT) {
     if (MapMachines[{x, y}] != nullptr) {
         throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
     }
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetZIndex(10 + (x+y)%2);
-    SetDrawable(m_Animation);
     this->type = type;
     this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
     if (type == BeltType::LEFT)  { r = ((r + 1) % 4); }
@@ -62,6 +44,14 @@ void Belt::Delete() {
 }
 
 void Belt::Update() {
+    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
+    switch (type) {
+        case BeltType::FORWARD: SetDrawable(beltForwardTexture[frame]); break;
+        case BeltType::LEFT: SetDrawable(beltLeftTexture[frame]); break;
+        case BeltType::RIGHT: SetDrawable(beltRightTexture[frame]); break;
+        default: throw std::invalid_argument("illegal belt type");
+    }
+
     // add progress to both accept progress and eject progress
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);

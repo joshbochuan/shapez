@@ -9,6 +9,12 @@
 #include "Util/Animation.hpp"
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
+#include "Util/Animation.hpp"
+#include <vector>
+
+inline std::vector<std::shared_ptr<Util::Image>> beltForwardTexture;
+inline std::vector<std::shared_ptr<Util::Image>> beltLeftTexture;
+inline std::vector<std::shared_ptr<Util::Image>> beltRightTexture;
 
 enum class BeltType {
     LEFT,
@@ -19,7 +25,6 @@ enum class BeltType {
 class Belt: public Machine {
 private:
     BeltType type;
-    std::shared_ptr<Util::Animation> m_Animation;
 public:
     Belt(int x, int y, int r, BeltType type);
     std::shared_ptr<ItemAcceptor> acceptor;

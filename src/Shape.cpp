@@ -36,8 +36,7 @@ Shape::Shape(std::string code)
         this->AddChild(this->quads[i]);
     }
 
-    this->SetDrawable(
-        std::make_shared<Util::Image>("../Resources/shapes/shape.png"));
+    this->SetDrawable(shapeTexture);
     Item::SetZIndex(20);
 }
 

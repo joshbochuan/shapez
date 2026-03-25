@@ -21,9 +21,9 @@ Rotator::Rotator(int x, int y, int r, RotatorType type)
     this->ejector = std::make_shared<ItemEjector>(this->x, this->y, this->r);
     this->AddChild(this->ejector);
     switch (this->type) {
-        case RotatorType::ROTATE_CW: this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/rotater.png")); break;
-        case RotatorType::ROTATE_180: this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/rotater-rotate180.png")); break;
-        case RotatorType::ROTATE_CCW: this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/rotater-ccw.png")); break;
+        case RotatorType::ROTATE_CW: this->SetDrawable(rotatorCWTexture); break;
+        case RotatorType::ROTATE_180: this->SetDrawable(rotator180Texture); break;
+        case RotatorType::ROTATE_CCW: this->SetDrawable(rotatorCCWTexture); break;
         default: throw std::invalid_argument("Invalid rotator type");
     }
     this->SetZIndex(44 + (x+y)%2);

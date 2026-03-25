@@ -7,6 +7,7 @@
 #include "Util/Animation.hpp"
 #include <cmath>
 #include <iostream>
+#include "Util/Time.hpp"
 
 Balancer::Balancer(int x, int y, int r)
     : Machine(x, y, r, BELT_RATE, MachineName::BALANCER) {
@@ -26,7 +27,7 @@ Balancer::Balancer(int x, int y, int r)
     }
 
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
-    this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/balancer.png"));
+    this->SetDrawable(balancerTexture);
 
     // cooking up a better X-index for 2-wide objects
     this->SetZIndex(60 + fmod((4.0f*x+y), 16.0f)/16.0f);
@@ -67,10 +68,10 @@ Balancer::Balancer(int x, int y, int r)
     }
     */
 
-    acceptorA->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/belt/built/forward_0_bottom.png"));
-    acceptorB->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/belt/built/forward_0_bottom.png"));
-    ejectorA->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/belt/built/forward_0_top.png"));
-    ejectorB->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/belt/built/forward_0_top.png"));
+    acceptorA->SetDrawable(balancerInTextures[0]);
+    acceptorB->SetDrawable(balancerInTextures[0]);
+    ejectorA->SetDrawable(balancerOutTextures[0]);
+    ejectorB->SetDrawable(balancerOutTextures[0]);
 
     acceptPriority = 0;
     ejectPriority = 0;
@@ -104,7 +105,11 @@ void Balancer::Delete() {
 }
 
 void Balancer::Update() {
-
+    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
+    acceptorA->SetDrawable(balancerInTextures[frame]);
+    acceptorB->SetDrawable(balancerInTextures[frame]);
+    ejectorA->SetDrawable(balancerOutTextures[frame]);
+    ejectorB->SetDrawable(balancerOutTextures[frame]);
     switch (r) {
         case 0:
             this->m_Transform.translation.x = std::round(((192.0*(1+x)) - cam.translation.x) * cam.scale.x);

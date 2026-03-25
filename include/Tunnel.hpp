@@ -7,6 +7,9 @@
 #include "Machine.hpp"
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
+#include "Util/Image.hpp"
+
+inline std::vector<std::shared_ptr<Util::Image>> tunnelInTextures, tunnelOutTextures;
 
 enum class TunnelType {
     IN, OUT

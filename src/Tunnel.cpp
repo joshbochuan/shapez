@@ -17,29 +17,27 @@ Tunnel::Tunnel(int x, int y, int r, TunnelType type, bool upgraded)
     this->distance = 0;
     this->upgraded = upgraded;
 
-    std::string path = "../Resources/Sprites/buildings/underground_belt_";
     switch (type) {
         case TunnelType::IN:
             this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
-            path += "entry";
+            SetDrawable(tunnelInTextures[upgraded]);
             break;
         case TunnelType::OUT:
             this->ejector = std::make_shared<ItemEjector>(x, y, r);
-            path += "exit";
+            SetDrawable(tunnelOutTextures[upgraded]);
             break;
         default: throw std::invalid_argument("unknown tunnel type");
     }
 
     if (acceptor != nullptr) {AddChild(acceptor);}
     if (ejector != nullptr) {AddChild(ejector);}
-    if (upgraded) {path += "-tier2";}
-    this->SetDrawable(std::make_shared<Util::Image>(path + ".png"));
     this->SetZIndex(50 + (x+y)%2);
     this->m_Transform.rotation = M_PI * 0.5 * r;
 }
 
 void Tunnel::Pair() {
     int dx, dy;
+    other = nullptr;
     std::shared_ptr<Tunnel> potentialOther;
     std::shared_ptr<Machine> machineOther;
     if (type == TunnelType::IN) {

@@ -39,7 +39,7 @@ Cutter::Cutter(int x, int y, int r)
     this->AddChild(ejectorA);
     this->AddChild(ejectorB);
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
-    this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/cutter.png"));
+    this->SetDrawable(cutterTexture);
     this->SetZIndex(40 + (x+y)%2);
 }
 

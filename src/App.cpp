@@ -15,38 +15,20 @@
 #include <iostream>
 #include <cmath>
 
-void App::Start() {
-    LOG_TRACE("Start");
-    /* z-index:
-    0 - background
-    1~9 - world
-    10~19 - machine below (mainly belts)
-    20~39 - shapes
-    40~99 - machine above
-    100 - post-processing
-    100+ - ui
-    */
-    background = std::make_shared<Util::GameObject>();
-    background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
-    background->m_Transform.scale = glm::vec2(256, 256);
-    background->SetZIndex(0);
-    m_Root.AddChild(background);
-
-    vignette = std::make_shared<Util::GameObject>();
-    vignette->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/vignette.lossless.png"));
-    vignette->m_Transform.scale = glm::vec2(20.0f/3.0f, 20.0f/3.0f);
-    vignette->SetZIndex(100);
-    m_Root.AddChild(vignette);
-
+std::vector<std::shared_ptr<Machine>> AddTunnelTest() {
     // tunnel test
+    std::vector<std::shared_ptr<Machine>> m_Machines;
     m_Machines.push_back(std::make_shared<Miner>(0, -7, 3, std::make_shared<Shape>("CuCuCuCu")));
     m_Machines.push_back(std::make_shared<Belt>(1, -7, 3, BeltType::FORWARD));
     m_Machines.push_back(std::make_shared<Tunnel>(2, -7, 3, TunnelType::IN, false));
     m_Machines.push_back(std::make_shared<Tunnel>(5, -7, 3, TunnelType::OUT, false));
     m_Machines.push_back(std::make_shared<Belt>(6, -7, 3, BeltType::FORWARD));
     m_Machines.push_back(std::make_shared<Trash>(7, -7));
+    return m_Machines;
+}
 
-    // balancer test
+std::vector<std::shared_ptr<Machine>> AddBalancerTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
     m_Machines.push_back(std::make_shared<Miner>(-8, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
     m_Machines.push_back(std::make_shared<Miner>(-7, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
     m_Machines.push_back(std::make_shared<Miner>(-6, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
@@ -60,8 +42,11 @@ void App::Start() {
     m_Machines.push_back(std::make_shared<Balancer>(-7, -6, 0));
     m_Machines.push_back(std::make_shared<Belt>(-7, -5, 0, BeltType::FORWARD));
     m_Machines.push_back(std::make_shared<Trash>(-7, -4));
+    return m_Machines;
+}
 
-    // hub test
+std::vector<std::shared_ptr<Machine>> AddHubTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
     m_Machines.push_back(std::make_shared<Hub>());
     m_Machines.push_back(std::make_shared<Belt>(-2, 2, 2, BeltType::FORWARD));
     m_Machines.push_back(std::make_shared<Belt>(-1, 2, 2, BeltType::FORWARD));
@@ -71,6 +56,11 @@ void App::Start() {
     m_Machines.push_back(std::make_shared<Miner>(-1, 3, 2, std::make_shared<Shape>("RrRrRrRr")));
     m_Machines.push_back(std::make_shared<Miner>(0, 3, 2, std::make_shared<Shape>("CuCuCuCu")));
     m_Machines.push_back(std::make_shared<Miner>(1, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
+    return m_Machines;
+}
+
+std::vector<std::shared_ptr<Machine>> AddBeltTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
     // belt, mine, trash test
     m_Machines.push_back(std::make_shared<Miner>(-1, 7, 3, std::make_shared<Shape>("CuCuCuCu")));
     m_Machines.push_back(std::make_shared<Trash>(1, 5));
@@ -83,7 +73,11 @@ void App::Start() {
     m_Machines.push_back(std::make_shared<Miner>(-2, 8, 0, nullptr));
     m_Machines.push_back(std::make_shared<Miner>(-2, 7, 1, nullptr));
     m_Machines.push_back(std::make_shared<Miner>(-2, 6, 1, nullptr));
+    return m_Machines;
+}
 
+std::vector<std::shared_ptr<Machine>> AddRotatorTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
     // rotator test
     m_Machines.push_back(std::make_shared<Miner>(5, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
     m_Machines.push_back(std::make_shared<Miner>(6, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
@@ -106,7 +100,11 @@ void App::Start() {
     m_Machines.push_back(std::make_shared<Trash>(6, 4));
     m_Machines.push_back(std::make_shared<Trash>(7, 4));
     m_Machines.push_back(std::make_shared<Trash>(8, 4));
+    return m_Machines;
+}
 
+std::vector<std::shared_ptr<Machine>> AddCutterTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
     // cutter test
     m_Machines.push_back(std::make_shared<Miner>(-5, 0, 0, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
     m_Machines.push_back(std::make_shared<Belt>(-5, 1, 0, BeltType::FORWARD));
@@ -115,7 +113,11 @@ void App::Start() {
     m_Machines.push_back(std::make_shared<Belt>(-4, 3, 0, BeltType::FORWARD));
     m_Machines.push_back(std::make_shared<Trash>(-5, 4));
     m_Machines.push_back(std::make_shared<Trash>(-4, 4));
+    return m_Machines;
+}
 
+std::vector<std::shared_ptr<Machine>> AddPenguinTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
     // arknights player behavior
     std::shared_ptr<Belt> belt;
     belt = std::make_shared<Belt>(5, -3, 0, BeltType::RIGHT);
@@ -151,7 +153,95 @@ void App::Start() {
     belt->acceptor->AddChild(belt->acceptor->item);
     m_Machines.push_back(belt);
     belt = nullptr;
+    return m_Machines;
+}
 
+void loadTextures() {
+    shapeTexture = std::make_shared<Util::Image>("../Resources/shapes/shape.png");
+
+    std::string quadChoice="CRSW", colorChoice="bcgpruwy", code;
+    for (int i=0; i<4; i++) {for (int j=0; j<8; j++) {for (int k=0; k<4; k++) {
+        code = quadChoice[i];
+        code += colorChoice[j];
+        code += std::to_string(k);
+        quadTextures[code] = std::make_shared<Util::Image>("../Resources/shapes/" + code + ".png");
+    }}}
+
+    beltForwardTexture.clear();
+    beltLeftTexture.clear();
+    beltRightTexture.clear();
+    balancerInTextures.clear();
+    balancerOutTextures.clear();
+    for (int i=0; i<=13; i++) {
+        beltForwardTexture.push_back(std::make_shared<Util::Image>(
+            "../Resources/sprites/belt/built/forward_" + std::to_string(i) +".png"));
+        beltLeftTexture.push_back(std::make_shared<Util::Image>(
+            "../Resources/sprites/belt/built/left_" + std::to_string(i) +".png"));
+        beltRightTexture.push_back(std::make_shared<Util::Image>(
+            "../Resources/sprites/belt/built/right_" + std::to_string(i) +".png"));
+        balancerInTextures.push_back(std::make_shared<Util::Image>(
+            "../Resources/sprites/belt/built/forward_" + std::to_string(i) + "_bottom.png"));
+        balancerOutTextures.push_back(std::make_shared<Util::Image>(
+            "../Resources/sprites/belt/built/forward_" + std::to_string(i) + "_top.png"));
+    }
+
+    balancerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/balancer.png");
+    cutterTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/cutter.png");
+    minerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/miner.png");
+    minerCoverTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/miner-cover.png");
+    rotatorCWTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/rotater.png");
+    rotator180Texture = std::make_shared<Util::Image>("../Resources/sprites/buildings/rotater-rotate180.png");
+    rotatorCCWTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/rotater-ccw.png");
+    trashTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/trash.png");
+
+    tunnelInTextures.clear();
+    tunnelOutTextures.clear();
+    tunnelInTextures.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/underground_belt_entry.png"));
+    tunnelInTextures.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/underground_belt_entry-tier2.png"));
+    tunnelOutTextures.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/underground_belt_exit.png"));
+    tunnelOutTextures.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/underground_belt_exit-tier2.png"));
+}
+
+void App::Start() {
+    LOG_TRACE("Start");
+    /* z-index:
+    0 - background
+    1~9 - world
+    10~19 - machine below (mainly belts)
+    20~39 - shapes
+    40~99 - machine above
+    100 - post-processing
+    100+ - ui
+    */
+    loadTextures();
+
+    background = std::make_shared<Util::GameObject>();
+    background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
+    background->m_Transform.scale = glm::vec2(256, 256);
+    background->SetZIndex(0);
+    m_Root.AddChild(background);
+
+    vignette = std::make_shared<Util::GameObject>();
+    vignette->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/vignette.lossless.png"));
+    vignette->m_Transform.scale = glm::vec2(20.0f/3.0f, 20.0f/3.0f);
+    vignette->SetZIndex(100);
+    m_Root.AddChild(vignette);
+
+    std::vector<std::shared_ptr<Machine>> vec2;
+    vec2 = AddTunnelTest();
+    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+    vec2 = AddHubTest();
+    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+    vec2 = AddBalancerTest();
+    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+    vec2 = AddBeltTest();
+    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+    vec2 = AddCutterTest();
+    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+    vec2 = AddRotatorTest();
+    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+    vec2 = AddPenguinTest();
+    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
 
     for (int i=0; i<m_Machines.size(); i++) {
         m_Machines[i]->Init();
@@ -231,27 +321,27 @@ void App::Update() {
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {
         if (m_MachineHeld == MachineName::BELT) {
             try {MachineToAdd = std::make_shared<Belt>(mouseX, mouseY, m_MachineHeldR, beltType);}
-            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::BALANCER) {
             try {MachineToAdd = std::make_shared<Balancer>(mouseX, mouseY, m_MachineHeldR);}
-            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::TUNNEL) {
             try {MachineToAdd = std::make_shared<Tunnel>(mouseX, mouseY, m_MachineHeldR, tunnelType, false);}
-            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::MINER) {
             try {MachineToAdd = std::make_shared<Miner>(mouseX, mouseY, m_MachineHeldR, std::make_shared<Shape>("CuCuCuCu"));}
-            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::CUTTER) {
             try {MachineToAdd = std::make_shared<Cutter>(mouseX, mouseY, m_MachineHeldR);}
-            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::ROTATOR) {
             try {MachineToAdd = std::make_shared<Rotator>(mouseX, mouseY, m_MachineHeldR, rotatorType);}
-            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::STACKER) {
             /*
@@ -273,7 +363,7 @@ void App::Update() {
         }
         if (m_MachineHeld == MachineName::TRASH) {
             try {MachineToAdd = std::make_shared<Trash>(mouseX, mouseY);}
-            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            catch (const std::invalid_argument& e) {}
         }
         if (MachineToAdd != nullptr) {
             MachineToAdd->Init();
@@ -287,9 +377,12 @@ void App::Update() {
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)
         && MachineToRemove != nullptr
         && MachineToRemove->getName() != MachineName::HUB) {
-            m_Machines.erase(std::remove(m_Machines.begin(), m_Machines.end(), MachineToRemove), m_Machines.end());
-            m_Root.RemoveChild(MachineToRemove);
-            MachineToRemove->Delete();
+        m_Machines.erase(std::remove(m_Machines.begin(), m_Machines.end(), MachineToRemove), m_Machines.end());
+        m_Root.RemoveChild(MachineToRemove);
+        MachineToRemove->Delete();
+        if (MachineToRemove.use_count() != 1) {
+            throw std::invalid_argument("machine not properly removed");
+        }
     }
     MachineToRemove = nullptr;
 

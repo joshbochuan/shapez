@@ -17,7 +17,7 @@ Trash::Trash(int x, int y)
         this->m_Acceptors.push_back(std::make_shared<ItemAcceptor>(x, y, i));
         this->AddChild(this->m_Acceptors[i]);
     }
-    this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/trash.png"));
+    this->SetDrawable(trashTexture);
     this->SetZIndex(46 + (x+y)%2);
 }
 

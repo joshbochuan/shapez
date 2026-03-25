@@ -8,6 +8,9 @@
 #include "Item.hpp"
 #include "Util/GameObject.hpp"
 #include <string>
+#include "Util/Image.hpp"
+
+inline std::shared_ptr<Util::Image> shapeTexture;
 
 class Shape: public Item {
 private:

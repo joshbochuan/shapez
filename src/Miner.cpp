@@ -20,11 +20,11 @@ Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product)
     }
     this->ejector = std::make_shared<ItemEjector>(x, y, r);
     this->AddChild(this->ejector);
-    this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/miner.png"));
+    this->SetDrawable(minerTexture);
     this->m_Transform.rotation = M_PI * 0.5 * r;
     this->SetZIndex(42 + (x+y)%2);
     this->cover = std::make_shared<Util::GameObject>();
-    cover->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/miner-cover.png"));
+    cover->SetDrawable(minerCoverTexture);
     cover->SetZIndex(40);
     this->AddChild(cover);
 }
