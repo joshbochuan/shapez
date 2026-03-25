@@ -83,7 +83,6 @@ void Tunnel::Init() {
     if (acceptor != nullptr) {acceptor->Init();}
     if (ejector != nullptr) {ejector->Init();}
     Pair();
-    std::cout << (other == nullptr) << std::endl;
 }
 
 void Tunnel::Delete() {

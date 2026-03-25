@@ -76,10 +76,6 @@ std::shared_ptr<Shape> Stack(std::shared_ptr<Shape> bottom, std::shared_ptr<Shap
             topQuads.back().push_back("--");
         }
     }
-    for (int i=0; i<4; i++) {for (int j=0; j<4; j++) {
-        std::cout << bottomQuads[i][j] << " ";
-    }
-        std::cout << std::endl;}
 
     std::string bottomCode = bottom->getCode(), topCode = top->getCode();
     for (int i=0; i<=bottomCode.length()/9; i++) {
@@ -92,10 +88,6 @@ std::shared_ptr<Shape> Stack(std::shared_ptr<Shape> bottom, std::shared_ptr<Shap
             topQuads[i][j] = topCode.substr(9*i+2*j, 2);
         }
     }
-    for (int i=0; i<4; i++) {for (int j=0; j<4; j++) {
-            std::cout << bottomQuads[i][j] << " ";
-        }
-        std::cout << std::endl;}
 
     int stackLayer = 4;
     bool collisionFlag = false;
@@ -123,8 +115,6 @@ std::shared_ptr<Shape> Stack(std::shared_ptr<Shape> bottom, std::shared_ptr<Shap
         if (i) {res += ":";}
         res += layerStr;
     }
-
-    std::cout << "stacked " << res << std::endl;
     return std::make_shared<Shape>(res);
 }
 

@@ -296,6 +296,7 @@ void App::Update() {
             }
             else if (tunnelType == TunnelType::OUT && tunnelUpgraded) {
                 tunnelType = TunnelType::IN;
+                tunnelUpgraded = false;
                 m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
                 "../Resources/sprites/blueprints/underground_belt_entry.png"));
             }
@@ -344,15 +345,15 @@ void App::Update() {
         }
         if (m_MachineHeld == MachineName::STACKER) {
             try {MachineToAdd = std::make_shared<Stacker>(mouseX, mouseY, m_MachineHeldR);}
-            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::MIXER) {
             try {MachineToAdd = std::make_shared<Mixer>(mouseX, mouseY, m_MachineHeldR);}
-            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::PAINTER) {
             try {MachineToAdd = std::make_shared<Painter>(mouseX, mouseY, m_MachineHeldR, painterMirrored);}
-            catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
+            catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::TRASH) {
             try {MachineToAdd = std::make_shared<Trash>(mouseX, mouseY);}
