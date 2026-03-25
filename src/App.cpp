@@ -202,6 +202,13 @@ void loadTextures() {
     tunnelOutTextures.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/underground_belt_exit-tier2.png"));
 }
 
+void loadAudio() {
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+    placeBeltSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/place_belt.wav");
+    placeBuildingSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/place_building.wav");
+    destroyBuildingSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/destroy_building.wav");
+}
+
 void App::Start() {
     LOG_TRACE("Start");
     /* z-index:
@@ -213,7 +220,19 @@ void App::Start() {
     100 - post-processing
     100+ - ui
     */
+    loadAudio();
     loadTextures();
+
+    // 41 minutes of ABSOLUTE BANGER
+    shapezBGM = std::make_shared<Util::BGM>("../Resources/sounds/music/theme-full.mp3");
+    shapezBGM->Play();
+
+    m_MachineHeldPreview = std::make_shared<Util::GameObject>();
+    m_MachineHeldPreview->SetVisible(false);
+    m_MachineHeldPreview->SetZIndex(99);
+    m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/belt_top.png"));
+    m_Root.AddChild(m_MachineHeldPreview);
 
     background = std::make_shared<Util::GameObject>();
     background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
@@ -258,40 +277,85 @@ void App::Update() {
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)) {
         m_MachineHeld = MachineName::NONE;
         m_MachineHeldR = 0;
+        m_MachineHeldPreview->SetVisible(false);
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_1)) {
         m_MachineHeld = MachineName::BELT;
         beltType = BeltType::FORWARD;
+        m_MachineHeldPreview->SetVisible(true);
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/belt_top.png"));
+        m_MachineHeldPreview->SetPivot({0, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_2)) {
         m_MachineHeld = MachineName::BALANCER;
+        m_MachineHeldPreview->SetVisible(true);
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/balancer.png"));
+        m_MachineHeldPreview->SetPivot({-84, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_3)) {
         m_MachineHeld = MachineName::TUNNEL;
         tunnelType = TunnelType::IN;
+        tunnelUpgraded = false;
+        m_MachineHeldPreview->SetVisible(true);
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/underground_belt_entry.png"));
+        m_MachineHeldPreview->SetPivot({0, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_4)) {
         m_MachineHeld = MachineName::MINER;
+        m_MachineHeldPreview->SetVisible(true);
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/miner.png"));
+        m_MachineHeldPreview->SetPivot({0, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_5)) {
         m_MachineHeld = MachineName::CUTTER;
+        m_MachineHeldPreview->SetVisible(true);
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/cutter.png"));
+        m_MachineHeldPreview->SetPivot({-84, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_6)) {
         m_MachineHeld = MachineName::ROTATOR;
         rotatorType = RotatorType::ROTATE_CW;
+        m_MachineHeldPreview->SetVisible(true);
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/rotater.png"));
+        m_MachineHeldPreview->SetPivot({0, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_7)) {
         m_MachineHeld = MachineName::STACKER;
+        m_MachineHeldPreview->SetVisible(true);
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/stacker.png"));
+        m_MachineHeldPreview->SetPivot({-84, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_8)) {
         m_MachineHeld = MachineName::MIXER;
+        m_MachineHeldPreview->SetVisible(true);
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/mixer.png"));
+        m_MachineHeldPreview->SetPivot({-84, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_9)) {
         m_MachineHeld = MachineName::PAINTER;
+        m_MachineHeldPreview->SetVisible(true);
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/painter.png"));
+        m_MachineHeldPreview->SetPivot({0, 84});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_0)) {
         m_MachineHeld = MachineName::TRASH;
+        m_MachineHeldPreview->SetVisible(true);
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/trash.png"));
+        m_MachineHeldPreview->SetPivot({0, 0});
     }
+    m_MachineHeldPreview->m_Transform.translation = Util::Input::GetCursorPosition();
+    m_MachineHeldPreview->m_Transform.rotation = 0.5 * M_PI * m_MachineHeldR;
+    m_MachineHeldPreview->m_Transform.scale = cam.scale;
     if (Util::Input::IsKeyDown(Util::Keycode::R) && m_MachineHeld != MachineName::NONE) {
         m_MachineHeldR = (m_MachineHeldR + 3) % 4;
     }
@@ -299,18 +363,61 @@ void App::Update() {
     // handle variants
     if (Util::Input::IsKeyDown(Util::Keycode::T)) {
         if (m_MachineHeld == MachineName::BELT) {
-            if (beltType == BeltType::FORWARD) {beltType = BeltType::LEFT;}
-            else if (beltType == BeltType::LEFT) {beltType = BeltType::RIGHT;}
-            else if (beltType == BeltType::RIGHT) {beltType = BeltType::FORWARD;}
+            if (beltType == BeltType::FORWARD) {
+                beltType = BeltType::LEFT;
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/belt_left.png"));
+            }
+            else if (beltType == BeltType::LEFT) {
+                beltType = BeltType::RIGHT;
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/belt_right.png"));
+            }
+            else if (beltType == BeltType::RIGHT) {
+                beltType = BeltType::FORWARD;
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/belt_top.png"));
+            }
         }
         else if (m_MachineHeld == MachineName::ROTATOR) {
-            if (rotatorType == RotatorType::ROTATE_CW) {rotatorType = RotatorType::ROTATE_180;}
-            else if (rotatorType == RotatorType::ROTATE_180) {rotatorType = RotatorType::ROTATE_CCW;}
-            else if (rotatorType == RotatorType::ROTATE_CCW) {rotatorType = RotatorType::ROTATE_CW;}
+            if (rotatorType == RotatorType::ROTATE_CW) {
+                rotatorType = RotatorType::ROTATE_180;
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/rotater-rotate180.png"));
+            }
+            else if (rotatorType == RotatorType::ROTATE_180) {
+                rotatorType = RotatorType::ROTATE_CCW;
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/rotater-ccw.png"));
+            }
+            else if (rotatorType == RotatorType::ROTATE_CCW) {
+                rotatorType = RotatorType::ROTATE_CW;
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/rotater.png"));
+            }
         }
         else if (m_MachineHeld == MachineName::TUNNEL) {
-            if (tunnelType == TunnelType::IN) {tunnelType = TunnelType::OUT;}
-            else {tunnelType = TunnelType::IN;}
+            if (tunnelType == TunnelType::IN && !tunnelUpgraded) {
+                tunnelType = TunnelType::OUT;
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/underground_belt_exit.png"));
+            }
+            else if (tunnelType == TunnelType::OUT && !tunnelUpgraded) {
+                tunnelType = TunnelType::IN;
+                tunnelUpgraded = true;
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/underground_belt_entry-tier2.png"));
+            }
+            else if (tunnelType == TunnelType::IN && tunnelUpgraded) {
+                tunnelType = TunnelType::OUT;
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/underground_belt_exit-tier2.png"));
+            }
+            else if (tunnelType == TunnelType::OUT && tunnelUpgraded) {
+                tunnelType = TunnelType::IN;
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/underground_belt_entry.png"));
+            }
         }
     }
 
@@ -328,7 +435,7 @@ void App::Update() {
             catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::TUNNEL) {
-            try {MachineToAdd = std::make_shared<Tunnel>(mouseX, mouseY, m_MachineHeldR, tunnelType, false);}
+            try {MachineToAdd = std::make_shared<Tunnel>(mouseX, mouseY, m_MachineHeldR, tunnelType, tunnelUpgraded);}
             catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::MINER) {
@@ -366,6 +473,8 @@ void App::Update() {
             catch (const std::invalid_argument& e) {}
         }
         if (MachineToAdd != nullptr) {
+            if (m_MachineHeld == MachineName::BELT) {placeBeltSFX->Play();} // play place_belt.wav
+            else {placeBuildingSFX->Play();} // play place_building.wav
             MachineToAdd->Init();
             m_Machines.push_back(MachineToAdd);
             m_Root.AddChild(MachineToAdd);
@@ -377,6 +486,7 @@ void App::Update() {
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)
         && MachineToRemove != nullptr
         && MachineToRemove->getName() != MachineName::HUB) {
+        destroyBuildingSFX->Play();
         m_Machines.erase(std::remove(m_Machines.begin(), m_Machines.end(), MachineToRemove), m_Machines.end());
         m_Root.RemoveChild(MachineToRemove);
         MachineToRemove->Delete();

@@ -11,6 +11,10 @@
 #include "Machine.hpp"
 #include "Rotator.hpp"
 #include "Tunnel.hpp"
+#include "Util/SFX.hpp"
+#include "Util/BGM.hpp"
+
+inline std::shared_ptr<Util::SFX> placeBuildingSFX, placeBeltSFX, destroyBuildingSFX;
 
 class App {
 public:
@@ -37,6 +41,10 @@ public:
     BeltType beltType = BeltType::FORWARD;
     RotatorType rotatorType = RotatorType::ROTATE_CW;
     TunnelType tunnelType = TunnelType::IN;
+    bool tunnelUpgraded = false;
+    std::shared_ptr<Util::GameObject> m_MachineHeldPreview;
+
+    std::shared_ptr<Util::BGM> shapezBGM;
 
 private:
     void ValidTask();

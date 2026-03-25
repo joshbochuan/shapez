@@ -38,6 +38,8 @@ Cutter::Cutter(int x, int y, int r)
     this->AddChild(acceptor);
     this->AddChild(ejectorA);
     this->AddChild(ejectorB);
+
+    SetPivot({-84, 0});
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetDrawable(cutterTexture);
     this->SetZIndex(40 + (x+y)%2);
@@ -81,26 +83,8 @@ void Cutter::Delete() {
 }
 
 void Cutter::Update() {
-    switch (r) {
-        case 0:
-            this->m_Transform.translation.x = std::round(((192.0*(1+x)) - cam.translation.x) * cam.scale.x);
-            this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
-            break;
-        case 1:
-            this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
-            this->m_Transform.translation.y = std::round(((192.0*(1+y)) - cam.translation.y) * cam.scale.y);
-            break;
-        case 2:
-            this->m_Transform.translation.x = std::round(((192.0*(x)) - cam.translation.x) * cam.scale.x);
-            this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
-            break;
-        case 3:
-            this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
-            this->m_Transform.translation.y = std::round(((192.0*(y)) - cam.translation.y) * cam.scale.y);
-            break;
-        default:
-            throw std::invalid_argument("illegal cutter rotation" + std::to_string(r));
-    }
+    this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
+    this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
     this->m_Transform.scale.x = cam.scale.x * 1.1;
     this->m_Transform.scale.y = cam.scale.y * 1.1;
 

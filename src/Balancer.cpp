@@ -26,6 +26,7 @@ Balancer::Balancer(int x, int y, int r)
         throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
     }
 
+    SetPivot({-84, 0});
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetDrawable(balancerTexture);
 
@@ -60,14 +61,6 @@ Balancer::Balancer(int x, int y, int r)
     this->AddChild(this->ejectorA);
     this->AddChild(this->ejectorB);
 
-    /*
-    std::vector<std::string> tops, bottoms;
-    for (int i = 0; i <= 13; i++) {
-        tops.push_back("../Resources/sprites/belt/built/forward_" + std::to_string(i) + "_top.png");
-        bottoms.push_back("../Resources/sprites/belt/built/forward_" + std::to_string(i) + "_bottom.png");
-    }
-    */
-
     acceptorA->SetDrawable(balancerInTextures[0]);
     acceptorB->SetDrawable(balancerInTextures[0]);
     ejectorA->SetDrawable(balancerOutTextures[0]);
@@ -84,8 +77,6 @@ void Balancer::Init() {
     acceptorB->Init();
     ejectorA->Init();
     ejectorB->Init();
-    std::cout << acceptorA.use_count() << " " << ejectorA.use_count() << " ";
-    std::cout << acceptorB.use_count() << " " << ejectorB.use_count() << std::endl;
 }
 
 void Balancer::Delete() {
@@ -100,8 +91,6 @@ void Balancer::Delete() {
     RemoveChild(acceptorB);
     RemoveChild(ejectorA);
     RemoveChild(ejectorB);
-    std::cout << acceptorA.use_count() << " " << ejectorA.use_count() << " ";
-    std::cout << acceptorB.use_count() << " " << ejectorB.use_count() << std::endl;
 }
 
 void Balancer::Update() {
@@ -110,26 +99,9 @@ void Balancer::Update() {
     acceptorB->SetDrawable(balancerInTextures[frame]);
     ejectorA->SetDrawable(balancerOutTextures[frame]);
     ejectorB->SetDrawable(balancerOutTextures[frame]);
-    switch (r) {
-        case 0:
-            this->m_Transform.translation.x = std::round(((192.0*(1+x)) - cam.translation.x) * cam.scale.x);
-            this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
-            break;
-        case 1:
-            this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
-            this->m_Transform.translation.y = std::round(((192.0*(1+y)) - cam.translation.y) * cam.scale.y);
-            break;
-        case 2:
-            this->m_Transform.translation.x = std::round(((192.0*(x)) - cam.translation.x) * cam.scale.x);
-            this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
-            break;
-        case 3:
-            this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
-            this->m_Transform.translation.y = std::round(((192.0*(y)) - cam.translation.y) * cam.scale.y);
-            break;
-        default:
-            throw std::invalid_argument("illegal cutter rotation" + std::to_string(r));
-    }
+
+    this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
+    this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
 
     this->m_Transform.scale.x = cam.scale.x * 1.1;
     this->m_Transform.scale.y = cam.scale.y * 1.1;
