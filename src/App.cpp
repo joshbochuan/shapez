@@ -1,5 +1,6 @@
 #include "App.hpp"
 
+#include "Test.hpp"
 #include "Global.hpp"
 #include "Shape.hpp"
 #include "Util/Image.hpp"
@@ -12,149 +13,12 @@
 #include "Hub.hpp"
 #include "Balancer.hpp"
 #include "Tunnel.hpp"
+#include "Color.hpp"
+#include "Stacker.hpp"
+#include "Painter.hpp"
+#include "Mixer.hpp"
 #include <iostream>
 #include <cmath>
-
-std::vector<std::shared_ptr<Machine>> AddTunnelTest() {
-    // tunnel test
-    std::vector<std::shared_ptr<Machine>> m_Machines;
-    m_Machines.push_back(std::make_shared<Miner>(0, -7, 3, std::make_shared<Shape>("CuCuCuCu")));
-    m_Machines.push_back(std::make_shared<Belt>(1, -7, 3, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Tunnel>(2, -7, 3, TunnelType::IN, false));
-    m_Machines.push_back(std::make_shared<Tunnel>(5, -7, 3, TunnelType::OUT, false));
-    m_Machines.push_back(std::make_shared<Belt>(6, -7, 3, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Trash>(7, -7));
-    return m_Machines;
-}
-
-std::vector<std::shared_ptr<Machine>> AddBalancerTest() {
-    std::vector<std::shared_ptr<Machine>> m_Machines;
-    m_Machines.push_back(std::make_shared<Miner>(-8, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
-    m_Machines.push_back(std::make_shared<Miner>(-7, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
-    m_Machines.push_back(std::make_shared<Miner>(-6, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
-    m_Machines.push_back(std::make_shared<Miner>(-5, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
-    m_Machines.push_back(std::make_shared<Belt>(-8, -8, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(-7, -8, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(-6, -8, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(-5, -8, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Balancer>(-8, -7, 0));
-    m_Machines.push_back(std::make_shared<Balancer>(-6, -7, 0));
-    m_Machines.push_back(std::make_shared<Balancer>(-7, -6, 0));
-    m_Machines.push_back(std::make_shared<Belt>(-7, -5, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Trash>(-7, -4));
-    return m_Machines;
-}
-
-std::vector<std::shared_ptr<Machine>> AddHubTest() {
-    std::vector<std::shared_ptr<Machine>> m_Machines;
-    m_Machines.push_back(std::make_shared<Hub>());
-    m_Machines.push_back(std::make_shared<Belt>(-2, 2, 2, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(-1, 2, 2, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(0, 2, 2, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(1, 2, 2, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Miner>(-2, 3, 2, std::make_shared<Shape>("CuCuCuCu")));
-    m_Machines.push_back(std::make_shared<Miner>(-1, 3, 2, std::make_shared<Shape>("RrRrRrRr")));
-    m_Machines.push_back(std::make_shared<Miner>(0, 3, 2, std::make_shared<Shape>("CuCuCuCu")));
-    m_Machines.push_back(std::make_shared<Miner>(1, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
-    return m_Machines;
-}
-
-std::vector<std::shared_ptr<Machine>> AddBeltTest() {
-    std::vector<std::shared_ptr<Machine>> m_Machines;
-    // belt, mine, trash test
-    m_Machines.push_back(std::make_shared<Miner>(-1, 7, 3, std::make_shared<Shape>("CuCuCuCu")));
-    m_Machines.push_back(std::make_shared<Trash>(1, 5));
-    m_Machines.push_back(std::make_shared<Belt>(0, 7, 3, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(1, 7, 3, BeltType::RIGHT));
-    m_Machines.push_back(std::make_shared<Belt>(1, 6, 2, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Trash>(2, 6));
-    m_Machines.push_back(std::make_shared<Miner>(-1, 6, 3, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-1, 8, 0, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-2, 8, 0, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-2, 7, 1, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-2, 6, 1, nullptr));
-    return m_Machines;
-}
-
-std::vector<std::shared_ptr<Machine>> AddRotatorTest() {
-    std::vector<std::shared_ptr<Machine>> m_Machines;
-    // rotator test
-    m_Machines.push_back(std::make_shared<Miner>(5, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
-    m_Machines.push_back(std::make_shared<Miner>(6, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
-    m_Machines.push_back(std::make_shared<Miner>(7, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
-    m_Machines.push_back(std::make_shared<Miner>(8, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
-    m_Machines.push_back(std::make_shared<Belt>(5, 1, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(6, 1, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(7, 1, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(8, 1, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Rotator>(5, 2, 0, RotatorType::ROTATE_CW));
-    m_Machines.push_back(std::make_shared<Rotator>(6, 2, 0, RotatorType::ROTATE_CW));
-    m_Machines.push_back(std::make_shared<Rotator>(7, 2, 0, RotatorType::ROTATE_180));
-    m_Machines.push_back(std::make_shared<Rotator>(8, 2, 0, RotatorType::ROTATE_CCW));
-    m_Machines.push_back(std::make_shared<Rotator>(5, 3, 0, RotatorType::ROTATE_CW));
-    m_Machines.push_back(std::make_shared<Belt>(6, 3, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(7, 3, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(8, 3, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(5, 4, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Trash>(5, 5));
-    m_Machines.push_back(std::make_shared<Trash>(6, 4));
-    m_Machines.push_back(std::make_shared<Trash>(7, 4));
-    m_Machines.push_back(std::make_shared<Trash>(8, 4));
-    return m_Machines;
-}
-
-std::vector<std::shared_ptr<Machine>> AddCutterTest() {
-    std::vector<std::shared_ptr<Machine>> m_Machines;
-    // cutter test
-    m_Machines.push_back(std::make_shared<Miner>(-5, 0, 0, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
-    m_Machines.push_back(std::make_shared<Belt>(-5, 1, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Cutter>(-5, 2, 0));
-    m_Machines.push_back(std::make_shared<Belt>(-5, 3, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Belt>(-4, 3, 0, BeltType::FORWARD));
-    m_Machines.push_back(std::make_shared<Trash>(-5, 4));
-    m_Machines.push_back(std::make_shared<Trash>(-4, 4));
-    return m_Machines;
-}
-
-std::vector<std::shared_ptr<Machine>> AddPenguinTest() {
-    std::vector<std::shared_ptr<Machine>> m_Machines;
-    // arknights player behavior
-    std::shared_ptr<Belt> belt;
-    belt = std::make_shared<Belt>(5, -3, 0, BeltType::RIGHT);
-    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
-    belt->acceptor->AddChild(belt->acceptor->item);
-    m_Machines.push_back(belt);
-    belt = std::make_shared<Belt>(6, -3, 3, BeltType::RIGHT);
-    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
-    belt->acceptor->AddChild(belt->acceptor->item);
-    m_Machines.push_back(belt);
-    belt = std::make_shared<Belt>(6, -4, 2, BeltType::RIGHT);
-    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
-    belt->acceptor->AddChild(belt->acceptor->item);
-    m_Machines.push_back(belt);
-    belt = std::make_shared<Belt>(5, -4, 1, BeltType::RIGHT);
-    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
-    belt->acceptor->AddChild(belt->acceptor->item);
-    m_Machines.push_back(belt);
-    belt = std::make_shared<Belt>(4, -2, 0, BeltType::LEFT);
-    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
-    belt->acceptor->AddChild(belt->acceptor->item);
-    m_Machines.push_back(belt);
-    belt = std::make_shared<Belt>(3, -2, 1, BeltType::LEFT);
-    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
-    belt->acceptor->AddChild(belt->acceptor->item);
-    m_Machines.push_back(belt);
-    belt = std::make_shared<Belt>(3, -3, 2, BeltType::LEFT);
-    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
-    belt->acceptor->AddChild(belt->acceptor->item);
-    m_Machines.push_back(belt);
-    belt = std::make_shared<Belt>(4, -3, 3, BeltType::LEFT);
-    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
-    belt->acceptor->AddChild(belt->acceptor->item);
-    m_Machines.push_back(belt);
-    belt = nullptr;
-    return m_Machines;
-}
 
 void loadTextures() {
     shapeTexture = std::make_shared<Util::Image>("../Resources/shapes/shape.png");
@@ -166,6 +30,15 @@ void loadTextures() {
         code += std::to_string(k);
         quadTextures[code] = std::make_shared<Util::Image>("../Resources/shapes/" + code + ".png");
     }}}
+
+    colorTextures["Color-b"] = std::make_shared<Util::Image>("../Resources/sprites/colors/blue.png");
+    colorTextures["Color-c"] = std::make_shared<Util::Image>("../Resources/sprites/colors/cyan.png");
+    colorTextures["Color-g"] = std::make_shared<Util::Image>("../Resources/sprites/colors/green.png");
+    colorTextures["Color-p"] = std::make_shared<Util::Image>("../Resources/sprites/colors/purple.png");
+    colorTextures["Color-r"] = std::make_shared<Util::Image>("../Resources/sprites/colors/red.png");
+    colorTextures["Color-u"] = std::make_shared<Util::Image>("../Resources/sprites/colors/uncolored.png");
+    colorTextures["Color-w"] = std::make_shared<Util::Image>("../Resources/sprites/colors/white.png");
+    colorTextures["Color-y"] = std::make_shared<Util::Image>("../Resources/sprites/colors/yellow.png");
 
     beltForwardTexture.clear();
     beltLeftTexture.clear();
@@ -189,10 +62,16 @@ void loadTextures() {
     cutterTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/cutter.png");
     minerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/miner.png");
     minerCoverTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/miner-cover.png");
+    mixerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/mixer.png");
     rotatorCWTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/rotater.png");
     rotator180Texture = std::make_shared<Util::Image>("../Resources/sprites/buildings/rotater-rotate180.png");
     rotatorCCWTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/rotater-ccw.png");
+    stackerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/stacker.png");
     trashTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/trash.png");
+
+    painterTextures.clear();
+    painterTextures.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/painter.png"));
+    painterTextures.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/painter-mirrored.png"));
 
     tunnelInTextures.clear();
     tunnelOutTextures.clear();
@@ -247,6 +126,7 @@ void App::Start() {
     m_Root.AddChild(vignette);
 
     std::vector<std::shared_ptr<Machine>> vec2;
+    m_Machines = AddColorTest();
     vec2 = AddTunnelTest();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     vec2 = AddHubTest();
@@ -340,11 +220,12 @@ void App::Update() {
         m_MachineHeldPreview->SetPivot({-84, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_9)) {
+        painterMirrored = false;
         m_MachineHeld = MachineName::PAINTER;
         m_MachineHeldPreview->SetVisible(true);
         m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
             "../Resources/sprites/blueprints/painter.png"));
-        m_MachineHeldPreview->SetPivot({0, 84});
+        m_MachineHeldPreview->SetPivot({-84, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_0)) {
         m_MachineHeld = MachineName::TRASH;
@@ -419,6 +300,17 @@ void App::Update() {
                 "../Resources/sprites/blueprints/underground_belt_entry.png"));
             }
         }
+        else if (m_MachineHeld == MachineName::PAINTER) {
+            if (!painterMirrored) {
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                    "../Resources/sprites/blueprints/painter-mirrored.png"));
+            }
+            else {
+                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                    "../Resources/sprites/blueprints/painter.png"));
+            }
+            painterMirrored = !painterMirrored;
+        }
     }
 
     int mouseX = std::floor((((Util::Input::GetCursorPosition().x / cam.scale.x) + cam.translation.x))/192.0f);
@@ -451,22 +343,16 @@ void App::Update() {
             catch (const std::invalid_argument& e) {}
         }
         if (m_MachineHeld == MachineName::STACKER) {
-            /*
-            try {MachineToAdd = std::make_shared<Stacker>(mouseX, mouseY, m_MachineHeldR, BeltType::FORWARD);}
+            try {MachineToAdd = std::make_shared<Stacker>(mouseX, mouseY, m_MachineHeldR);}
             catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
-            */
         }
         if (m_MachineHeld == MachineName::MIXER) {
-            /*
-            try {MachineToAdd = std::make_shared<Belt>(mouseX, mouseY, m_MachineHeldR, BeltType::FORWARD);}
+            try {MachineToAdd = std::make_shared<Mixer>(mouseX, mouseY, m_MachineHeldR);}
             catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
-            */
         }
         if (m_MachineHeld == MachineName::PAINTER) {
-            /*
-            try {MachineToAdd = std::make_shared<Belt>(mouseX, mouseY, m_MachineHeldR, BeltType::FORWARD);}
+            try {MachineToAdd = std::make_shared<Painter>(mouseX, mouseY, m_MachineHeldR, painterMirrored);}
             catch (const std::invalid_argument& e) {std::cerr << e.what() << std::endl;}
-            */
         }
         if (m_MachineHeld == MachineName::TRASH) {
             try {MachineToAdd = std::make_shared<Trash>(mouseX, mouseY);}

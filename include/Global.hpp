@@ -42,5 +42,8 @@ inline float BELTTURN_RATE = (4.0/M_PI) * BELT_RATE;
 inline float MINE_RATE = 0.5/FPS;
 inline float CUT_RATE = 0.5/FPS;
 inline float ROTATE_RATE = 1.0/FPS;
+inline float STACK_RATE = 0.5/FPS;
+inline float PAINTER_RATE = 0.5/FPS;
+inline float MIXER_RATE = 0.5/FPS;
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_CAM_HPP

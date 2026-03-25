@@ -68,3 +68,8 @@ void Shape::MachineItemZIndex(float index) {
         this->quads[i]->SetZIndex(index+i+1);
     }
 }
+
+void Shape::SetItemSize(glm::vec2 s) {
+    m_Transform.scale.x = s.x * 0.25f;
+    m_Transform.scale.y = s.y * 0.25f;
+}

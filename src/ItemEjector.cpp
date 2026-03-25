@@ -76,8 +76,7 @@ void ItemEjector::Update() {
         p2.y = p1.y + cam.scale.y * 96.0 * dy;
         item->m_Transform.translation.x = std::round(p1.x * (1-progress) + p2.x * progress);
         item->m_Transform.translation.y = std::round(p1.y * (1-progress) + p2.y * progress);
-        item->m_Transform.scale.x = 0.25 * cam.scale.x;
-        item->m_Transform.scale.y = 0.25 * cam.scale.y;
+        item->SetItemSize(cam.scale);
         item->Update();
     }
 }

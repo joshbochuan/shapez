@@ -22,6 +22,7 @@ public:
     virtual std::shared_ptr<Item> copy() = 0;
     virtual bool operator==(std::shared_ptr<Item> rhs) = 0;
     virtual void MachineItemZIndex(float index) = 0;
+    virtual void SetItemSize(glm::vec2 s) = 0;
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_ITEM_HPP

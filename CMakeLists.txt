@@ -66,6 +66,15 @@ add_executable(${PROJECT_NAME}
         src/Balancer.cpp
         include/Tunnel.hpp
         src/Tunnel.cpp
+        include/Color.hpp
+        src/Color.cpp
+        include/Stacker.hpp
+        src/Stacker.cpp
+        include/Painter.hpp
+        src/Painter.cpp
+        include/Test.hpp
+        include/Mixer.hpp
+        src/Mixer.cpp
 )
 
 if(MSVC)

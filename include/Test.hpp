@@ -1,0 +1,180 @@
+//
+// Created by joshb on 2026/3/25.
+//
+
+#ifndef REPLACE_WITH_YOUR_PROJECT_NAME_TEST_HPP
+#define REPLACE_WITH_YOUR_PROJECT_NAME_TEST_HPP
+#include <vector>
+#include <memory>
+#include "Machine.hpp"
+#include "Miner.hpp"
+#include "Belt.hpp"
+#include "Tunnel.hpp"
+#include "Trash.hpp"
+#include "Shape.hpp"
+#include "Balancer.hpp"
+#include "Hub.hpp"
+#include "Cutter.hpp"
+#include "Rotator.hpp"
+#include "Color.hpp"
+
+inline std::vector<std::shared_ptr<Machine>> AddColorTest() {
+    // tunnel test
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    m_Machines.push_back(std::make_shared<Miner>(-5, 10, 0, std::make_shared<Color>("Color-r")));
+    m_Machines.push_back(std::make_shared<Miner>(-4, 10, 0, std::make_shared<Color>("Color-r")));
+    m_Machines.push_back(std::make_shared<Miner>(-3, 10, 0, std::make_shared<Color>("Color-r")));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 10, 0, std::make_shared<Color>("Color-r")));
+    m_Machines.push_back(std::make_shared<Miner>(-1, 10, 0, std::make_shared<Color>("Color-g")));
+    m_Machines.push_back(std::make_shared<Miner>(0, 10, 0, std::make_shared<Color>("Color-g")));
+    m_Machines.push_back(std::make_shared<Miner>(1, 10, 0, std::make_shared<Color>("Color-g")));
+    m_Machines.push_back(std::make_shared<Miner>(2, 10, 0, std::make_shared<Color>("Color-g")));
+    m_Machines.push_back(std::make_shared<Miner>(3, 10, 0, std::make_shared<Color>("Color-b")));
+    m_Machines.push_back(std::make_shared<Miner>(4, 10, 0, std::make_shared<Color>("Color-b")));
+    m_Machines.push_back(std::make_shared<Miner>(5, 10, 0, std::make_shared<Color>("Color-b")));
+    m_Machines.push_back(std::make_shared<Miner>(6, 10, 0, std::make_shared<Color>("Color-b")));
+    return m_Machines;
+}
+
+inline std::vector<std::shared_ptr<Machine>> AddTunnelTest() {
+    // tunnel test
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    m_Machines.push_back(std::make_shared<Miner>(0, -7, 3, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Belt>(1, -7, 3, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Tunnel>(2, -7, 3, TunnelType::IN, false));
+    m_Machines.push_back(std::make_shared<Tunnel>(5, -7, 3, TunnelType::OUT, false));
+    m_Machines.push_back(std::make_shared<Belt>(6, -7, 3, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Trash>(7, -7));
+    return m_Machines;
+}
+
+inline std::vector<std::shared_ptr<Machine>> AddBalancerTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    m_Machines.push_back(std::make_shared<Miner>(-8, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Miner>(-7, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Miner>(-6, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Miner>(-5, -9, 0, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Belt>(-8, -8, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(-7, -8, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(-6, -8, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(-5, -8, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Balancer>(-8, -7, 0));
+    m_Machines.push_back(std::make_shared<Balancer>(-6, -7, 0));
+    m_Machines.push_back(std::make_shared<Balancer>(-7, -6, 0));
+    m_Machines.push_back(std::make_shared<Belt>(-7, -5, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Trash>(-7, -4));
+    return m_Machines;
+}
+
+inline std::vector<std::shared_ptr<Machine>> AddHubTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    m_Machines.push_back(std::make_shared<Hub>());
+    m_Machines.push_back(std::make_shared<Belt>(-2, 2, 2, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(-1, 2, 2, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(0, 2, 2, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(1, 2, 2, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 3, 2, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Miner>(-1, 3, 2, std::make_shared<Shape>("RrRrRrRr")));
+    m_Machines.push_back(std::make_shared<Miner>(0, 3, 2, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Miner>(1, 3, 2, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
+    return m_Machines;
+}
+
+inline std::vector<std::shared_ptr<Machine>> AddBeltTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    // belt, mine, trash test
+    m_Machines.push_back(std::make_shared<Miner>(-1, 7, 3, std::make_shared<Shape>("CuCuCuCu")));
+    m_Machines.push_back(std::make_shared<Trash>(1, 5));
+    m_Machines.push_back(std::make_shared<Belt>(0, 7, 3, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(1, 7, 3, BeltType::RIGHT));
+    m_Machines.push_back(std::make_shared<Belt>(1, 6, 2, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Trash>(2, 6));
+    m_Machines.push_back(std::make_shared<Miner>(-1, 6, 3, nullptr));
+    m_Machines.push_back(std::make_shared<Miner>(-1, 8, 0, nullptr));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 8, 0, nullptr));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 7, 1, nullptr));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 6, 1, nullptr));
+    return m_Machines;
+}
+
+inline std::vector<std::shared_ptr<Machine>> AddRotatorTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    // rotator test
+    m_Machines.push_back(std::make_shared<Miner>(5, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
+    m_Machines.push_back(std::make_shared<Miner>(6, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
+    m_Machines.push_back(std::make_shared<Miner>(7, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
+    m_Machines.push_back(std::make_shared<Miner>(8, 0, 0, std::make_shared<Shape>("CrRgSbWw:CrRgSbWw:CrRgSbWw:CrRgSbWw")));
+    m_Machines.push_back(std::make_shared<Belt>(5, 1, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(6, 1, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(7, 1, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(8, 1, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Rotator>(5, 2, 0, RotatorType::ROTATE_CW));
+    m_Machines.push_back(std::make_shared<Rotator>(6, 2, 0, RotatorType::ROTATE_CW));
+    m_Machines.push_back(std::make_shared<Rotator>(7, 2, 0, RotatorType::ROTATE_180));
+    m_Machines.push_back(std::make_shared<Rotator>(8, 2, 0, RotatorType::ROTATE_CCW));
+    m_Machines.push_back(std::make_shared<Rotator>(5, 3, 0, RotatorType::ROTATE_CW));
+    m_Machines.push_back(std::make_shared<Belt>(6, 3, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(7, 3, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(8, 3, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(5, 4, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Trash>(5, 5));
+    m_Machines.push_back(std::make_shared<Trash>(6, 4));
+    m_Machines.push_back(std::make_shared<Trash>(7, 4));
+    m_Machines.push_back(std::make_shared<Trash>(8, 4));
+    return m_Machines;
+}
+
+inline std::vector<std::shared_ptr<Machine>> AddCutterTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    // cutter test
+    m_Machines.push_back(std::make_shared<Miner>(-5, 0, 0, std::make_shared<Shape>("CrRgSbWw:Cr----Ww:Cr------:--Rg----")));
+    m_Machines.push_back(std::make_shared<Belt>(-5, 1, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Cutter>(-5, 2, 0));
+    m_Machines.push_back(std::make_shared<Belt>(-5, 3, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(-4, 3, 0, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Trash>(-5, 4));
+    m_Machines.push_back(std::make_shared<Trash>(-4, 4));
+    return m_Machines;
+}
+
+inline std::vector<std::shared_ptr<Machine>> AddPenguinTest() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    // arknights player behavior
+    std::shared_ptr<Belt> belt;
+    belt = std::make_shared<Belt>(5, -3, 0, BeltType::RIGHT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
+    belt->acceptor->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(6, -3, 3, BeltType::RIGHT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
+    belt->acceptor->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(6, -4, 2, BeltType::RIGHT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
+    belt->acceptor->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(5, -4, 1, BeltType::RIGHT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RyCyRyCy");
+    belt->acceptor->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(4, -2, 0, BeltType::LEFT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
+    belt->acceptor->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(3, -2, 1, BeltType::LEFT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
+    belt->acceptor->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(3, -3, 2, BeltType::LEFT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
+    belt->acceptor->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = std::make_shared<Belt>(4, -3, 3, BeltType::LEFT);
+    belt->acceptor->item = std::make_shared<Shape>("RuRuRuRu:RbCbRbCb");
+    belt->acceptor->AddChild(belt->acceptor->item);
+    m_Machines.push_back(belt);
+    belt = nullptr;
+    return m_Machines;
+}
+
+#endif //REPLACE_WITH_YOUR_PROJECT_NAME_TEST_HPP

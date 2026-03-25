@@ -49,8 +49,7 @@ void Miner::Update() {
     cover->m_Transform.translation = this->m_Transform.translation;
     if (this->product != nullptr) {
         this->product->m_Transform.translation = this->m_Transform.translation;
-        this->product->m_Transform.scale.x = 0.25f * cam.scale.x;
-        this->product->m_Transform.scale.y = 0.25f * cam.scale.y;
+        this->product->SetItemSize(cam.scale);
         this->product->Update();
     }
 

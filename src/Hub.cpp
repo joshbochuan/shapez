@@ -118,7 +118,7 @@ void Hub::Update() {
 
     targetItem->m_Transform.translation.x = m_Transform.translation.x - cam.scale.x * 128;
     targetItem->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 32;
-    targetItem->m_Transform.scale = cam.scale * 0.6f;
+    targetItem->SetItemSize(cam.scale * 2.4f);
     targetItem->Update();
 
     levelTxt->m_Transform.translation.x = m_Transform.translation.x - cam.scale.x * 244;

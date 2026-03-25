@@ -18,11 +18,12 @@ private:
 public:
     std::vector<std::shared_ptr<Quad>> quads;
     Shape(std::string code);
-    void Update();
-    std::string getCode();
-    std::shared_ptr<Item> copy();
+    void Update() override;
+    std::string getCode() override;
+    std::shared_ptr<Item> copy() override;
     bool operator==(std::shared_ptr<Item> rhs) override;
-    void MachineItemZIndex(float index);
+    void MachineItemZIndex(float index) override;
+    void SetItemSize(glm::vec2 s) override;
 };
 
 

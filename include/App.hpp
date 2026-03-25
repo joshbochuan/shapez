@@ -42,6 +42,7 @@ public:
     RotatorType rotatorType = RotatorType::ROTATE_CW;
     TunnelType tunnelType = TunnelType::IN;
     bool tunnelUpgraded = false;
+    bool painterMirrored = false;
     std::shared_ptr<Util::GameObject> m_MachineHeldPreview;
 
     std::shared_ptr<Util::BGM> shapezBGM;
