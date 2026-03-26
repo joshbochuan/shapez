@@ -90,15 +90,6 @@ void loadAudio() {
 
 void App::Start() {
     LOG_TRACE("Start");
-    /* z-index:
-    0 - background
-    1~9 - world
-    10~19 - machine below (mainly belts)
-    20~39 - shapes
-    40~99 - machine above
-    100 - post-processing
-    100+ - ui
-    */
     loadAudio();
     loadTextures();
 
@@ -109,8 +100,6 @@ void App::Start() {
     m_MachineHeldPreview = std::make_shared<Util::GameObject>();
     m_MachineHeldPreview->SetVisible(false);
     m_MachineHeldPreview->SetZIndex(99);
-    m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-            "../Resources/sprites/blueprints/belt_top.png"));
     m_Root.AddChild(m_MachineHeldPreview);
 
     background = std::make_shared<Util::GameObject>();
@@ -153,7 +142,88 @@ void App::Start() {
 }
 
 void App::Update() {
-    // user machine placement
+    UserSelectMachine();
+    if (Util::Input::IsKeyDown(Util::Keycode::R)) {m_MachineHeldR = (m_MachineHeldR + 3) % 4;}
+    if (Util::Input::IsKeyDown(Util::Keycode::T)) {UserSelectVariant();}
+    m_MachineHeldPreview->m_Transform.translation = Util::Input::GetCursorPosition();
+    m_MachineHeldPreview->m_Transform.rotation = 0.5 * M_PI * m_MachineHeldR;
+    m_MachineHeldPreview->m_Transform.scale = cam.scale;
+    int mouseX = std::floor((((Util::Input::GetCursorPosition().x / cam.scale.x) + cam.translation.x))/192.0f);
+    int mouseY = std::floor((((Util::Input::GetCursorPosition().y / cam.scale.y) + cam.translation.y))/192.0f);
+    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {UserPlaceMachine(mouseX, mouseY);}
+    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)) {UserRemoveMachine(mouseX, mouseY);}
+
+    // camera movement
+    UserMoveCamera();
+
+    OperateMachines();
+
+    m_Root.Update();
+
+    /*
+     * Do not touch the code below as they serve the purpose for
+     * closing the window.
+     */
+    if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) ||
+        Util::Input::IfExit()) {
+        m_CurrentState = State::END;
+    }
+}
+
+void App::OperateMachines() {
+    for (int i=0; i<m_Machines.size(); i++) {m_Machines[i]->Update();}
+
+    // moving items from ejectors to acceptors
+    std::shared_ptr<ItemAcceptor> acceptor;
+    std::shared_ptr<ItemEjector> ejector;
+    for (const auto& pair : MapEjectors) {
+        ejector = pair.second;
+        if (ejector == nullptr) {continue;}
+        if (ejector->item == nullptr) {continue;}
+        if (ejector->progress < 1) {continue;}
+
+        acceptor = ejector->next;
+        if (acceptor == nullptr) {continue;}
+        if (acceptor->item != nullptr) {continue;}
+        if ((ejector->item->getType() == ItemType::COLOR) && (!acceptor->takesColor)) {continue;}
+        if ((ejector->item->getType() == ItemType::SHAPE) && (!acceptor->takesShape)) {continue;}
+
+        acceptor->item = ejector->item;
+        acceptor->progress = ejector->progress-1;
+        acceptor->AddChild(acceptor->item);
+        ejector->RemoveChild(acceptor->item);
+        ejector->item = nullptr;
+        ejector->progress = 0;
+    }
+}
+
+void App::UserMoveCamera() {
+    float camSpeed = 10;
+    if (Util::Input::IsKeyPressed(Util::Keycode::W)) {
+        cam.translation.y += camSpeed / cam.scale.y;
+    }
+    if (Util::Input::IsKeyPressed(Util::Keycode::S)) {
+        cam.translation.y -= camSpeed / cam.scale.y;
+    }
+    if (Util::Input::IsKeyPressed(Util::Keycode::A)) {
+        cam.translation.x -= camSpeed / cam.scale.x;
+    }
+    if (Util::Input::IsKeyPressed(Util::Keycode::D)) {
+        cam.translation.x += camSpeed / cam.scale.x;
+    }
+    if (Util::Input::IfScroll()) {
+        auto delta = Util::Input::GetScrollDistance();
+        // fix: change PTSD/src/Util/Input.cpp line 110
+        // if (delta.y >= 10) {delta.y = 0;}
+        cam.scale.x += delta.y * 0.05;
+        cam.scale.y += delta.y * 0.05;
+        cam.scale.x = std::clamp(cam.scale.x, 0.1f, 2.0f);
+        cam.scale.y = std::clamp(cam.scale.y, 0.1f, 2.0f);
+        LOG_DEBUG("Scrolling: x: {}, y: {}", delta.x, delta.y);
+    }
+}
+
+void App::UserSelectMachine() {
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)) {
         m_MachineHeld = MachineName::NONE;
         m_MachineHeldR = 0;
@@ -234,224 +304,142 @@ void App::Update() {
             "../Resources/sprites/blueprints/trash.png"));
         m_MachineHeldPreview->SetPivot({0, 0});
     }
-    m_MachineHeldPreview->m_Transform.translation = Util::Input::GetCursorPosition();
-    m_MachineHeldPreview->m_Transform.rotation = 0.5 * M_PI * m_MachineHeldR;
-    m_MachineHeldPreview->m_Transform.scale = cam.scale;
-    if (Util::Input::IsKeyDown(Util::Keycode::R) && m_MachineHeld != MachineName::NONE) {
-        m_MachineHeldR = (m_MachineHeldR + 3) % 4;
-    }
+}
 
-    // handle variants
-    if (Util::Input::IsKeyDown(Util::Keycode::T)) {
-        if (m_MachineHeld == MachineName::BELT) {
-            if (beltType == BeltType::FORWARD) {
-                beltType = BeltType::LEFT;
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                "../Resources/sprites/blueprints/belt_left.png"));
-            }
-            else if (beltType == BeltType::LEFT) {
-                beltType = BeltType::RIGHT;
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                "../Resources/sprites/blueprints/belt_right.png"));
-            }
-            else if (beltType == BeltType::RIGHT) {
-                beltType = BeltType::FORWARD;
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                "../Resources/sprites/blueprints/belt_top.png"));
-            }
+void App::UserSelectVariant() {
+    if (m_MachineHeld == MachineName::BELT) {
+        if (beltType == BeltType::FORWARD) {
+            beltType = BeltType::LEFT;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/belt_left.png"));
         }
-        else if (m_MachineHeld == MachineName::ROTATOR) {
-            if (rotatorType == RotatorType::ROTATE_CW) {
-                rotatorType = RotatorType::ROTATE_180;
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                "../Resources/sprites/blueprints/rotater-rotate180.png"));
-            }
-            else if (rotatorType == RotatorType::ROTATE_180) {
-                rotatorType = RotatorType::ROTATE_CCW;
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                "../Resources/sprites/blueprints/rotater-ccw.png"));
-            }
-            else if (rotatorType == RotatorType::ROTATE_CCW) {
-                rotatorType = RotatorType::ROTATE_CW;
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                "../Resources/sprites/blueprints/rotater.png"));
-            }
+        else if (beltType == BeltType::LEFT) {
+            beltType = BeltType::RIGHT;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/belt_right.png"));
         }
-        else if (m_MachineHeld == MachineName::TUNNEL) {
-            if (tunnelType == TunnelType::IN && !tunnelUpgraded) {
-                tunnelType = TunnelType::OUT;
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                "../Resources/sprites/blueprints/underground_belt_exit.png"));
-            }
-            else if (tunnelType == TunnelType::OUT && !tunnelUpgraded) {
-                tunnelType = TunnelType::IN;
-                tunnelUpgraded = true;
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                "../Resources/sprites/blueprints/underground_belt_entry-tier2.png"));
-            }
-            else if (tunnelType == TunnelType::IN && tunnelUpgraded) {
-                tunnelType = TunnelType::OUT;
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                "../Resources/sprites/blueprints/underground_belt_exit-tier2.png"));
-            }
-            else if (tunnelType == TunnelType::OUT && tunnelUpgraded) {
-                tunnelType = TunnelType::IN;
-                tunnelUpgraded = false;
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                "../Resources/sprites/blueprints/underground_belt_entry.png"));
-            }
-        }
-        else if (m_MachineHeld == MachineName::PAINTER) {
-            if (!painterMirrored) {
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                    "../Resources/sprites/blueprints/painter-mirrored.png"));
-            }
-            else {
-                m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
-                    "../Resources/sprites/blueprints/painter.png"));
-            }
-            painterMirrored = !painterMirrored;
+        else if (beltType == BeltType::RIGHT) {
+            beltType = BeltType::FORWARD;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/belt_top.png"));
         }
     }
+    else if (m_MachineHeld == MachineName::ROTATOR) {
+        if (rotatorType == RotatorType::ROTATE_CW) {
+            rotatorType = RotatorType::ROTATE_180;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/rotater-rotate180.png"));
+        }
+        else if (rotatorType == RotatorType::ROTATE_180) {
+            rotatorType = RotatorType::ROTATE_CCW;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/rotater-ccw.png"));
+        }
+        else if (rotatorType == RotatorType::ROTATE_CCW) {
+            rotatorType = RotatorType::ROTATE_CW;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/rotater.png"));
+        }
+    }
+    else if (m_MachineHeld == MachineName::TUNNEL) {
+        if (tunnelType == TunnelType::IN && !tunnelUpgraded) {
+            tunnelType = TunnelType::OUT;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/underground_belt_exit.png"));
+        }
+        else if (tunnelType == TunnelType::OUT && !tunnelUpgraded) {
+            tunnelType = TunnelType::IN;
+            tunnelUpgraded = true;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/underground_belt_entry-tier2.png"));
+        }
+        else if (tunnelType == TunnelType::IN && tunnelUpgraded) {
+            tunnelType = TunnelType::OUT;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/underground_belt_exit-tier2.png"));
+        }
+        else if (tunnelType == TunnelType::OUT && tunnelUpgraded) {
+            tunnelType = TunnelType::IN;
+            tunnelUpgraded = false;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/underground_belt_entry.png"));
+        }
+    }
+    else if (m_MachineHeld == MachineName::PAINTER) {
+        if (!painterMirrored) {
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/painter-mirrored.png"));
+        }
+        else {
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/painter.png"));
+        }
+        painterMirrored = !painterMirrored;
+    }
+}
 
-    int mouseX = std::floor((((Util::Input::GetCursorPosition().x / cam.scale.x) + cam.translation.x))/192.0f);
-    int mouseY = std::floor((((Util::Input::GetCursorPosition().y / cam.scale.y) + cam.translation.y))/192.0f);
-
+void App::UserPlaceMachine(int mouseX, int mouseY) {
     std::shared_ptr<Machine> MachineToAdd = nullptr;
-    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {
-        if (m_MachineHeld == MachineName::BELT) {
-            try {MachineToAdd = std::make_shared<Belt>(mouseX, mouseY, m_MachineHeldR, beltType);}
-            catch (const std::invalid_argument& e) {}
-        }
-        if (m_MachineHeld == MachineName::BALANCER) {
-            try {MachineToAdd = std::make_shared<Balancer>(mouseX, mouseY, m_MachineHeldR);}
-            catch (const std::invalid_argument& e) {}
-        }
-        if (m_MachineHeld == MachineName::TUNNEL) {
-            try {MachineToAdd = std::make_shared<Tunnel>(mouseX, mouseY, m_MachineHeldR, tunnelType, tunnelUpgraded);}
-            catch (const std::invalid_argument& e) {}
-        }
-        if (m_MachineHeld == MachineName::MINER) {
-            try {MachineToAdd = std::make_shared<Miner>(mouseX, mouseY, m_MachineHeldR, std::make_shared<Shape>("CuCuCuCu"));}
-            catch (const std::invalid_argument& e) {}
-        }
-        if (m_MachineHeld == MachineName::CUTTER) {
-            try {MachineToAdd = std::make_shared<Cutter>(mouseX, mouseY, m_MachineHeldR);}
-            catch (const std::invalid_argument& e) {}
-        }
-        if (m_MachineHeld == MachineName::ROTATOR) {
-            try {MachineToAdd = std::make_shared<Rotator>(mouseX, mouseY, m_MachineHeldR, rotatorType);}
-            catch (const std::invalid_argument& e) {}
-        }
-        if (m_MachineHeld == MachineName::STACKER) {
-            try {MachineToAdd = std::make_shared<Stacker>(mouseX, mouseY, m_MachineHeldR);}
-            catch (const std::invalid_argument& e) {}
-        }
-        if (m_MachineHeld == MachineName::MIXER) {
-            try {MachineToAdd = std::make_shared<Mixer>(mouseX, mouseY, m_MachineHeldR);}
-            catch (const std::invalid_argument& e) {}
-        }
-        if (m_MachineHeld == MachineName::PAINTER) {
-            try {MachineToAdd = std::make_shared<Painter>(mouseX, mouseY, m_MachineHeldR, painterMirrored);}
-            catch (const std::invalid_argument& e) {}
-        }
-        if (m_MachineHeld == MachineName::TRASH) {
-            try {MachineToAdd = std::make_shared<Trash>(mouseX, mouseY);}
-            catch (const std::invalid_argument& e) {}
-        }
-        if (MachineToAdd != nullptr) {
-            if (m_MachineHeld == MachineName::BELT) {placeBeltSFX->Play();} // play place_belt.wav
-            else {placeBuildingSFX->Play();} // play place_building.wav
-            MachineToAdd->Init();
-            m_Machines.push_back(MachineToAdd);
-            m_Root.AddChild(MachineToAdd);
-            MachineToAdd = nullptr;
-        }
+    if (m_MachineHeld == MachineName::BELT) {
+        try {MachineToAdd = std::make_shared<Belt>(mouseX, mouseY, m_MachineHeldR, beltType);}
+        catch (const std::invalid_argument& e) {}
     }
+    if (m_MachineHeld == MachineName::BALANCER) {
+        try {MachineToAdd = std::make_shared<Balancer>(mouseX, mouseY, m_MachineHeldR);}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (m_MachineHeld == MachineName::TUNNEL) {
+        try {MachineToAdd = std::make_shared<Tunnel>(mouseX, mouseY, m_MachineHeldR, tunnelType, tunnelUpgraded);}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (m_MachineHeld == MachineName::MINER) {
+        try {MachineToAdd = std::make_shared<Miner>(mouseX, mouseY, m_MachineHeldR, std::make_shared<Shape>("CuCuCuCu"));}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (m_MachineHeld == MachineName::CUTTER) {
+        try {MachineToAdd = std::make_shared<Cutter>(mouseX, mouseY, m_MachineHeldR);}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (m_MachineHeld == MachineName::ROTATOR) {
+        try {MachineToAdd = std::make_shared<Rotator>(mouseX, mouseY, m_MachineHeldR, rotatorType);}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (m_MachineHeld == MachineName::STACKER) {
+        try {MachineToAdd = std::make_shared<Stacker>(mouseX, mouseY, m_MachineHeldR);}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (m_MachineHeld == MachineName::MIXER) {
+        try {MachineToAdd = std::make_shared<Mixer>(mouseX, mouseY, m_MachineHeldR);}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (m_MachineHeld == MachineName::PAINTER) {
+        try {MachineToAdd = std::make_shared<Painter>(mouseX, mouseY, m_MachineHeldR, painterMirrored);}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (m_MachineHeld == MachineName::TRASH) {
+        try {MachineToAdd = std::make_shared<Trash>(mouseX, mouseY);}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (MachineToAdd != nullptr) {
+        if (m_MachineHeld == MachineName::BELT) {placeBeltSFX->Play();} // play place_belt.wav
+        else {placeBuildingSFX->Play();} // play place_building.wav
+        MachineToAdd->Init();
+        m_Machines.push_back(MachineToAdd);
+        m_Root.AddChild(MachineToAdd);
+        MachineToAdd = nullptr;
+    }
+}
 
+void App::UserRemoveMachine(int mouseX, int mouseY) {
     std::shared_ptr<Machine> MachineToRemove = MapMachines[{mouseX, mouseY}];
-    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)
-        && MachineToRemove != nullptr
-        && MachineToRemove->getName() != MachineName::HUB) {
-        destroyBuildingSFX->Play();
-        m_Machines.erase(std::remove(m_Machines.begin(), m_Machines.end(), MachineToRemove), m_Machines.end());
-        m_Root.RemoveChild(MachineToRemove);
-        MachineToRemove->Delete();
-        if (MachineToRemove.use_count() != 1) {
-            throw std::invalid_argument("machine not properly removed");
-        }
-    }
+    if (MachineToRemove == nullptr) {return;}
+    if (MachineToRemove->getName() == MachineName::HUB) {return;}
+    destroyBuildingSFX->Play();
+    m_Machines.erase(std::remove(m_Machines.begin(), m_Machines.end(), MachineToRemove), m_Machines.end());
+    m_Root.RemoveChild(MachineToRemove);
+    MachineToRemove->Delete();
+    if (MachineToRemove.use_count() != 1) {throw std::invalid_argument("machine not properly removed");}
     MachineToRemove = nullptr;
-
-    // camera movement
-    float camSpeed = 10;
-    if (Util::Input::IsKeyPressed(Util::Keycode::W)) {
-        cam.translation.y += camSpeed / cam.scale.y;
-    }
-    if (Util::Input::IsKeyPressed(Util::Keycode::S)) {
-        cam.translation.y -= camSpeed / cam.scale.y;
-    }
-    if (Util::Input::IsKeyPressed(Util::Keycode::A)) {
-        cam.translation.x -= camSpeed / cam.scale.x;
-    }
-    if (Util::Input::IsKeyPressed(Util::Keycode::D)) {
-        cam.translation.x += camSpeed / cam.scale.x;
-    }
-    if (Util::Input::IfScroll()) {
-        auto delta = Util::Input::GetScrollDistance();
-
-        // fix: change PTSD/src/Util/Input.cpp
-        // if (delta.y >= 10) {delta.y = 0;}
-        cam.scale.x += delta.y * 0.05;
-        cam.scale.y += delta.y * 0.05;
-
-        cam.scale.x = std::clamp(cam.scale.x, 0.1f, 2.0f);
-        cam.scale.y = std::clamp(cam.scale.y, 0.1f, 2.0f);
-
-        LOG_DEBUG("Scrolling: x: {}, y: {}", delta.x, delta.y);
-    }
-
-    for (int i=0; i<m_Machines.size(); i++) {
-        m_Machines[i]->Update();
-    }
-
-    // holy shit it worked first try
-    // code responsible for moving items from ejectors to acceptors
-    std::shared_ptr<ItemAcceptor> acceptor;
-    std::shared_ptr<ItemEjector> ejector;
-    int dx, dy;
-    for (const auto& pair : MapEjectors) {
-        ejector = pair.second;
-
-        if (ejector == nullptr) {continue;}
-        if (ejector->item == nullptr) {continue;}
-        if (ejector->progress < 1) {continue;}
-
-        acceptor = ejector->next;
-
-        if (acceptor == nullptr) {continue;}
-        if (acceptor->item != nullptr) {continue;}
-        if ((ejector->item->getType() == ItemType::COLOR) && (!acceptor->takesColor)) {continue;}
-        if ((ejector->item->getType() == ItemType::SHAPE) && (!acceptor->takesShape)) {continue;}
-
-        acceptor->item = ejector->item;
-        acceptor->progress = ejector->progress-1;
-        acceptor->AddChild(acceptor->item);
-        ejector->RemoveChild(acceptor->item);
-        ejector->item = nullptr;
-        ejector->progress = 0;
-    }
-
-    m_Root.Update();
-
-    /*
-     * Do not touch the code below as they serve the purpose for
-     * closing the window.
-     */
-    if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) ||
-        Util::Input::IfExit()) {
-        m_CurrentState = State::END;
-    }
 }
 
 void App::End() { // NOLINT(this method will mutate members in the future)

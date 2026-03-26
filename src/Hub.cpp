@@ -2,6 +2,9 @@
 // Created by joshb on 2026/3/21.
 //
 #include "Hub.hpp"
+
+#include <iostream>
+
 #include "Global.hpp"
 #include "Util/Image.hpp"
 #include "Shape.hpp"
@@ -10,10 +13,12 @@
 
 Hub::Hub()
     : Machine(0, 0, 0, BELT_RATE, MachineName::HUB) {
+    levelUpSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/level_complete.wav");
+
     this->level = 1;
-    this->targetItem = std::make_shared<Shape>("CuCuCuCu"); // first level
+    this->targetItem = std::make_shared<Shape>(levelTargets[0].first); // first level
     this->progress = 0;
-    this->targetAmount = 3000; // first level target amount
+    this->targetAmount = levelTargets[0].second;
 
     this->targetItem->MachineItemZIndex(51);
     this->AddChild(this->targetItem);
@@ -88,6 +93,10 @@ void Hub::Delete() {
     }
 }
 
+std::shared_ptr<Shape> GenerateRandomTarget(int seed, int level) {
+    return std::make_shared<Shape>("CuCuCuCu");
+}
+
 void Hub::Update() {
     for (int i=0; i<m_Acceptors.size(); i++) {
         m_Acceptors[i]->Update();
@@ -98,16 +107,33 @@ void Hub::Update() {
 
         m_Acceptors[i]->item->Update();
         m_Acceptors[i]->RemoveChild(this->m_Acceptors[i]->item);
-        std::weak_ptr<Item> tmp = m_Acceptors[i]->item;
         m_Acceptors[i]->item = nullptr;
         m_Acceptors[i]->progress = 0;
     }
 
+    // level up
     if (progress >= targetAmount) {
         progress = 0;
         level++;
+
+        RemoveChild(targetItem);
+
+        if (level <= levelTargets.size()) {
+            targetItem = std::make_shared<Shape>(levelTargets[level-1].first);
+            targetAmount = levelTargets[level-1].second;
+        }
+        else {
+            targetItem = GenerateRandomTarget(SEED, level);
+            targetAmount = 9999999;
+        }
+
+        targetItem->MachineItemZIndex(51);
+        AddChild(targetItem);
+
         levelNumTxt->m_Text->SetText(std::to_string(level));
         targetTxt->m_Text->SetText("/ " + BigNumStr(targetAmount));
+
+        levelUpSFX->Play();
     }
     progressTxt->m_Text->SetText(BigNumStr(progress));
 

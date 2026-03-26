@@ -36,6 +36,8 @@ inline std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<ItemAccepto
 inline std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<ItemEjector>, TriHash> MapEjectors;
 inline std::unordered_map<std::pair<int, int>, std::shared_ptr<Machine>, PairHash> MapMachines;
 
+inline int SEED = 67; // world seed
+
 inline float FPS = 60;
 inline float BELT_RATE = 2.0/FPS;
 inline float BELTTURN_RATE = (4.0/M_PI) * BELT_RATE;

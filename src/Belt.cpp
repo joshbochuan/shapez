@@ -55,11 +55,13 @@ void Belt::Update() {
     // add progress to both accept progress and eject progress
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
-    this->m_Transform.scale.x = cam.scale.x * 1.02; // adding tiny size to avoid gap
-    this->m_Transform.scale.y = cam.scale.y * 1.02;
+    this->m_Transform.scale.x = cam.scale.x * 1.01f; // adding tiny size to avoid gap
+    this->m_Transform.scale.y = cam.scale.y * 1.01f;
 
     // if item can be transferred from input slot to output slot
-    if ((acceptor->item != nullptr) && (acceptor->progress >= 1) && (ejector->item == nullptr)) {
+    if ((acceptor->item != nullptr)
+        && (acceptor->progress >= 1)
+        && (ejector->item == nullptr)) {
         ejector->AddChild(acceptor->item);
         ejector->item = acceptor->item;
         ejector->progress = acceptor->progress-1;

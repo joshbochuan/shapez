@@ -32,6 +32,13 @@ public:
 
     void End(); // NOLINT(readability-convert-member-functions-to-static)
 
+    void OperateMachines();
+    void UserMoveCamera();
+    void UserSelectMachine();
+    void UserSelectVariant();
+    void UserPlaceMachine(int mouseX, int mouseY);
+    void UserRemoveMachine(int mouseX, int mouseY);
+
     std::shared_ptr<Util::GameObject> background;
     std::shared_ptr<Util::GameObject> vignette;
     std::vector<std::shared_ptr<Machine>> m_Machines;
