@@ -9,6 +9,8 @@
 enum class MachineName {
     NONE,
     BALANCER,
+    SPLITTER,
+    MERGER,
     BELT,
     CUTTER,
     HUB,

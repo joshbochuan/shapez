@@ -230,3 +230,170 @@ void Balancer::Update() {
     ejectorB->Update();
 }
 
+Splitter::Splitter(int x, int y, int r, bool mirrored)
+    : Machine(x, y, r, BELT_RATE, MachineName::SPLITTER) {
+    this->mirrored = mirrored;
+    if (MapMachines[{x, y}] != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
+
+    this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
+    this->SetDrawable(splitterTexture[mirrored]);
+
+    // cooking up a better X-index for 2-wide objects
+    this->SetZIndex(62 + (x+y)%2);
+
+    this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
+    this->ejectorA = std::make_shared<ItemEjector>(x, y, r);
+    this->ejectorB = std::make_shared<ItemEjector>(x, y, (r+3 + 2*mirrored)%4);
+
+    this->AddChild(this->acceptor);
+    this->AddChild(this->ejectorA);
+    this->AddChild(this->ejectorB);
+
+    acceptor->SetDrawable(balancerInTextures[0]);
+    ejectorA->SetDrawable(balancerOutTextures[0]);
+    ejectPriority = 0;
+}
+
+void Splitter::Init() {
+    MapMachines[{x, y}] = shared_from_this();
+    acceptor->Init();
+    ejectorA->Init();
+    ejectorB->Init();
+}
+
+void Splitter::Delete() {
+    MapMachines.erase({x, y});
+    acceptor->Delete();
+    ejectorA->Delete();
+    ejectorB->Delete();
+    RemoveChild(acceptor);
+    RemoveChild(ejectorA);
+    RemoveChild(ejectorB);
+}
+
+void Splitter::Update() {
+    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
+    acceptor->SetDrawable(balancerInTextures[frame]);
+    ejectorA->SetDrawable(balancerOutTextures[frame]);
+
+    this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
+    this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
+
+    this->m_Transform.scale.x = cam.scale.x * 1.1;
+    this->m_Transform.scale.y = cam.scale.y * 1.1;
+
+    const bool acceptorReady = acceptor->item!=nullptr && acceptor->progress>=1;
+    const bool eA = ejectorA->item==nullptr && ejectorA->next!=nullptr;
+    const bool eB = ejectorB->item==nullptr && ejectorB->next!=nullptr;
+    if (acceptorReady && (eA || eB)) {
+        std::shared_ptr<Item> item = acceptor->item;
+        float progress = acceptor->progress;
+        acceptor->RemoveChild(acceptor->item);
+        acceptor->item = nullptr;
+        acceptor->progress = 0;
+        if ((ejectPriority || !eA) && eB) { // outputs to prioritized one (B)
+            ejectorB->item = item;
+            ejectorB->progress = progress-1;
+            ejectorB->AddChild(item);
+            ejectPriority = 0;
+        }
+        else {
+            ejectorA->item = item;
+            ejectorA->progress = progress-1;
+            ejectorA->AddChild(item);
+            ejectPriority = 1;
+        }
+        item = nullptr;
+    }
+    acceptor->Update();
+    ejectorA->Update();
+    ejectorB->Update();
+}
+
+Merger::Merger(int x, int y, int r, bool mirrored)
+    : Machine(x, y, r, BELT_RATE, MachineName::MERGER) {
+    this->mirrored = mirrored;
+    if (MapMachines[{x, y}] != nullptr) {
+        throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
+    }
+
+    this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
+    this->SetDrawable(mergerTexture[mirrored]);
+
+    // cooking up a better X-index for 2-wide objects
+    this->SetZIndex(62 + (x+y)%2);
+
+    this->acceptorA = std::make_shared<ItemAcceptor>(x, y, r);
+    this->acceptorB = std::make_shared<ItemAcceptor>(x, y, (r+1 + 2*mirrored)%4);
+    this->ejector = std::make_shared<ItemEjector>(x, y, r);
+
+    this->AddChild(this->acceptorA);
+    this->AddChild(this->acceptorB);
+    this->AddChild(this->ejector);
+
+    acceptorA->SetDrawable(balancerInTextures[0]);
+    ejector->SetDrawable(balancerOutTextures[0]);
+    acceptPriority = 0;
+}
+
+void Merger::Init() {
+    MapMachines[{x, y}] = shared_from_this();
+    acceptorA->Init();
+    acceptorB->Init();
+    ejector->Init();
+}
+
+void Merger::Delete() {
+    MapMachines.erase({x, y});
+    acceptorA->Delete();
+    acceptorB->Delete();
+    ejector->Delete();
+    RemoveChild(acceptorA);
+    RemoveChild(acceptorB);
+    RemoveChild(ejector);
+}
+
+void Merger::Update() {
+    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
+    acceptorA->SetDrawable(balancerInTextures[frame]);
+    ejector->SetDrawable(balancerOutTextures[frame]);
+
+    this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
+    this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
+
+    this->m_Transform.scale.x = cam.scale.x * 1.1;
+    this->m_Transform.scale.y = cam.scale.y * 1.1;
+
+    const bool ejectorReady = ejector->next!=nullptr && ejector->item == nullptr;
+    const bool aA = acceptorA->item!=nullptr && acceptorA->progress>=1;
+    const bool aB = acceptorB->item!=nullptr && acceptorB->progress>=1;
+    if (ejectorReady && (aA || aB)) {
+        std::shared_ptr<Item> item = nullptr;
+        float progress = 0;
+        if ((acceptPriority || !aA) && aB) {
+            item = acceptorB->item;
+            progress = acceptorB->progress;
+            acceptPriority = false;
+            acceptorB->RemoveChild(acceptorB->item);
+            acceptorB->item = nullptr;
+            acceptorB->progress = 0;
+        }
+        else {
+            item = acceptorA->item;
+            progress = acceptorA->progress;
+            acceptPriority = true;
+            acceptorA->RemoveChild(acceptorA->item);
+            acceptorA->item = nullptr;
+            acceptorA->progress = 0;
+        }
+        ejector->item = item;
+        ejector->progress = progress-1;
+        ejector->AddChild(item);
+        item = nullptr;
+    }
+    acceptorA->Update();
+    acceptorB->Update();
+    ejector->Update();
+}

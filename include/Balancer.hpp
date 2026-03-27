@@ -10,6 +10,8 @@
 #include "Util/Image.hpp"
 
 inline std::shared_ptr<Util::Image> balancerTexture;
+inline std::vector<std::shared_ptr<Util::Image>> splitterTexture;
+inline std::vector<std::shared_ptr<Util::Image>> mergerTexture;
 inline std::vector<std::shared_ptr<Util::Image>> balancerInTextures; // belt in
 inline std::vector<std::shared_ptr<Util::Image>> balancerOutTextures;
 
@@ -24,5 +26,33 @@ public:
     void Update();
     void Delete();
 };
+
+class Splitter: public Machine {
+private:
+    int ejectPriority = 0;
+    bool mirrored = false;
+public:
+    std::shared_ptr<ItemAcceptor> acceptor;
+    std::shared_ptr<ItemEjector> ejectorA, ejectorB;
+    Splitter(int x, int y, int r, bool mirrored);
+    void Init();
+    void Update();
+    void Delete();
+};
+
+class Merger: public Machine {
+private:
+    int acceptPriority = 0;
+    bool mirrored = false;
+public:
+    std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
+    std::shared_ptr<ItemEjector> ejector;
+    Merger(int x, int y, int r, bool mirrored);
+    void Init();
+    void Update();
+    void Delete();
+};
+
+
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_BALANCER_HPP

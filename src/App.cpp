@@ -58,6 +58,14 @@ void loadTextures() {
             "../Resources/sprites/belt/built/forward_" + std::to_string(i) + "_top.png"));
     }
 
+    splitterTexture.clear();
+    splitterTexture.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/balancer-splitter.png"));
+    splitterTexture.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/balancer-splitter-inverse.png"));
+
+    mergerTexture.clear();
+    mergerTexture.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/balancer-merger.png"));
+    mergerTexture.push_back(std::make_shared<Util::Image>("../Resources/sprites/buildings/balancer-merger-inverse.png"));
+
     balancerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/balancer.png");
     cutterTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/cutter.png");
     minerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/miner.png");
@@ -290,7 +298,7 @@ void App::UserSelectMachine() {
         m_MachineHeldPreview->SetPivot({-84, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_9)) {
-        painterMirrored = false;
+        previewMirrored = false;
         m_MachineHeld = MachineName::PAINTER;
         m_MachineHeldPreview->SetVisible(true);
         m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
@@ -322,6 +330,41 @@ void App::UserSelectVariant() {
             beltType = BeltType::FORWARD;
             m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
             "../Resources/sprites/blueprints/belt_top.png"));
+        }
+    }
+    else if (m_MachineHeld == MachineName::BALANCER) {
+        m_MachineHeld = MachineName::SPLITTER;
+        m_MachineHeldPreview->SetVisible(true);
+        previewMirrored = false;
+        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/balancer-splitter.png"));
+        m_MachineHeldPreview->SetPivot({0, 0});
+    }
+    else if (m_MachineHeld == MachineName::SPLITTER) {
+        if (!previewMirrored) {
+            previewMirrored = true;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/balancer-splitter-inverse.png"));
+        }
+        else {
+            m_MachineHeld = MachineName::MERGER;
+            previewMirrored = false;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/balancer-merger.png"));
+        }
+    }
+    else if (m_MachineHeld == MachineName::MERGER) {
+        if (!previewMirrored) {
+            previewMirrored = true;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/balancer-merger-inverse.png"));
+        }
+        else {
+            m_MachineHeld = MachineName::BALANCER;
+            previewMirrored = false;
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+                "../Resources/sprites/blueprints/balancer.png"));
+            m_MachineHeldPreview->SetPivot({-84, 0});
         }
     }
     else if (m_MachineHeld == MachineName::ROTATOR) {
@@ -366,7 +409,7 @@ void App::UserSelectVariant() {
         }
     }
     else if (m_MachineHeld == MachineName::PAINTER) {
-        if (!painterMirrored) {
+        if (!previewMirrored) {
             m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
                 "../Resources/sprites/blueprints/painter-mirrored.png"));
         }
@@ -374,7 +417,7 @@ void App::UserSelectVariant() {
             m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
                 "../Resources/sprites/blueprints/painter.png"));
         }
-        painterMirrored = !painterMirrored;
+        previewMirrored = !previewMirrored;
     }
 }
 
@@ -386,6 +429,14 @@ void App::UserPlaceMachine(int mouseX, int mouseY) {
     }
     if (m_MachineHeld == MachineName::BALANCER) {
         try {MachineToAdd = std::make_shared<Balancer>(mouseX, mouseY, m_MachineHeldR);}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (m_MachineHeld == MachineName::SPLITTER) {
+        try {MachineToAdd = std::make_shared<Splitter>(mouseX, mouseY, m_MachineHeldR, previewMirrored);}
+        catch (const std::invalid_argument& e) {}
+    }
+    if (m_MachineHeld == MachineName::MERGER) {
+        try {MachineToAdd = std::make_shared<Merger>(mouseX, mouseY, m_MachineHeldR, previewMirrored);}
         catch (const std::invalid_argument& e) {}
     }
     if (m_MachineHeld == MachineName::TUNNEL) {
@@ -413,7 +464,7 @@ void App::UserPlaceMachine(int mouseX, int mouseY) {
         catch (const std::invalid_argument& e) {}
     }
     if (m_MachineHeld == MachineName::PAINTER) {
-        try {MachineToAdd = std::make_shared<Painter>(mouseX, mouseY, m_MachineHeldR, painterMirrored);}
+        try {MachineToAdd = std::make_shared<Painter>(mouseX, mouseY, m_MachineHeldR, previewMirrored);}
         catch (const std::invalid_argument& e) {}
     }
     if (m_MachineHeld == MachineName::TRASH) {
