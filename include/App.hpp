@@ -13,6 +13,7 @@
 #include "Tunnel.hpp"
 #include "Util/SFX.hpp"
 #include "Util/BGM.hpp"
+#include "UI.hpp"
 
 inline std::shared_ptr<Util::SFX> placeBuildingSFX, placeBeltSFX, destroyBuildingSFX;
 
@@ -38,6 +39,10 @@ public:
     void UserSelectVariant();
     void UserPlaceMachine(int mouseX, int mouseY);
     void UserRemoveMachine(int mouseX, int mouseY);
+
+    bool inTitle;
+    std::shared_ptr<Util::GameObject> title;
+    std::shared_ptr<UIButton> playButton;
 
     std::shared_ptr<Util::GameObject> background;
     std::shared_ptr<Util::GameObject> vignette;

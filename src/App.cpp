@@ -101,6 +101,19 @@ void App::Start() {
     loadAudio();
     loadTextures();
 
+    inTitle = true;
+    title = std::make_shared<Util::GameObject>();
+    title->SetDrawable(std::make_shared<Util::Image>("../Resources/logo.png"));
+    title->SetZIndex(100);
+    title->m_Transform.translation = glm::vec2(0, 200);
+    title->m_Transform.scale = glm::vec2(1, 1);
+    m_Root.AddChild(title);
+    playButton = std::make_shared<UIButton>(glm::vec2({272, 173}), "../Resources/ui/PlayButton.png", "Play", 64, Util::Color::FromRGB(255, 255, 255));
+    playButton->SetZIndex(91);
+    playButton->imagePressed = std::make_shared<Util::Image>("../Resources/ui/PlayButtonPressed.png");
+    playButton->text->SetZIndex(92);
+    m_Root.AddChild(playButton);
+
     // 41 minutes of ABSOLUTE BANGER
     shapezBGM = std::make_shared<Util::BGM>("../Resources/sounds/music/theme-full.mp3");
     shapezBGM->Play();
@@ -119,7 +132,7 @@ void App::Start() {
     vignette = std::make_shared<Util::GameObject>();
     vignette->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/vignette.lossless.png"));
     vignette->m_Transform.scale = glm::vec2(20.0f/3.0f, 20.0f/3.0f);
-    vignette->SetZIndex(100);
+    vignette->SetZIndex(90);
     m_Root.AddChild(vignette);
 
     std::vector<std::shared_ptr<Machine>> vec2;
@@ -144,28 +157,37 @@ void App::Start() {
         m_Root.AddChild(m_Machines[i]);
     }
 
-    cam.scale = glm::vec2(0.5, 0.5);
+    cam.scale = glm::vec2(0.1, 0.1);
+
+    OperateMachines();
+    m_Root.Update();
 
     m_CurrentState = State::UPDATE;
 }
 
 void App::Update() {
-    UserSelectMachine();
-    if (Util::Input::IsKeyDown(Util::Keycode::R)) {m_MachineHeldR = (m_MachineHeldR + 3) % 4;}
-    if (Util::Input::IsKeyDown(Util::Keycode::T)) {UserSelectVariant();}
-    m_MachineHeldPreview->m_Transform.translation = Util::Input::GetCursorPosition();
-    m_MachineHeldPreview->m_Transform.rotation = 0.5 * M_PI * m_MachineHeldR;
-    m_MachineHeldPreview->m_Transform.scale = cam.scale;
-    int mouseX = std::floor((((Util::Input::GetCursorPosition().x / cam.scale.x) + cam.translation.x))/192.0f);
-    int mouseY = std::floor((((Util::Input::GetCursorPosition().y / cam.scale.y) + cam.translation.y))/192.0f);
-    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {UserPlaceMachine(mouseX, mouseY);}
-    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)) {UserRemoveMachine(mouseX, mouseY);}
-
-    // camera movement
-    UserMoveCamera();
-
+    if (inTitle) {
+        playButton->Update();
+        if (playButton->isReleased) {
+            m_Root.RemoveChild(playButton);
+            m_Root.RemoveChild(title);
+            inTitle = false;
+        }
+    }
+    else {
+        UserSelectMachine();
+        if (Util::Input::IsKeyDown(Util::Keycode::R)) {m_MachineHeldR = (m_MachineHeldR + 3) % 4;}
+        if (Util::Input::IsKeyDown(Util::Keycode::T)) {UserSelectVariant();}
+        m_MachineHeldPreview->m_Transform.translation = Util::Input::GetCursorPosition();
+        m_MachineHeldPreview->m_Transform.rotation = 0.5 * M_PI * m_MachineHeldR;
+        m_MachineHeldPreview->m_Transform.scale = cam.scale;
+        int mouseX = std::floor((((Util::Input::GetCursorPosition().x / cam.scale.x) + cam.translation.x))/192.0f);
+        int mouseY = std::floor((((Util::Input::GetCursorPosition().y / cam.scale.y) + cam.translation.y))/192.0f);
+        if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {UserPlaceMachine(mouseX, mouseY);}
+        if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)) {UserRemoveMachine(mouseX, mouseY);}
+        UserMoveCamera();
+    }
     OperateMachines();
-
     m_Root.Update();
 
     /*

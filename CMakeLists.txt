@@ -75,6 +75,8 @@ add_executable(${PROJECT_NAME}
         include/Test.hpp
         include/Mixer.hpp
         src/Mixer.cpp
+        include/UI.hpp
+        src/UI.cpp
 )
 
 if(MSVC)
