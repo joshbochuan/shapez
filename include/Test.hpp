@@ -89,11 +89,11 @@ inline std::vector<std::shared_ptr<Machine>> AddBeltTest() {
     m_Machines.push_back(std::make_shared<Belt>(1, 7, 3, BeltType::RIGHT));
     m_Machines.push_back(std::make_shared<Belt>(1, 6, 2, BeltType::FORWARD));
     m_Machines.push_back(std::make_shared<Trash>(2, 6));
-    m_Machines.push_back(std::make_shared<Miner>(-1, 6, 3, nullptr));
+    m_Machines.push_back(std::make_shared<Miner>(-1, 6, 3, std::make_shared<Shape>("RuRuRuRu")));
     m_Machines.push_back(std::make_shared<Miner>(-1, 8, 0, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-2, 8, 0, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-2, 7, 1, nullptr));
-    m_Machines.push_back(std::make_shared<Miner>(-2, 6, 1, nullptr));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 8, 0, std::make_shared<Shape>("RuRuRuRu")));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 7, 1, std::make_shared<Shape>("RuRuRuRu")));
+    m_Machines.push_back(std::make_shared<Miner>(-2, 6, 1, std::make_shared<Shape>("RuRuRuRu")));
     return m_Machines;
 }
 

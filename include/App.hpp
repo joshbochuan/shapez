@@ -42,6 +42,7 @@ public:
 
     bool inTitle;
     std::shared_ptr<Util::GameObject> title;
+    std::shared_ptr<Util::GameObject> titleWindow; // #E9EAEC
     std::shared_ptr<UIButton> playButton;
 
     std::shared_ptr<Util::GameObject> background;

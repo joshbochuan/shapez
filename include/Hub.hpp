@@ -21,27 +21,27 @@ public:
     std::vector<std::shared_ptr<ItemAcceptor>> m_Acceptors;
 
     // og are
-    std::vector<std::pair<std::string, int>> levelTargets = {
-        {"CuCuCuCu",                            30}, // og1
-        {"----CuCu",                            40}, // og2
-        {"RuRuRuRu",                            70}, // og3
-        {"RuRu----",                            125}, // og4
-        {"Cu----Cu",                            170}, // level 5, og5
-        {"Cu------",                            270}, // og6
-        {"CrCrCrCr",                            300}, // og7
-        {"RbRbRbRb",                            480}, // og8
-        {"CpCpCpCp",                            600}, // og9
-        {"ScScScSc",                            800}, // level 10, og10
-        {"CbCbCbRb:CwCwCwCw",                   1000}, // bp, og12
-        {"RpRpRpRp:CwCwCwCw",                   1000}, // og13
-        {"SrSrSrSr:CyCyCyCy:SwSwSwSw",          2500}, // og16
-        {"CbRbRbCb:CwCwCwCw:WbWbWbWb",          3800}, // og17
-        {"Sg----Sg:CgCgCgCg:--CyCy--",          6000}, // level 15, og18
-        {"Cg----Cr:Cw----Cw:Sy------:Cy----Cy", 20000}, // og22
-        {"CcRcCcRc:RwCwRwCw:Sr--Sw--:CyCyCyCy", 20000}, // og24
-        {"Rg--Rg--:CwRwCwRw:--Rg--Rg"         , 25000}, // og25
-        {"CbCuCbCu:Sr------:--CrSrCr:CwCwCwCw", 25000}, // og26
-        {"RuCw--Cw:----Ru--",                   50000} // level 20, og20
+    std::vector<std::tuple<std::string, int, std::string>> levelTargets = {
+        {"CuCuCuCu",                            30, "Cutter and Trash"}, // og1
+        {"----CuCu",                            40, "Upgrades"}, // og2
+        {"RuRuRuRu",                            70, "Balancer"}, // og3
+        {"RuRu----",                            125, "Rotator (CW)"}, // og4
+        {"Cu----Cu",                            170, "Tunnel"}, // level 5, og5
+        {"Cu------",                            270, "Painter"}, // og6
+        {"CrCrCrCr",                            300, "Splitter"}, // og7
+        {"RbRbRbRb",                            480, "Color Mixer"}, // og8
+        {"CpCpCpCp",                            600, "Merger"}, // og9
+        {"ScScScSc",                            800, "Stacker"}, // level 10, og10
+        {"CbCbCbRb:CwCwCwCw",                   1000, "Blueprint"}, // bp, og12
+        {"RpRpRpRp:CwCwCwCw",                   1000, "Storage"}, // og13
+        {"SrSrSrSr:CyCyCyCy:SwSwSwSw",          2500, "Rotator (CCW)"}, // og16
+        {"CbRbRbCb:CwCwCwCw:WbWbWbWb",          3800, "Rotator (180)"}, // og17
+        {"Sg----Sg:CgCgCgCg:--CyCy--",          6000, "Chaining Miner"}, // level 15, og18
+        {"Cg----Cr:Cw----Cw:Sy------:Cy----Cy", 20000, "Belt Reader"}, // og22
+        {"CcRcCcRc:RwCwRwCw:Sr--Sw--:CyCyCyCy", 20000, "Tunnel Tier II"}, // og24
+        {"Rg--Rg--:CwRwCwRw:--Rg--Rg"         , 25000, "Double Painter"}, // og25
+        {"CbCuCbCu:Sr------:--CrSrCr:CwCwCwCw", 25000, "Quad Cutter"}, // og26
+        {"RuCw--Cw:----Ru--",                   50000, "Freeplay"} // level 20, og20
     };
 
     Hub();

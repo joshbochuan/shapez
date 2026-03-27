@@ -16,9 +16,10 @@ Hub::Hub()
     levelUpSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/level_complete.wav");
 
     this->level = 1;
-    this->targetItem = std::make_shared<Shape>(levelTargets[0].first); // first level
+    auto [a, b, c] = levelTargets[0];
+    this->targetItem = std::make_shared<Shape>(a); // first level
     this->progress = 0;
-    this->targetAmount = levelTargets[0].second;
+    this->targetAmount = b;
 
     this->targetItem->MachineItemZIndex(51);
     this->AddChild(this->targetItem);
@@ -32,7 +33,7 @@ Hub::Hub()
     progressTxt = std::make_shared<Text>(BigNumStr(progress), 160, Util::Color::FromRGB(100, 102, 110));
     targetTxt = std::make_shared<Text>("/ " + BigNumStr(targetAmount), 80, Util::Color::FromRGB(164, 166, 176));
     toUnlockTxt = std::make_shared<Text>("TO UNLOCK", 64, Util::Color::FromRGB(100, 102, 110));
-    lockedItemTxt = std::make_shared<Text>("IDK", 56, Util::Color::FromRGB(253, 7, 82));
+    lockedItemTxt = std::make_shared<Text>(c, 56, Util::Color::FromRGB(253, 7, 82));
 
     this->AddChild(levelTxt);
     this->AddChild(levelNumTxt);
@@ -66,7 +67,6 @@ Hub::Hub()
     m_Acceptors.push_back(std::make_shared<ItemAcceptor>(-2, -1, 3));
     m_Acceptors.push_back(std::make_shared<ItemAcceptor>(-2, -2, 3));
 
-    std::shared_ptr<ItemAcceptor> a;
     for (int i=0; i<m_Acceptors.size(); i++) {this->AddChild(m_Acceptors[i]);}
 }
 
@@ -119,12 +119,15 @@ void Hub::Update() {
         RemoveChild(targetItem);
 
         if (level <= levelTargets.size()) {
-            targetItem = std::make_shared<Shape>(levelTargets[level-1].first);
-            targetAmount = levelTargets[level-1].second;
+            auto [a, b, c] = levelTargets[level-1];
+            targetItem = std::make_shared<Shape>(a);
+            targetAmount = b;
+            lockedItemTxt->m_Text->SetText(c);
         }
         else {
             targetItem = GenerateRandomTarget(SEED, level);
             targetAmount = 9999999;
+            toUnlockTxt->m_Text->SetText("Next Level");
         }
 
         targetItem->MachineItemZIndex(51);

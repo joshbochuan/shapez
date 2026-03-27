@@ -33,6 +33,5 @@ void UIButton::Update() {
         isHeld = false;
         SetDrawable(this->image);
     }
-
-    text->m_Transform = m_Transform;
+    text->m_Transform.translation = m_Transform.translation;
 }

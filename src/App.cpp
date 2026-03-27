@@ -105,13 +105,24 @@ void App::Start() {
     title = std::make_shared<Util::GameObject>();
     title->SetDrawable(std::make_shared<Util::Image>("../Resources/logo.png"));
     title->SetZIndex(100);
-    title->m_Transform.translation = glm::vec2(0, 200);
-    title->m_Transform.scale = glm::vec2(1, 1);
+    title->m_Transform.translation = glm::vec2(-252, 128);
+    title->m_Transform.scale = glm::vec2(0.5, 0.5);
     m_Root.AddChild(title);
-    playButton = std::make_shared<UIButton>(glm::vec2({272, 173}), "../Resources/ui/PlayButton.png", "Play", 64, Util::Color::FromRGB(255, 255, 255));
-    playButton->SetZIndex(91);
-    playButton->imagePressed = std::make_shared<Util::Image>("../Resources/ui/PlayButtonPressed.png");
-    playButton->text->SetZIndex(92);
+    playButton = std::make_shared<UIButton>(
+        glm::vec2(350, 200),
+        "../Resources/1px/66BB6A.png",
+        "P L A Y", 48, Util::Color::FromRGB(255, 255, 255));
+    titleWindow = std::make_shared<Util::GameObject>();
+    titleWindow->SetDrawable(std::make_shared<Util::Image>("../Resources/1px/D2D6DF.png"));
+    titleWindow->SetZIndex(89);
+    titleWindow->m_Transform.translation = glm::vec2(-252, 0);
+    titleWindow->m_Transform.scale = glm::vec2(384, 384);
+    m_Root.AddChild(titleWindow);
+    playButton->m_Transform.scale = glm::vec2(350, 200);
+    playButton->imagePressed = std::make_shared<Util::Image>("../Resources/1px/58B55C.png");
+    playButton->SetZIndex(89.1);
+    playButton->text->SetZIndex(89.2);
+    playButton->m_Transform.translation = glm::vec2(-252, -72);
     m_Root.AddChild(playButton);
 
     // 41 minutes of ABSOLUTE BANGER
@@ -157,7 +168,8 @@ void App::Start() {
         m_Root.AddChild(m_Machines[i]);
     }
 
-    cam.scale = glm::vec2(0.1, 0.1);
+    cam.scale = glm::vec2(0.5, 0.5);
+    cam.translation.x = -504;
 
     OperateMachines();
     m_Root.Update();
@@ -171,6 +183,7 @@ void App::Update() {
         if (playButton->isReleased) {
             m_Root.RemoveChild(playButton);
             m_Root.RemoveChild(title);
+            m_Root.RemoveChild(titleWindow);
             inTitle = false;
         }
     }
