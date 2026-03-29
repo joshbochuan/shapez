@@ -33,11 +33,11 @@ public:
         {"CpCpCpCp",                            600, "Merger"}, // og9
         {"ScScScSc",                            800, "Stacker"}, // level 10, og10
         {"CbCbCbRb:CwCwCwCw",                   1000, "Blueprint"}, // bp, og12
-        {"RpRpRpRp:CwCwCwCw",                   1000, "Storage"}, // og13
+        {"RpRpRpRp:CwCwCwCw",                   1000, "Next Level"}, // og13
         {"SrSrSrSr:CyCyCyCy:SwSwSwSw",          2500, "Rotator (CCW)"}, // og16
         {"CbRbRbCb:CwCwCwCw:WbWbWbWb",          3800, "Rotator (180)"}, // og17
         {"Sg----Sg:CgCgCgCg:--CyCy--",          6000, "Chaining Miner"}, // level 15, og18
-        {"Cg----Cr:Cw----Cw:Sy------:Cy----Cy", 20000, "Belt Reader"}, // og22
+        {"Cg----Cr:Cw----Cw:Sy------:Cy----Cy", 20000, "Next Level"}, // og22
         {"CcRcCcRc:RwCwRwCw:Sr--Sw--:CyCyCyCy", 20000, "Tunnel Tier II"}, // og24
         {"Rg--Rg--:CwRwCwRw:--Rg--Rg"         , 25000, "Double Painter"}, // og25
         {"CbCuCbCu:Sr------:--CrSrCr:CwCwCwCw", 25000, "Quad Cutter"}, // og26

@@ -55,6 +55,7 @@ public:
     RotatorType rotatorType = RotatorType::ROTATE_CW;
     TunnelType tunnelType = TunnelType::IN;
     bool tunnelUpgraded = false;
+    bool minerChained = false;
     bool previewMirrored = false;
     std::shared_ptr<Util::GameObject> m_MachineHeldPreview;
 

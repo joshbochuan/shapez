@@ -69,6 +69,7 @@ void loadTextures() {
     balancerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/balancer.png");
     cutterTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/cutter.png");
     minerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/miner.png");
+    chainedMinerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/miner-chainable.png");
     minerCoverTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/miner-cover.png");
     mixerTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/mixer.png");
     rotatorCWTexture = std::make_shared<Util::Image>("../Resources/sprites/buildings/rotater.png");
@@ -147,10 +148,13 @@ void App::Start() {
     m_Root.AddChild(vignette);
 
     std::vector<std::shared_ptr<Machine>> vec2;
-    m_Machines = AddColorTest();
+    m_Machines.push_back(std::make_shared<Hub>());
+    vec2 = AddChainMinerTest();
+    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+    /*
     vec2 = AddTunnelTest();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    vec2 = AddHubTest();
+    vec2 = AddColorTest();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     vec2 = AddBalancerTest();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
@@ -162,6 +166,7 @@ void App::Start() {
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     vec2 = AddPenguinTest();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+    */
 
     for (int i=0; i<m_Machines.size(); i++) {
         m_Machines[i]->Init();
@@ -298,6 +303,7 @@ void App::UserSelectMachine() {
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_4)) {
         m_MachineHeld = MachineName::MINER;
+        minerChained = false;
         m_MachineHeldPreview->SetVisible(true);
         m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
             "../Resources/sprites/blueprints/miner.png"));
@@ -402,6 +408,17 @@ void App::UserSelectVariant() {
             m_MachineHeldPreview->SetPivot({-84, 0});
         }
     }
+    else if (m_MachineHeld == MachineName::MINER) {
+        if (!minerChained) {
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/miner-chainable.png"));
+        }
+        else {
+            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/miner.png"));
+        }
+        minerChained = !minerChained;
+    }
     else if (m_MachineHeld == MachineName::ROTATOR) {
         if (rotatorType == RotatorType::ROTATE_CW) {
             rotatorType = RotatorType::ROTATE_180;
@@ -479,7 +496,7 @@ void App::UserPlaceMachine(int mouseX, int mouseY) {
         catch (const std::invalid_argument& e) {}
     }
     if (m_MachineHeld == MachineName::MINER) {
-        try {MachineToAdd = std::make_shared<Miner>(mouseX, mouseY, m_MachineHeldR, std::make_shared<Shape>("CuCuCuCu"));}
+        try {MachineToAdd = std::make_shared<Miner>(mouseX, mouseY, m_MachineHeldR, std::make_shared<Shape>("CuCuCuCu"), minerChained);}
         catch (const std::invalid_argument& e) {}
     }
     if (m_MachineHeld == MachineName::CUTTER) {
