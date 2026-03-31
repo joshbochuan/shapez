@@ -7,7 +7,7 @@
 #include "Machine.hpp"
 #include "ItemAcceptor.hpp"
 #include "World.hpp"
-#include "Item.hpp"
+#include "../items/Item.hpp"
 #include "Text.hpp"
 #include "Util/SFX.hpp"
 

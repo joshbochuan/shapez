@@ -9,16 +9,11 @@
 #include "ItemEjector.hpp"
 #include "Util/Image.hpp"
 
-inline std::shared_ptr<Util::Image> balancerTexture;
-inline std::vector<std::shared_ptr<Util::Image>> splitterTexture;
-inline std::vector<std::shared_ptr<Util::Image>> mergerTexture;
-inline std::vector<std::shared_ptr<Util::Image>> balancerInTextures; // belt in
-inline std::vector<std::shared_ptr<Util::Image>> balancerOutTextures;
-
 class Balancer: public Machine {
 private:
     int acceptPriority, ejectPriority;
 public:
+    static inline std::shared_ptr<Util::Image> balancerTexture;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;
     Balancer(int x, int y, int r);
@@ -32,6 +27,7 @@ private:
     int ejectPriority = 0;
     bool mirrored = false;
 public:
+    static inline std::vector<std::shared_ptr<Util::Image>> splitterTexture;
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;
     Splitter(int x, int y, int r, bool mirrored);
@@ -45,6 +41,7 @@ private:
     int acceptPriority = 0;
     bool mirrored = false;
 public:
+    static inline std::vector<std::shared_ptr<Util::Image>> mergerTexture;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejector;
     Merger(int x, int y, int r, bool mirrored);

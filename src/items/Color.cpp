@@ -2,12 +2,12 @@
 // Created by joshb on 2026/3/25.
 //
 
-#include "Color.hpp"
+#include "../../include/items/Color.hpp"
 
 Color::Color(int color)
     : Item(ItemType::COLOR) {
     this->color = color;
-    SetDrawable(colorTextures[Color::getCode()]);
+    SetDrawable(colorTextures[color]);
     SetZIndex(20);
 }
 
@@ -22,7 +22,7 @@ Color::Color(std::string code)
     else if (code == "Color-y") {color = 6;} // 110
     else if (code == "Color-w") {color = 7;} // 111
     else {throw std::invalid_argument("Invalid color " + code);}
-    SetDrawable(colorTextures[code]);
+    SetDrawable(colorTextures[color]);
     SetZIndex(20);
 }
 

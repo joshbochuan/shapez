@@ -3,7 +3,7 @@
 //
 #include "buildings/Stacker.hpp"
 #include "World.hpp"
-#include "Shape.hpp"
+#include "../../include/items/Shape.hpp"
 #include <iostream>
 using namespace World;
 

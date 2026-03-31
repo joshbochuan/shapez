@@ -7,12 +7,11 @@
 #include "Item.hpp"
 #include "Util/Image.hpp"
 
-inline std::unordered_map<std::string, std::shared_ptr<Util::Image>> colorTextures;
-
 class Color: public Item {
 private:
     int color = 0; // right-most bit means r, g, b, OR-ing gives the mix result
 public:
+    static inline std::vector<std::shared_ptr<Util::Image>> colorTextures;
     Color(int color);
     Color(std::string code);
     void Update();

@@ -2,9 +2,9 @@
 // Created by joshb on 2026/3/22.
 //
 #include "buildings/Balancer.hpp"
+#include "buildings/Belt.hpp"
 #include "World.hpp"
 #include "Util/Image.hpp"
-#include "Util/Animation.hpp"
 #include <cmath>
 #include <iostream>
 #include "Util/Time.hpp"
@@ -62,10 +62,10 @@ Balancer::Balancer(int x, int y, int r)
     this->AddChild(this->ejectorA);
     this->AddChild(this->ejectorB);
 
-    acceptorA->SetDrawable(balancerInTextures[0]);
-    acceptorB->SetDrawable(balancerInTextures[0]);
-    ejectorA->SetDrawable(balancerOutTextures[0]);
-    ejectorB->SetDrawable(balancerOutTextures[0]);
+    acceptorA->SetDrawable(Belt::beltInTexture[0]);
+    acceptorB->SetDrawable(Belt::beltInTexture[0]);
+    ejectorA->SetDrawable(Belt::beltOutTexture[0]);
+    ejectorB->SetDrawable(Belt::beltOutTexture[0]);
 
     acceptPriority = 0;
     ejectPriority = 0;
@@ -96,10 +96,10 @@ void Balancer::Delete() {
 
 void Balancer::Update() {
     int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
-    acceptorA->SetDrawable(balancerInTextures[frame]);
-    acceptorB->SetDrawable(balancerInTextures[frame]);
-    ejectorA->SetDrawable(balancerOutTextures[frame]);
-    ejectorB->SetDrawable(balancerOutTextures[frame]);
+    acceptorA->SetDrawable(Belt::beltInTexture[frame]);
+    acceptorB->SetDrawable(Belt::beltInTexture[frame]);
+    ejectorA->SetDrawable(Belt::beltOutTexture[frame]);
+    ejectorB->SetDrawable(Belt::beltOutTexture[frame]);
 
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
@@ -252,8 +252,8 @@ Splitter::Splitter(int x, int y, int r, bool mirrored)
     this->AddChild(this->ejectorA);
     this->AddChild(this->ejectorB);
 
-    acceptor->SetDrawable(balancerInTextures[0]);
-    ejectorA->SetDrawable(balancerOutTextures[0]);
+    acceptor->SetDrawable(Belt::beltInTexture[0]);
+    ejectorA->SetDrawable(Belt::beltOutTexture[0]);
     ejectPriority = 0;
 }
 
@@ -276,8 +276,8 @@ void Splitter::Delete() {
 
 void Splitter::Update() {
     int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
-    acceptor->SetDrawable(balancerInTextures[frame]);
-    ejectorA->SetDrawable(balancerOutTextures[frame]);
+    acceptor->SetDrawable(Belt::beltInTexture[frame]);
+    ejectorA->SetDrawable(Belt::beltOutTexture[frame]);
 
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
@@ -334,8 +334,8 @@ Merger::Merger(int x, int y, int r, bool mirrored)
     this->AddChild(this->acceptorB);
     this->AddChild(this->ejector);
 
-    acceptorA->SetDrawable(balancerInTextures[0]);
-    ejector->SetDrawable(balancerOutTextures[0]);
+    acceptorA->SetDrawable(Belt::beltInTexture[0]);
+    ejector->SetDrawable(Belt::beltOutTexture[0]);
     acceptPriority = 0;
 }
 
@@ -358,8 +358,8 @@ void Merger::Delete() {
 
 void Merger::Update() {
     int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
-    acceptorA->SetDrawable(balancerInTextures[frame]);
-    ejector->SetDrawable(balancerOutTextures[frame]);
+    acceptorA->SetDrawable(Belt::beltInTexture[frame]);
+    ejector->SetDrawable(Belt::beltOutTexture[frame]);
 
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);

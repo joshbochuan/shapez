@@ -9,12 +9,11 @@
 #include "ItemEjector.hpp"
 #include "Util/Image.hpp"
 
-inline std::shared_ptr<Util::Image> cutterTexture;
-
 class Cutter: public Machine {
 private:
     float cooldown;
 public:
+    static inline std::shared_ptr<Util::Image> cutterTexture;
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejectorA;
     std::shared_ptr<ItemEjector> ejectorB;

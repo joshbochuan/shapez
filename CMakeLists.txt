@@ -35,14 +35,14 @@ add_executable(${PROJECT_NAME}
     ${SRC_DIR}/main.cpp
     ${SRC_FILES}
     ${HEADER_FILES}
-        include/Shape.hpp
-        include/Quad.hpp
-        src/Shape.cpp
-        src/Quad.cpp
+        include/items/Shape.hpp
+        include/items/Quad.hpp
+        src/items/Shape.cpp
+        src/items/Quad.cpp
         include/buildings/Machine.hpp
         include/buildings/Belt.hpp
-        include/Item.hpp
-        src/Item.cpp
+        include/items/Item.hpp
+        src/items/Item.cpp
         src/buildings/Belt.cpp
         src/buildings/Machine.cpp
         include/World.hpp
@@ -66,8 +66,8 @@ add_executable(${PROJECT_NAME}
         src/buildings/Balancer.cpp
         include/buildings/Tunnel.hpp
         src/buildings/Tunnel.cpp
-        include/Color.hpp
-        src/Color.cpp
+        include/items/Color.hpp
+        src/items/Color.cpp
         include/buildings/Stacker.hpp
         src/buildings/Stacker.cpp
         include/buildings/Painter.hpp
@@ -77,6 +77,10 @@ add_executable(${PROJECT_NAME}
         src/buildings/Mixer.cpp
         include/UI.hpp
         src/UI.cpp
+        include/scenes/GameScene.hpp
+        src/scenes/GameScene.cpp
+        src/World.cpp
+        include/scenes/Scene.hpp
 )
 
 if(MSVC)

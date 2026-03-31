@@ -3,7 +3,7 @@
 //
 #include "buildings/Rotator.hpp"
 #include "World.hpp"
-#include "Shape.hpp"
+#include "../../include/items/Shape.hpp"
 #include "Util/Image.hpp"
 #include <algorithm>
 #include <iostream>

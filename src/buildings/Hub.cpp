@@ -7,7 +7,7 @@
 
 #include "World.hpp"
 #include "Util/Image.hpp"
-#include "Shape.hpp"
+#include "../../include/items/Shape.hpp"
 #include "Util/Text.hpp"
 #include "BigNumStr.hpp"
 using namespace World;

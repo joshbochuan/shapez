@@ -3,8 +3,8 @@
 //
 #include "buildings/Painter.hpp"
 #include "World.hpp"
-#include "Shape.hpp"
-#include "Color.hpp"
+#include "../../include/items/Shape.hpp"
+#include "../../include/items/Color.hpp"
 using namespace World;
 
 Painter::Painter(int x, int y, int r, bool mirrored)

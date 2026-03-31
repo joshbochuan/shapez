@@ -4,7 +4,7 @@
 #include "Util/Image.hpp"
 #include "buildings/Cutter.hpp"
 #include "World.hpp"
-#include "Shape.hpp"
+#include "../../include/items/Shape.hpp"
 #include <iostream>
 using namespace World;
 

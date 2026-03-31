@@ -2,7 +2,7 @@
 // Created by User on 2026/3/20.
 //
 
-#include "Item.hpp"
+#include "../../include/items/Item.hpp"
 #include "Util/GameObject.hpp"
 
 Item::Item(ItemType type) {

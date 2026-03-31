@@ -5,13 +5,9 @@
 #ifndef REPLACE_WITH_YOUR_PROJECT_NAME_MINER_HPP
 #define REPLACE_WITH_YOUR_PROJECT_NAME_MINER_HPP
 #include "World.hpp"
-#include "Item.hpp"
+#include "items/Item.hpp"
 #include "Machine.hpp"
 #include "Util/Image.hpp"
-
-inline std::shared_ptr<Util::Image> minerTexture;
-inline std::shared_ptr<Util::Image> chainedMinerTexture;
-inline std::shared_ptr<Util::Image> minerCoverTexture;
 
 class Miner: public Machine {
 private:
@@ -21,6 +17,9 @@ private:
     std::shared_ptr<Util::GameObject> cover;
 
 public:
+    static inline std::shared_ptr<Util::Image> minerTexture;
+    static inline std::shared_ptr<Util::Image> chainedMinerTexture;
+    static inline std::shared_ptr<Util::Image> minerCoverTexture;
     std::shared_ptr<Miner> next = nullptr;
     std::vector<std::shared_ptr<Miner>> prev;
     std::shared_ptr<Item> product;

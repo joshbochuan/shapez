@@ -10,12 +10,11 @@
 #include <string>
 #include "Util/Image.hpp"
 
-inline std::shared_ptr<Util::Image> shapeTexture;
-
 class Shape: public Item {
 private:
     std::string code;
 public:
+    static inline std::shared_ptr<Util::Image> shapeTexture; // dark circle below
     std::vector<std::shared_ptr<Quad>> quads;
     Shape(std::string code);
     void Update() override;

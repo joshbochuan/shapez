@@ -9,12 +9,11 @@
 #include "ItemEjector.hpp"
 #include "Util/Image.hpp"
 
-inline std::shared_ptr<Util::Image> stackerTexture;
-
 class Stacker: public Machine {
 private:
     float cooldown = 0;
 public:
+    static inline std::shared_ptr<Util::Image> stackerTexture;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejector;
     Stacker(int x, int y, int r);

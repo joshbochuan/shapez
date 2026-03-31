@@ -4,7 +4,7 @@
 
 #ifndef REPLACE_WITH_YOUR_PROJECT_NAME_ITEMACCEPTOR_HPP
 #define REPLACE_WITH_YOUR_PROJECT_NAME_ITEMACCEPTOR_HPP
-#include "Item.hpp"
+#include "../items/Item.hpp"
 #include "Util/GameObject.hpp"
 #include "ItemEjector.hpp"
 

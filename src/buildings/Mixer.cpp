@@ -4,7 +4,7 @@
 
 #include "buildings/Mixer.hpp"
 #include "World.hpp"
-#include "Color.hpp"
+#include "../../include/items/Color.hpp"
 using namespace World;
 
 Mixer::Mixer(int x, int y, int r)

@@ -15,8 +15,8 @@
 #include "buildings/Hub.hpp"
 #include "buildings/Cutter.hpp"
 #include "buildings/Rotator.hpp"
-#include "Shape.hpp"
-#include "Color.hpp"
+#include "items/Shape.hpp"
+#include "items/Color.hpp"
 
 inline std::vector<std::shared_ptr<Machine>> AddChainMinerTest() {
     // contains all miners having uncolored whole shapes and rgb colors

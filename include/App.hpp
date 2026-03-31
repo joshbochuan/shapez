@@ -4,18 +4,11 @@
 #include <unordered_map>
 #include "pch.hpp" // IWYU pragma: export
 #include "Util/Renderer.hpp"
-#include "Shape.hpp"
-#include "buildings/Belt.hpp"
-#include "buildings/Miner.hpp"
-#include "buildings/Trash.hpp"
+#include "items/Shape.hpp"
 #include "buildings/Machine.hpp"
-#include "buildings/Rotator.hpp"
-#include "buildings/Tunnel.hpp"
-#include "Util/SFX.hpp"
+#include "scenes/GameScene.hpp"
 #include "Util/BGM.hpp"
 #include "UI.hpp"
-
-inline std::shared_ptr<Util::SFX> placeBuildingSFX, placeBeltSFX, destroyBuildingSFX;
 
 class App {
 public:
@@ -33,12 +26,7 @@ public:
 
     void End(); // NOLINT(readability-convert-member-functions-to-static)
 
-    void OperateMachines();
-    void UserMoveCamera();
-    void UserSelectMachine();
-    void UserSelectVariant();
-    void UserPlaceMachine(int mouseX, int mouseY);
-    void UserRemoveMachine(int mouseX, int mouseY);
+    std::shared_ptr<Scene> scene;
 
     bool inTitle;
     std::shared_ptr<Util::GameObject> title;
@@ -47,17 +35,6 @@ public:
 
     std::shared_ptr<Util::GameObject> background;
     std::shared_ptr<Util::GameObject> vignette;
-    std::vector<std::shared_ptr<Machine>> m_Machines;
-    MachineName m_MachineHeld = MachineName::NONE; // the machine user is currently trying to place
-    int m_MachineHeldR = 0; // rotation of m_MachineHeld
-    // belts, rotators and tunnels have variants
-    BeltType beltType = BeltType::FORWARD;
-    RotatorType rotatorType = RotatorType::ROTATE_CW;
-    TunnelType tunnelType = TunnelType::IN;
-    bool tunnelUpgraded = false;
-    bool minerChained = false;
-    bool previewMirrored = false;
-    std::shared_ptr<Util::GameObject> m_MachineHeldPreview;
 
     std::shared_ptr<Util::BGM> shapezBGM;
 
@@ -66,8 +43,6 @@ private:
 
 private:
     State m_CurrentState = State::START;
-
-    Util::Renderer m_Root;
 };
 
 #endif

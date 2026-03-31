@@ -9,10 +9,9 @@
 #include <string>
 #include "Util/Image.hpp"
 
-inline std::unordered_map<std::string, std::shared_ptr<Util::Image>> quadTextures;
-
 class Quad: public Util::GameObject {
 public:
+    static inline std::unordered_map<std::string, std::shared_ptr<Util::Image>> quadTextures;
     std::string code;
     int r; // rotation, 0-3 in corresponding places
     int layer; // layer, 0 is bottom, 3 is top

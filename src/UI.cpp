@@ -4,7 +4,7 @@
 #include "UI.hpp"
 
 #include "Text.hpp"
-#include "Color.hpp"
+#include "../include/items/Color.hpp"
 #include "Util/Color.hpp"
 #include "Util/Image.hpp"
 #include "Util/Input.hpp"

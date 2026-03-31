@@ -2,7 +2,7 @@
 // Created by User on 2026/3/20.
 //
 
-#include "Quad.hpp"
+#include "../../include/items/Quad.hpp"
 #include <string>
 #include <cmath>
 #include "Util/GameObject.hpp"

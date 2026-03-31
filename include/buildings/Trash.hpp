@@ -8,10 +8,9 @@
 #include "ItemAcceptor.hpp"
 #include "Util/Image.hpp"
 
-inline std::shared_ptr<Util::Image> trashTexture;
-
 class Trash: public Machine {
 public:
+    static inline std::shared_ptr<Util::Image> trashTexture;
     std::vector<std::shared_ptr<ItemAcceptor>> m_Acceptors;
     Trash(int x, int y);
     void Init();

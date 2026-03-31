@@ -9,12 +9,11 @@
 #include "ItemEjector.hpp"
 #include "Util/Image.hpp"
 
-inline std::vector<std::shared_ptr<Util::Image>> painterTextures;
-
 class Painter: public Machine {
 private:
     float cooldown;
 public:
+    static inline std::vector<std::shared_ptr<Util::Image>> painterTextures;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejector;
     Painter(int x, int y, int r, bool mirrored);

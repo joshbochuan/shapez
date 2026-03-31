@@ -9,14 +9,13 @@
 #include "ItemEjector.hpp"
 #include "Util/Image.hpp"
 
-inline std::vector<std::shared_ptr<Util::Image>> tunnelInTextures, tunnelOutTextures;
-
 enum class TunnelType {
     IN, OUT
 };
 
 class Tunnel: public Machine {
 public:
+    static inline std::vector<std::shared_ptr<Util::Image>> tunnelInTextures, tunnelOutTextures;
     std::shared_ptr<Tunnel> other;
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;
