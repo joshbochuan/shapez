@@ -338,7 +338,7 @@ GameScene::GameScene() {
     m_Root.AddChild(m_MachineHeldPreview);
 }
 
-void GameScene::Update() {
+std::shared_ptr<Scene> GameScene::Update() {
     UserSelectMachine();
     if (Util::Input::IsKeyDown(Util::Keycode::R)) {m_MachineHeldR = (m_MachineHeldR + 3) % 4;}
     if (Util::Input::IsKeyDown(Util::Keycode::T)) {UserSelectVariant();}
@@ -350,4 +350,5 @@ void GameScene::Update() {
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {UserPlaceMachine(mouseX, mouseY);}
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB)) {UserRemoveMachine(mouseX, mouseY);}
     UserMoveCamera();
+    return shared_from_this();
 }

@@ -8,7 +8,7 @@
 #include "ItemAcceptor.hpp"
 #include "World.hpp"
 #include "../items/Item.hpp"
-#include "Text.hpp"
+#include "../UIelement/Text.hpp"
 #include "Util/SFX.hpp"
 
 class Hub: public Machine {

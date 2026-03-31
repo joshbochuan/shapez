@@ -8,7 +8,7 @@
 #include "Text.hpp"
 #include "Util/Image.hpp"
 
-class UIButton: public Util::GameObject {
+class Button: public Util::GameObject {
 public:
     std::shared_ptr<Text> text;
     std::shared_ptr<Util::Image> image, imagePressed;
@@ -16,7 +16,7 @@ public:
     bool isClicked = false;
     bool isHeld = false;
     bool isReleased = false;
-    UIButton(glm::vec2 dimension, std::string path, std::string text, float size, Util::Color color);
+    Button(glm::vec2 dimension, std::string path, std::string text, float size, Util::Color color);
     void Update();
 };
 

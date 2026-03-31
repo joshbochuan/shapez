@@ -8,7 +8,7 @@
 #include "buildings/Machine.hpp"
 #include "scenes/GameScene.hpp"
 #include "Util/BGM.hpp"
-#include "UI.hpp"
+#include "UIelement/Button.hpp"
 
 class App {
 public:
@@ -27,15 +27,8 @@ public:
     void End(); // NOLINT(readability-convert-member-functions-to-static)
 
     std::shared_ptr<Scene> scene;
-
-    bool inTitle;
-    std::shared_ptr<Util::GameObject> title;
-    std::shared_ptr<Util::GameObject> titleWindow; // #E9EAEC
-    std::shared_ptr<UIButton> playButton;
-
     std::shared_ptr<Util::GameObject> background;
     std::shared_ptr<Util::GameObject> vignette;
-
     std::shared_ptr<Util::BGM> shapezBGM;
 
 private:

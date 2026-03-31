@@ -60,7 +60,7 @@ add_executable(${PROJECT_NAME}
         src/buildings/Cutter.cpp
         include/buildings/Hub.hpp
         src/buildings/Hub.cpp
-        include/Text.hpp
+        include/UIElement/Text.hpp
         include/BigNumStr.hpp
         include/buildings/Balancer.hpp
         src/buildings/Balancer.cpp
@@ -75,12 +75,16 @@ add_executable(${PROJECT_NAME}
         include/Test.hpp
         include/buildings/Mixer.hpp
         src/buildings/Mixer.cpp
-        include/UI.hpp
-        src/UI.cpp
+        include/UIElement/Button.hpp
+        src/UIelement/Button.cpp
         include/scenes/GameScene.hpp
         src/scenes/GameScene.cpp
         src/World.cpp
         include/scenes/Scene.hpp
+        include/scenes/TitleScene.hpp
+        src/scenes/TitleScene.cpp
+        include/AssetLoader.hpp
+        src/AssetLoader.cpp
 )
 
 if(MSVC)

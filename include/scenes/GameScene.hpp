@@ -29,7 +29,7 @@ class GameScene: public Scene {
 public:
     static inline std::shared_ptr<Util::SFX> placeBuildingSFX, placeBeltSFX, destroyBuildingSFX;
     GameScene();
-    void Update();
+    std::shared_ptr<Scene> Update();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_USERACTION_HPP

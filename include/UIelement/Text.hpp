@@ -18,9 +18,6 @@ public:
             text,
             color);
         SetDrawable(m_Text);
-        // ImGui::Begin("text");
-        // ImGui::SetWindowSize({300, 100});
-        // ImGui::End();
     };
 };
 
