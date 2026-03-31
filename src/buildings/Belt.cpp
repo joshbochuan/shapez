@@ -21,11 +21,6 @@ Belt::Belt(int x, int y, int r, BeltType type)
     if (type == BeltType::LEFT)  { r = ((r + 1) % 4); }
     if (type == BeltType::RIGHT) { r = ((r - 1 + 4) % 4); }
     this->ejector = std::make_shared<ItemEjector>(x, y, r);
-
-    if (type != BeltType::FORWARD) {
-        this->acceptor->rate = BELTTURN_RATE;
-        this->ejector->rate = BELTTURN_RATE;
-    }
 }
 
 void Belt::Init() {
@@ -60,7 +55,8 @@ void Belt::Update() {
     this->m_Transform.scale.y = cam.scale.y * 1.01f;
 
     // if item can be transferred from input slot to output slot
-    if ((acceptor->item != nullptr)
+    if ((type == BeltType::FORWARD)
+        && (acceptor->item != nullptr)
         && (acceptor->progress >= 1)
         && (ejector->item == nullptr)) {
         ejector->AddChild(acceptor->item);
@@ -71,8 +67,45 @@ void Belt::Update() {
         acceptor->progress = 0;
     }
 
+    // instead of acceptor going from 0 to 0.25pi
+    // it goes from 0 to 0.75 to avoid irrational number shenanigans
+    if ((type != BeltType::FORWARD)
+        && (acceptor->item != nullptr)
+        && (acceptor->progress >= 0.75)
+        && (ejector->item == nullptr)
+        && ((ejector->next == nullptr)
+            || (ejector->next->item == nullptr)
+            || (ejector->next->progress >= 0.25))) {
+        ejector->AddChild(acceptor->item);
+        ejector->item = acceptor->item;
+        ejector->progress = acceptor->progress - 0.5;
+        acceptor->RemoveChild(acceptor->item);
+        acceptor->item = nullptr;
+        acceptor->progress = 0;
+    }
+
     acceptor->Update();
     ejector->Update();
+
+    if ((type != BeltType::FORWARD)
+        && (ejector->next != nullptr)
+        && (ejector->next->item != nullptr)
+        && (acceptor->progress > ejector->next->progress + 0.5)) {
+        acceptor->progress = ejector->next->progress + 0.5;
+    }
+
+    if ((type == BeltType::FORWARD)
+        && (ejector->item != nullptr)
+        && (acceptor->progress > ejector->progress)) {
+        acceptor->progress = ejector->progress;
+    }
+
+    // p + 0.5*M_PI - 1
+    if ((type != BeltType::FORWARD)
+        && (ejector->item != nullptr)
+        && (acceptor->progress > ejector->progress + 1.5 - 2)) {
+        acceptor->progress = ejector->progress + 1.5 - 2;
+    }
 
 
     if (type == BeltType::LEFT) {
@@ -88,13 +121,13 @@ void Belt::Update() {
         cy = m_Transform.translation.y + cam.scale.y * 96.0 * cy;
         if (acceptor->item != nullptr) {
             // radian_t = 90deg*r + 45deg * progress
-            radian = M_PI * (0.5) * (r + 0.5 * acceptor->progress);
+            radian = M_PI * (0.5) * (r + 0) + (acceptor->progress * M_PI/3.0);
             acceptor->item->m_Transform.translation.x = std::round(cx + cam.scale.x * 96.0 * std::cos(radian));
             acceptor->item->m_Transform.translation.y = std::round(cy + cam.scale.y * 96.0 * std::sin(radian));
         }
         if (ejector->item != nullptr) {
             // radian = 45deg + 90deg*r + 45deg * progress
-            radian = M_PI * (0.5) * (r+0.5 + 0.5 * ejector->progress);
+            radian = M_PI * (0.5) * (r + 1) + ((M_PI/3.0)*(ejector->progress-1)+1) - 1;
             ejector->item->m_Transform.translation.x = std::round(cx + cam.scale.x * 96.0 * std::cos(radian));
             ejector->item->m_Transform.translation.y = std::round(cy + cam.scale.y * 96.0 * std::sin(radian));
         }
@@ -113,13 +146,13 @@ void Belt::Update() {
         cy = m_Transform.translation.y + cam.scale.y * 96.0 * cy;
         if (acceptor->item != nullptr) {
             // radian_t = 180deg + 90deg*r - 45deg * progress
-            radian = M_PI * (0.5) * (r+2 - 0.5 * acceptor->progress);
+            radian = M_PI * (0.5) * (r+2) - (acceptor->progress * M_PI/3.0);
             acceptor->item->m_Transform.translation.x = std::round(cx + cam.scale.x * 96.0 * std::cos(radian));
             acceptor->item->m_Transform.translation.y = std::round(cy + cam.scale.y * 96.0 * std::sin(radian));
         }
         if (ejector->item != nullptr) {
             // radian = 135deg + 90deg*r + 45deg * progress
-            radian = M_PI * (0.5) * (r+1.5 - 0.5 * ejector->progress);
+            radian = M_PI * (0.5) * (r+1) - ((M_PI/3.0)*(ejector->progress-1)+1) + 1;
             ejector->item->m_Transform.translation.x = std::round(cx + cam.scale.x * 96.0 * std::cos(radian));
             ejector->item->m_Transform.translation.y = std::round(cy + cam.scale.y * 96.0 * std::sin(radian));
         }

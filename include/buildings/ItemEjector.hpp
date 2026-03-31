@@ -20,7 +20,6 @@ public:
     float progress;
     std::shared_ptr<ItemAcceptor> next;
     ItemEjector(int x, int y, int r);
-    // ~ItemEjector();
     void Init();
     void Update();
     void Delete();

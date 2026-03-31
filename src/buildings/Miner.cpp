@@ -110,7 +110,7 @@ void Miner::Update() {
 
     cooldown += rate * static_cast<float>(chainLen);
     if ((cooldown >= 1)
-        &&(product != nullptr)
+        && (product != nullptr)
         && (ejector->item == nullptr)) {
         cooldown -= 1;
         ejector->item = product->copy();

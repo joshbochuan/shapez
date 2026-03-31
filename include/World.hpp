@@ -46,7 +46,6 @@ namespace World {
     inline int SEED = 67;
 
     inline float BELT_RATE = 2.0/FPS_CAP;
-    inline float BELTTURN_RATE = (4.0/M_PI) * BELT_RATE;
     inline float MINE_RATE = 0.4/FPS_CAP;
     inline float CUT_RATE = 0.5/FPS_CAP;
     inline float ROTATE_RATE = 0.5/FPS_CAP;

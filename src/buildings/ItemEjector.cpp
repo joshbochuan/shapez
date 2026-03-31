@@ -80,4 +80,10 @@ void ItemEjector::Update() {
         item->SetItemSize(cam.scale);
         item->Update();
     }
+
+    // logic for clogged belt
+    if (next == nullptr) {return;}
+    if (next->item == nullptr) {return;}
+    if (item == nullptr) {return;}
+    if (progress > next->progress) {progress = next->progress;}
 }
