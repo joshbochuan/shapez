@@ -2,9 +2,10 @@
 // Created by joshb on 2026/3/23.
 //
 #include "buildings/Tunnel.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Util/Image.hpp"
 #include <iostream>
+using namespace World;
 
 Tunnel::Tunnel(int x, int y, int r, TunnelType type, bool upgraded)
     : Machine(x, y, r, BELT_RATE, MachineName::TUNNEL) {

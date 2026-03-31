@@ -2,11 +2,12 @@
 // Created by joshb on 2026/3/21.
 //
 #include "buildings/Rotator.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Shape.hpp"
 #include "Util/Image.hpp"
 #include <algorithm>
 #include <iostream>
+using namespace World;
 
 Rotator::Rotator(int x, int y, int r, RotatorType type)
     : Machine(x, y, r, ROTATE_RATE, MachineName::ROTATOR) {

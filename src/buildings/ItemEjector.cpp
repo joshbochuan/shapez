@@ -2,8 +2,9 @@
 // Created by joshb on 2026/3/20.
 //
 #include "buildings/ItemEjector.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include <iostream>
+using namespace World;
 
 ItemEjector::ItemEjector(int x, int y, int r): rate(BELT_RATE){
     this->x = x;

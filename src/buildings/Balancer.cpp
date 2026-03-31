@@ -2,12 +2,13 @@
 // Created by joshb on 2026/3/22.
 //
 #include "buildings/Balancer.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Util/Image.hpp"
 #include "Util/Animation.hpp"
 #include <cmath>
 #include <iostream>
 #include "Util/Time.hpp"
+using namespace World;
 
 Balancer::Balancer(int x, int y, int r)
     : Machine(x, y, r, BELT_RATE, MachineName::BALANCER) {

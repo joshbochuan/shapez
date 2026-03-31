@@ -3,9 +3,10 @@
 //
 #include "Util/Image.hpp"
 #include "buildings/Cutter.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Shape.hpp"
 #include <iostream>
+using namespace World;
 
 Cutter::Cutter(int x, int y, int r)
     : Machine(x, y, r, CUT_RATE, MachineName::CUTTER) {

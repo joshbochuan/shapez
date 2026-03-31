@@ -6,6 +6,7 @@
 #include "buildings/Machine.hpp"
 #include "Util/Image.hpp"
 #include <iostream>
+using namespace World;
 
 Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product, bool chained)
     : Machine(x, y, r, MINE_RATE, MachineName::MINER) {

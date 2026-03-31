@@ -6,7 +6,7 @@
 #define REPLACE_WITH_YOUR_PROJECT_NAME_HUB_HPP
 #include "Machine.hpp"
 #include "ItemAcceptor.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Item.hpp"
 #include "Text.hpp"
 #include "Util/SFX.hpp"

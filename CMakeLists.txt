@@ -39,42 +39,42 @@ add_executable(${PROJECT_NAME}
         include/Quad.hpp
         src/Shape.cpp
         src/Quad.cpp
-        include/Machine.hpp
-        include/Belt.hpp
+        include/buildings/Machine.hpp
+        include/buildings/Belt.hpp
         include/Item.hpp
         src/Item.cpp
-        src/Belt.cpp
-        src/Machine.cpp
-        include/Global.hpp
-        include/Miner.hpp
-        include/ItemAcceptor.hpp
-        include/ItemEjector.hpp
-        src/ItemEjector.cpp
-        src/Miner.cpp
-        src/ItemAcceptor.cpp
-        include/Trash.hpp
-        src/Trash.cpp
-        include/Rotator.hpp
-        src/Rotator.cpp
-        include/Cutter.hpp
-        src/Cutter.cpp
-        include/Hub.hpp
-        src/Hub.cpp
+        src/buildings/Belt.cpp
+        src/buildings/Machine.cpp
+        include/World.hpp
+        include/buildings/Miner.hpp
+        include/buildings/ItemAcceptor.hpp
+        include/buildings/ItemEjector.hpp
+        src/buildings/ItemEjector.cpp
+        src/buildings/Miner.cpp
+        src/buildings/ItemAcceptor.cpp
+        include/buildings/Trash.hpp
+        src/buildings/Trash.cpp
+        include/buildings/Rotator.hpp
+        src/buildings/Rotator.cpp
+        include/buildings/Cutter.hpp
+        src/buildings/Cutter.cpp
+        include/buildings/Hub.hpp
+        src/buildings/Hub.cpp
         include/Text.hpp
         include/BigNumStr.hpp
-        include/Balancer.hpp
-        src/Balancer.cpp
-        include/Tunnel.hpp
-        src/Tunnel.cpp
+        include/buildings/Balancer.hpp
+        src/buildings/Balancer.cpp
+        include/buildings/Tunnel.hpp
+        src/buildings/Tunnel.cpp
         include/Color.hpp
         src/Color.cpp
-        include/Stacker.hpp
-        src/Stacker.cpp
-        include/Painter.hpp
-        src/Painter.cpp
+        include/buildings/Stacker.hpp
+        src/buildings/Stacker.cpp
+        include/buildings/Painter.hpp
+        src/buildings/Painter.cpp
         include/Test.hpp
-        include/Mixer.hpp
-        src/Mixer.cpp
+        include/buildings/Mixer.hpp
+        src/buildings/Mixer.cpp
         include/UI.hpp
         src/UI.cpp
 )

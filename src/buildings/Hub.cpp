@@ -5,11 +5,12 @@
 
 #include <iostream>
 
-#include "Global.hpp"
+#include "World.hpp"
 #include "Util/Image.hpp"
 #include "Shape.hpp"
 #include "Util/Text.hpp"
 #include "BigNumStr.hpp"
+using namespace World;
 
 Hub::Hub()
     : Machine(0, 0, 0, BELT_RATE, MachineName::HUB) {

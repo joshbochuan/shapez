@@ -3,8 +3,9 @@
 //
 
 #include "buildings/ItemAcceptor.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include <iostream>
+using namespace World;
 
 ItemAcceptor::ItemAcceptor(int x, int y, int r) : rate(BELT_RATE) {
     this->x = x;

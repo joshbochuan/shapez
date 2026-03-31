@@ -3,11 +3,12 @@
 //
 
 #include "buildings/Mixer.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Color.hpp"
+using namespace World;
 
 Mixer::Mixer(int x, int y, int r)
-    : Machine(x, y, r, MIXER_RATE, MachineName::MIXER){
+    : Machine(x, y, r, MIX_RATE, MachineName::MIXER){
     if (MapMachines[{x, y}] != nullptr) {
         throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
     }

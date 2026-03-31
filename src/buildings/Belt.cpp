@@ -5,8 +5,9 @@
 #include <cmath>
 #include <iostream>
 #include "buildings/Belt.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Util/Time.hpp"
+using namespace World;
 
 Belt::Belt(int x, int y, int r, BeltType type)
     : Machine(x, y, r, BELT_RATE, MachineName::BELT) {

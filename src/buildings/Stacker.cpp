@@ -2,9 +2,10 @@
 // Created by joshb on 2026/3/25.
 //
 #include "buildings/Stacker.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Shape.hpp"
 #include <iostream>
+using namespace World;
 
 Stacker::Stacker(int x, int y, int r)
     : Machine(x, y, r, STACK_RATE, MachineName::STACKER){

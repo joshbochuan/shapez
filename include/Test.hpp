@@ -6,16 +6,16 @@
 #define REPLACE_WITH_YOUR_PROJECT_NAME_TEST_HPP
 #include <vector>
 #include <memory>
-#include "Machine.hpp"
-#include "Miner.hpp"
-#include "Belt.hpp"
-#include "Tunnel.hpp"
-#include "Trash.hpp"
+#include "buildings/Machine.hpp"
+#include "buildings/Miner.hpp"
+#include "buildings/Belt.hpp"
+#include "buildings/Tunnel.hpp"
+#include "buildings/Trash.hpp"
+#include "buildings/Balancer.hpp"
+#include "buildings/Hub.hpp"
+#include "buildings/Cutter.hpp"
+#include "buildings/Rotator.hpp"
 #include "Shape.hpp"
-#include "Balancer.hpp"
-#include "Hub.hpp"
-#include "Cutter.hpp"
-#include "Rotator.hpp"
 #include "Color.hpp"
 
 inline std::vector<std::shared_ptr<Machine>> AddChainMinerTest() {

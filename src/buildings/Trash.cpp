@@ -3,9 +3,10 @@
 //
 
 #include "buildings/Trash.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Util/Image.hpp"
 #include <iostream>
+using namespace World;
 
 Trash::Trash(int x, int y)
     : Machine(x, y, 0, BELT_RATE, MachineName::TRASH) {

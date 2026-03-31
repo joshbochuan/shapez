@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <string>
 
-#include "Machine.hpp"
 #include "Util/Image.hpp"
 #include <iostream>
 

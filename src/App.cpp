@@ -1,13 +1,14 @@
 #include "App.hpp"
 
 #include "Test.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Shape.hpp"
 #include "Util/Image.hpp"
 #include "Util/Input.hpp"
 #include "Util/Keycode.hpp"
 #include "Util/Logger.hpp"
 #include "Util/Renderer.hpp"
+#include "buildings/Belt.hpp"
 #include "buildings/Rotator.hpp"
 #include "buildings/Cutter.hpp"
 #include "buildings/Hub.hpp"
@@ -21,8 +22,7 @@
 #include "Color.hpp"
 #include <iostream>
 #include <cmath>
-
-#include "buildings/Belt.hpp"
+using namespace World;
 
 void loadTextures() {
     shapeTexture = std::make_shared<Util::Image>("../Resources/shapes/shape.png");
@@ -177,8 +177,8 @@ void App::Start() {
         m_Root.AddChild(m_Machines[i]);
     }
 
-    cam.scale = glm::vec2(0.5, 0.5);
-    cam.translation.x = -504;
+    World::cam.scale = glm::vec2(0.5, 0.5);
+    World::cam.translation.x = -504;
 
     OperateMachines();
     m_Root.Update();
@@ -202,7 +202,7 @@ void App::Update() {
         if (Util::Input::IsKeyDown(Util::Keycode::T)) {UserSelectVariant();}
         m_MachineHeldPreview->m_Transform.translation = Util::Input::GetCursorPosition();
         m_MachineHeldPreview->m_Transform.rotation = 0.5 * M_PI * m_MachineHeldR;
-        m_MachineHeldPreview->m_Transform.scale = cam.scale;
+        m_MachineHeldPreview->m_Transform.scale = World::cam.scale;
         int mouseX = std::floor((((Util::Input::GetCursorPosition().x / cam.scale.x) + cam.translation.x))/192.0f);
         int mouseY = std::floor((((Util::Input::GetCursorPosition().y / cam.scale.y) + cam.translation.y))/192.0f);
         if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {UserPlaceMachine(mouseX, mouseY);}

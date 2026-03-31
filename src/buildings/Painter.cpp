@@ -2,12 +2,13 @@
 // Created by joshb on 2026/3/25.
 //
 #include "buildings/Painter.hpp"
-#include "Global.hpp"
+#include "World.hpp"
 #include "Shape.hpp"
 #include "Color.hpp"
+using namespace World;
 
 Painter::Painter(int x, int y, int r, bool mirrored)
-    : Machine(x, y, r, PAINTER_RATE, MachineName::PAINTER){
+    : Machine(x, y, r, PAINT_RATE, MachineName::PAINTER){
     if (MapMachines[{x, y}] != nullptr) {
         throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
     }

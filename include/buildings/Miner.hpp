@@ -4,7 +4,7 @@
 
 #ifndef REPLACE_WITH_YOUR_PROJECT_NAME_MINER_HPP
 #define REPLACE_WITH_YOUR_PROJECT_NAME_MINER_HPP
-#include "Global.hpp"
+#include "World.hpp"
 #include "Item.hpp"
 #include "Machine.hpp"
 #include "Util/Image.hpp"
