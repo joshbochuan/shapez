@@ -1,7 +1,7 @@
 //
 // Created by joshb on 2026/3/21.
 //
-#include "Hub.hpp"
+#include "buildings/Hub.hpp"
 
 #include <iostream>
 

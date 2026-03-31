@@ -2,7 +2,7 @@
 // Created by joshb on 2026/3/21.
 //
 
-#include "Trash.hpp"
+#include "buildings/Trash.hpp"
 #include "Global.hpp"
 #include "Util/Image.hpp"
 #include <iostream>

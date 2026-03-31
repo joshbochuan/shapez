@@ -2,8 +2,8 @@
 // Created by joshb on 2026/3/20.
 //
 
-#include "Miner.hpp"
-#include "Machine.hpp"
+#include "buildings/Miner.hpp"
+#include "buildings/Machine.hpp"
 #include "Util/Image.hpp"
 #include <iostream>
 

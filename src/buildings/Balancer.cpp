@@ -1,7 +1,7 @@
 //
 // Created by joshb on 2026/3/22.
 //
-#include "Balancer.hpp"
+#include "buildings/Balancer.hpp"
 #include "Global.hpp"
 #include "Util/Image.hpp"
 #include "Util/Animation.hpp"

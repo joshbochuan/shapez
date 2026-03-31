@@ -2,7 +2,7 @@
 // Created by joshb on 2026/3/21.
 //
 #include "Util/Image.hpp"
-#include "Cutter.hpp"
+#include "buildings/Cutter.hpp"
 #include "Global.hpp"
 #include "Shape.hpp"
 #include <iostream>

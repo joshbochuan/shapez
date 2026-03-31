@@ -8,17 +8,21 @@
 #include "Util/Keycode.hpp"
 #include "Util/Logger.hpp"
 #include "Util/Renderer.hpp"
-#include "Rotator.hpp"
-#include "Cutter.hpp"
-#include "Hub.hpp"
-#include "Balancer.hpp"
-#include "Tunnel.hpp"
+#include "buildings/Rotator.hpp"
+#include "buildings/Cutter.hpp"
+#include "buildings/Hub.hpp"
+#include "buildings/Balancer.hpp"
+#include "buildings/Tunnel.hpp"
+#include "buildings/Stacker.hpp"
+#include "buildings/Painter.hpp"
+#include "buildings/Mixer.hpp"
+#include "buildings/Miner.hpp"
+#include "buildings/Trash.hpp"
 #include "Color.hpp"
-#include "Stacker.hpp"
-#include "Painter.hpp"
-#include "Mixer.hpp"
 #include <iostream>
 #include <cmath>
+
+#include "buildings/Belt.hpp"
 
 void loadTextures() {
     shapeTexture = std::make_shared<Util::Image>("../Resources/shapes/shape.png");

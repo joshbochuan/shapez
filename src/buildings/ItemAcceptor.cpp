@@ -2,7 +2,7 @@
 // Created by joshb on 2026/3/20.
 //
 
-#include "ItemAcceptor.hpp"
+#include "buildings/ItemAcceptor.hpp"
 #include "Global.hpp"
 #include <iostream>
 

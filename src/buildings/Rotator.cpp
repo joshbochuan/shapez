@@ -1,7 +1,7 @@
 //
 // Created by joshb on 2026/3/21.
 //
-#include "Rotator.hpp"
+#include "buildings/Rotator.hpp"
 #include "Global.hpp"
 #include "Shape.hpp"
 #include "Util/Image.hpp"

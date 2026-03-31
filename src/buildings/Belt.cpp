@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include <iostream>
-#include "Belt.hpp"
+#include "buildings/Belt.hpp"
 #include "Global.hpp"
 #include "Util/Time.hpp"
 
