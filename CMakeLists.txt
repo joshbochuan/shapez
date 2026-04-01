@@ -85,6 +85,8 @@ add_executable(${PROJECT_NAME}
         src/scenes/TitleScene.cpp
         include/AssetLoader.hpp
         src/AssetLoader.cpp
+        include/ShapezRenderer.hpp
+        src/ShapezRenderer.cpp
 )
 
 if(MSVC)

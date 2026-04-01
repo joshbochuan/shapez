@@ -34,7 +34,10 @@ void ItemAcceptor::Init() {
     }
 
     prev = MapEjectors[key];
-    if (prev == nullptr) {return;}
+    if (prev == nullptr) {
+        MapEjectors.erase(key);
+        return;
+    }
     if (prev->item != nullptr) {prev->RemoveChild(prev->item);}
     prev->item = nullptr;
     prev->progress = 0;

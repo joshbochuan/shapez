@@ -25,6 +25,8 @@
 #include "AssetLoader.hpp"
 #include <iostream>
 #include <cmath>
+#include <chrono>
+
 using namespace World;
 
 void App::Start() {
@@ -51,7 +53,9 @@ void App::Start() {
     std::vector<std::shared_ptr<Machine>> m_Machines;
     std::vector<std::shared_ptr<Machine>> vec2;
     m_Machines.push_back(std::make_shared<Hub>());
-    vec2 = AddChainMinerTest();
+    // vec2 = AddChainMinerTest();
+    // m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+    vec2 = AddDrawableBenchmark10k();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     /*
     vec2 = AddTunnelTest();
@@ -84,10 +88,20 @@ void App::Start() {
 }
 
 void App::Update() {
+    auto start = std::chrono::steady_clock::now();
     scene = scene->Update();
+    auto t1 = std::chrono::steady_clock::now();
     OperateMachines();
+    auto t2 = std::chrono::steady_clock::now();
     m_Root.Update();
+    auto end = std::chrono::steady_clock::now();
 
+    auto sceneDuration = std::chrono::duration_cast<std::chrono::microseconds>(t1-start);
+    auto operationDuration = std::chrono::duration_cast<std::chrono::microseconds>(t2-t1);
+    auto rootDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-t2);
+    std::cout << sceneDuration.count() << " ";
+    std::cout << operationDuration.count() << " ";
+    std::cout << rootDuration.count() << std::endl;
     /*
      * Do not touch the code below as they serve the purpose for
      * closing the window.

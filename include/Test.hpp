@@ -18,6 +18,23 @@
 #include "items/Shape.hpp"
 #include "items/Color.hpp"
 
+inline std::vector<std::shared_ptr<Machine>> AddDrawableBenchmark10k() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    int width = 36, height = 2;
+    for (int i=0; i<width; i++) {
+        m_Machines.push_back(std::make_shared<Miner>(i, 9, 0, std::make_shared<Shape>("CuCuCuCu:CuCuCuCu:CuCuCuCu:CuCuCuCu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(i, 8, 0, std::make_shared<Shape>("CuCuCuCu:CuCuCuCu:CuCuCuCu:CuCuCuCu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(i, 7, 0, std::make_shared<Shape>("CuCuCuCu:CuCuCuCu:CuCuCuCu:CuCuCuCu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(i, 6, 0, std::make_shared<Shape>("CuCuCuCu:CuCuCuCu:CuCuCuCu:CuCuCuCu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(i, 5, 0, std::make_shared<Shape>("CuCuCuCu:CuCuCuCu:CuCuCuCu:CuCuCuCu"), true));
+        for (int j=10; j<10+height; j++) {
+            m_Machines.push_back(std::make_shared<Belt>(i, j, 0, BeltType::FORWARD));
+        }
+        m_Machines.push_back(std::make_shared<Trash>(i, 10+height));
+    }
+    return m_Machines;
+}
+
 inline std::vector<std::shared_ptr<Machine>> AddChainMinerTest() {
     // contains all miners having uncolored whole shapes and rgb colors
     std::vector<std::shared_ptr<Machine>> m_Machines;

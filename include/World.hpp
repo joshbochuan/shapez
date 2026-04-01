@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "config.hpp"
+#include "ShapezRenderer.hpp"
 #include "buildings/ItemAcceptor.hpp"
 #include "buildings/ItemEjector.hpp"
 #include "buildings/Machine.hpp"
@@ -35,7 +36,7 @@ struct TriHash {
 };
 
 namespace World {
-    inline Util::Renderer m_Root;
+    inline ShapezRenderer m_Root;
 
     inline Util::Transform cam;
     inline std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<ItemAcceptor>, TriHash> MapAcceptors;
