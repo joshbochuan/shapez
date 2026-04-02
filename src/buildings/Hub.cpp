@@ -83,7 +83,6 @@ void Hub::Init() {
 }
 
 void Hub::Delete() {
-    throw std::invalid_argument("Hub can't be deleted");
     for (int i=-2; i<2; i++) {
         for (int j=-2; j<2; j++) {
             MapMachines.erase({i, j});

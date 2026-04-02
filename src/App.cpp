@@ -96,15 +96,25 @@ void App::Update() {
     auto t2 = std::chrono::steady_clock::now();
     m_Root.Update();
     auto end = std::chrono::steady_clock::now();
+    if (Util::Input::IsKeyDown(Util::Keycode::K)) {
+        std::cout << SaveWorld("test.txt") << std::endl;
+    }
+    if (Util::Input::IsKeyDown(Util::Keycode::L)) {
+        LoadWorld("test.txt");
+    }
 
     auto sceneDuration = std::chrono::duration_cast<std::chrono::microseconds>(t1-start);
     auto operationDuration = std::chrono::duration_cast<std::chrono::microseconds>(t2-t1);
     auto rootDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-t2);
     auto totalDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+
+    /*
     std::cout << sceneDuration.count() << " ";
     std::cout << operationDuration.count() << " ";
     std::cout << rootDuration.count() << " ";
     std::cout << totalDuration.count() << std::endl;
+    */
+
     /*
      * Do not touch the code below as they serve the purpose for
      * closing the window.

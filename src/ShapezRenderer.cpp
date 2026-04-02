@@ -27,9 +27,6 @@ void ShapezRenderer::AddChildren(
 }
 
 void ShapezRenderer::Update() {
-    auto start = std::chrono::steady_clock::now();
-    std::cout << "shapez renderer measures ";
-
     for (int i=0; i<101; i++) {buckets[i].clear();}
     stack = m_Children;
     std::shared_ptr<ShapezObject> curr;
@@ -44,10 +41,7 @@ void ShapezRenderer::Update() {
 
     for (int i=0; i<101; i++) {
         if (buckets[i].empty()) {continue;}
-        std::for_each(std::execution::par, buckets[i].begin(), buckets[i].end(),
-        [](const auto& gameObject) {
-            gameObject->Draw();
-        });
+        for (const auto& obj : buckets[i]) {obj->Draw();}
     }
 
     for (int i=0; i<101; i++) {buckets[i].clear();}

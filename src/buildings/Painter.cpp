@@ -24,6 +24,8 @@ Painter::Painter(int x, int y, int r, bool mirrored)
         throw std::invalid_argument("an machine is already at " + std::to_string(x) + ", " + std::to_string(y));
     }
 
+    this->mirrored = mirrored;
+
     SetPivot({-84, 0});
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetDrawable(painterTextures[mirrored]);

@@ -17,12 +17,12 @@ enum class RotatorType {
 
 class Rotator: public Machine {
 private:
-    RotatorType type;
     float cooldown;
 public:
     static inline std::shared_ptr<Util::Image> rotatorCWTexture;
     static inline std::shared_ptr<Util::Image> rotator180Texture;
     static inline std::shared_ptr<Util::Image> rotatorCCWTexture;
+    RotatorType type;
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;
     Rotator(int x, int y, int r, RotatorType type);

@@ -18,6 +18,21 @@
 #include "items/Shape.hpp"
 #include "items/Color.hpp"
 
+inline std::vector<std::shared_ptr<Machine>> AddMachineBenchmark(int x, int y) {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+
+    return m_Machines;
+}
+
+inline std::vector<std::shared_ptr<Machine>> AddMachineBenchmark10k() {
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    int n=100;
+    for (int i=0; i<n; i++) {
+
+    }
+    return m_Machines;
+}
+
 inline std::vector<std::shared_ptr<Machine>> AddDrawableBenchmark10k() {
     std::vector<std::shared_ptr<Machine>> m_Machines;
     int width = 36, height = 2;

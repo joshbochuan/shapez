@@ -45,6 +45,8 @@ namespace World {
     inline std::vector<std::shared_ptr<Machine>> LstMachines;
 
     inline int SEED = 67;
+    inline int LEVEL = 1;
+    inline int PROGRESS = 0;
 
     inline float BELT_RATE = 2.0/FPS_CAP;
     inline float MINE_RATE = 0.4/FPS_CAP;
@@ -55,6 +57,9 @@ namespace World {
     inline float MIX_RATE = 0.5/FPS_CAP;
 
     void OperateMachines();
+
+    std::string SaveWorld(std::string save);
+    void LoadWorld(std::string save);
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_CAM_HPP

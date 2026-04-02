@@ -16,6 +16,7 @@ public:
     static inline std::vector<std::shared_ptr<Util::Image>> painterTextures;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejector;
+    bool mirrored;
     Painter(int x, int y, int r, bool mirrored);
     void Init();
     void Update();

@@ -19,8 +19,6 @@ enum class BeltType {
 };
 
 class Belt: public Machine {
-private:
-    BeltType type;
 public:
     static inline std::vector<std::shared_ptr<Util::Image>> beltForwardTexture;
     static inline std::vector<std::shared_ptr<Util::Image>> beltLeftTexture;
@@ -30,6 +28,7 @@ public:
     Belt(int x, int y, int r, BeltType type);
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;
+    BeltType type;
     void Init();
     void Update();
     void Delete();
