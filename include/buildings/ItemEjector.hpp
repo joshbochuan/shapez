@@ -7,10 +7,11 @@
 #include "../items/Item.hpp"
 #include "Util/GameObject.hpp"
 #include "ItemAcceptor.hpp"
+#include "ShapezObject.hpp"
 
 class ItemAcceptor;
 
-class ItemEjector: public Util::GameObject, public std::enable_shared_from_this<ItemEjector> {
+class ItemEjector: public ShapezObject, public std::enable_shared_from_this<ItemEjector> {
 private:
     bool initialized = false;
 public:

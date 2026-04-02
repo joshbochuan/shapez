@@ -332,7 +332,7 @@ void GameScene::UserRemoveMachine(int mouseX, int mouseY) {
 }
 
 GameScene::GameScene() {
-    m_MachineHeldPreview = std::make_shared<Util::GameObject>();
+    m_MachineHeldPreview = std::make_shared<ShapezObject>();
     m_MachineHeldPreview->SetVisible(false);
     m_MachineHeldPreview->SetZIndex(99);
     m_Root.AddChild(m_MachineHeldPreview);

@@ -7,8 +7,9 @@
 #include "Util/GameObject.hpp"
 #include "Util/Color.hpp"
 #include "Util/Text.hpp"
+#include "ShapezObject.hpp"
 
-class Text: public Util::GameObject {
+class Text: public ShapezObject {
 public:
     std::shared_ptr<Util::Text> m_Text;
     Text(std::string text, float size, Util::Color color) {

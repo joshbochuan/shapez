@@ -8,8 +8,9 @@
 #include "Util/GameObject.hpp"
 #include <string>
 #include "Util/Image.hpp"
+#include "ShapezObject.hpp"
 
-class Quad: public Util::GameObject {
+class Quad: public ShapezObject {
 public:
     static inline std::unordered_map<std::string, std::shared_ptr<Util::Image>> quadTextures;
     std::string code;

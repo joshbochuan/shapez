@@ -8,6 +8,7 @@
 #include <vector>
 #include <memory>
 #include "Util/GameObject.hpp"
+#include "ShapezObject.hpp"
 
 class App;
 
@@ -24,28 +25,28 @@ public:
      *
      * @param children The GameObject needing to be managed by Renderer.
      */
-    ShapezRenderer(const std::vector<std::shared_ptr<Util::GameObject>> &children = {});
+    ShapezRenderer(const std::vector<std::shared_ptr<ShapezObject>> &children = {});
 
     /**
      * @brief Add a child to Renderer.
      *
      * @param child The GameObject needing to be managed by Renderer.
      */
-    void AddChild(const std::shared_ptr<Util::GameObject> &child);
+    void AddChild(const std::shared_ptr<ShapezObject> &child);
 
     /**
      * @brief Add children to Renderer.
      *
      * @param children The GameObjects needing to be managed by Renderer.
      */
-    void AddChildren(const std::vector<std::shared_ptr<Util::GameObject>> &children);
+    void AddChildren(const std::vector<std::shared_ptr<ShapezObject>> &children);
 
     /**
      * @brief Remove the child.
      *
      * @param child The GameObject being removed.
      */
-    void RemoveChild(std::shared_ptr<Util::GameObject> child);
+    void RemoveChild(std::shared_ptr<ShapezObject> child);
 
     /**
      * @brief Draw children according to their z-index.
@@ -55,9 +56,9 @@ public:
     void Update();
 
 private:
-    std::vector<std::shared_ptr<Util::GameObject>> m_Children;
-    std::vector<std::shared_ptr<Util::GameObject>> stack;
-    std::vector<std::shared_ptr<Util::GameObject>> buckets[101]; // 2d array for sorting
+    std::vector<std::shared_ptr<ShapezObject>> m_Children;
+    std::vector<std::shared_ptr<ShapezObject>> stack;
+    std::vector<std::shared_ptr<ShapezObject>> buckets[101]; // 2d array for sorting
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_SHAPEZRENDERER_HPP

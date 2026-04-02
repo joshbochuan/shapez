@@ -9,7 +9,7 @@
 #include "Util/Image.hpp"
 #include <iostream>
 
-Quad::Quad(std::string code, int r, int layer): Util::GameObject() {
+Quad::Quad(std::string code, int r, int layer): ShapezObject() {
     this->code = code;
     this->r = r;
     this->layer = layer;

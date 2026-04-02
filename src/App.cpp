@@ -21,6 +21,7 @@
 #include "items/Shape.hpp"
 #include "items/Color.hpp"
 #include "../include/scenes/GameScene.hpp"
+#include "ShapezObject.hpp"
 #include "scenes/TitleScene.hpp"
 #include "AssetLoader.hpp"
 #include <iostream>
@@ -38,13 +39,13 @@ void App::Start() {
     shapezBGM = std::make_shared<Util::BGM>("../Resources/sounds/music/theme-full.mp3");
     shapezBGM->Play();
 
-    background = std::make_shared<Util::GameObject>();
+    background = std::make_shared<ShapezObject>();
     background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
     background->m_Transform.scale = glm::vec2(256, 256);
     background->SetZIndex(0);
     m_Root.AddChild(background);
 
-    vignette = std::make_shared<Util::GameObject>();
+    vignette = std::make_shared<ShapezObject>();
     vignette->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/vignette.lossless.png"));
     vignette->m_Transform.scale = glm::vec2(20.0f/3.0f, 20.0f/3.0f);
     vignette->SetZIndex(90);
@@ -99,9 +100,11 @@ void App::Update() {
     auto sceneDuration = std::chrono::duration_cast<std::chrono::microseconds>(t1-start);
     auto operationDuration = std::chrono::duration_cast<std::chrono::microseconds>(t2-t1);
     auto rootDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-t2);
+    auto totalDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
     std::cout << sceneDuration.count() << " ";
     std::cout << operationDuration.count() << " ";
-    std::cout << rootDuration.count() << std::endl;
+    std::cout << rootDuration.count() << " ";
+    std::cout << totalDuration.count() << std::endl;
     /*
      * Do not touch the code below as they serve the purpose for
      * closing the window.

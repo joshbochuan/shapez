@@ -10,6 +10,7 @@
 #include "../buildings/Rotator.hpp"
 #include "scenes/Scene.hpp"
 #include "Util/SFX.hpp"
+#include "ShapezObject.hpp"
 
 class GameScene: public Scene {
     MachineName m_MachineHeld = MachineName::NONE; // the machine user is currently trying to place
@@ -20,7 +21,7 @@ class GameScene: public Scene {
     bool tunnelUpgraded = false;
     bool minerChained = false;
     bool previewMirrored = false;
-    std::shared_ptr<Util::GameObject> m_MachineHeldPreview = nullptr;
+    std::shared_ptr<ShapezObject> m_MachineHeldPreview = nullptr;
     void UserMoveCamera();
     void UserSelectMachine();
     void UserSelectVariant();

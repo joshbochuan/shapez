@@ -14,7 +14,7 @@ private:
     bool chained = false; // whether it's a normal miner or chained miner
     int chainLen = 1; // how many of them are chained, maxed out at 5
     float cooldown;
-    std::shared_ptr<Util::GameObject> cover;
+    std::shared_ptr<ShapezObject> cover;
 
 public:
     static inline std::shared_ptr<Util::Image> minerTexture;

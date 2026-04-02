@@ -10,7 +10,7 @@
 #include "Util/Input.hpp"
 #include <cmath>
 
-Button::Button(glm::vec2 dimension, std::string path, std::string text, float size, Util::Color color): Util::GameObject() {
+Button::Button(glm::vec2 dimension, std::string path, std::string text, float size, Util::Color color): ShapezObject() {
     this->text = std::make_shared<Text>(text, size, color);
     this->image = std::make_shared<Util::Image>(path);
     this->imagePressed = nullptr;;

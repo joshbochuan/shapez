@@ -7,8 +7,9 @@
 #include "Util/GameObject.hpp"
 #include "Text.hpp"
 #include "Util/Image.hpp"
+#include "ShapezObject.hpp"
 
-class Button: public Util::GameObject {
+class Button: public ShapezObject {
 public:
     std::shared_ptr<Text> text;
     std::shared_ptr<Util::Image> image, imagePressed;

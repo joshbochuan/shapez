@@ -5,13 +5,14 @@
 #ifndef REPLACE_WITH_YOUR_PROJECT_NAME_ITEM_HPP
 #define REPLACE_WITH_YOUR_PROJECT_NAME_ITEM_HPP
 #include "Util/GameObject.hpp"
+#include "ShapezObject.hpp"
 
 enum class ItemType {
     SHAPE,
     COLOR
 };
 
-class Item: public Util::GameObject {
+class Item: public ShapezObject {
 private:
     ItemType type;
 public:

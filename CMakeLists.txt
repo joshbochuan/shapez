@@ -87,6 +87,8 @@ add_executable(${PROJECT_NAME}
         src/AssetLoader.cpp
         include/ShapezRenderer.hpp
         src/ShapezRenderer.cpp
+        src/ShapezObject.cpp
+        include/ShapezObject.hpp
 )
 
 if(MSVC)
