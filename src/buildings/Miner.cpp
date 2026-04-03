@@ -99,6 +99,9 @@ void Miner::Update() {
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
     this->m_Transform.scale.x = cam.scale.x * 1.1f;
     this->m_Transform.scale.y = cam.scale.y * 1.1f;
+
+    m_Visible = ((std::abs(m_Transform.translation.x) < WINDOW_WIDTH) && (std::abs(m_Transform.translation.y) < WINDOW_HEIGHT));
+
     cover->m_Transform.scale.x = cam.scale.x * 0.85f;
     cover->m_Transform.scale.y = cam.scale.y * 0.85f;
     cover->m_Transform.translation = this->m_Transform.translation;

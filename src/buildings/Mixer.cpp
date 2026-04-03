@@ -77,6 +77,8 @@ void Mixer::Update() {
     this->m_Transform.scale.x = cam.scale.x * 1.1;
     this->m_Transform.scale.y = cam.scale.y * 1.1;
 
+    m_Visible = ((std::abs(m_Transform.translation.x) < WINDOW_WIDTH) && (std::abs(m_Transform.translation.y) < WINDOW_HEIGHT));
+
     cooldown += rate;
     if ((cooldown >= 1)
         && (acceptorA->item != nullptr)

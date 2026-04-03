@@ -157,7 +157,6 @@ public:
 
     void Draw();
 
-protected:
     std::shared_ptr<Core::Drawable> m_Drawable = nullptr;
     std::vector<std::shared_ptr<OptiObject>> m_Children;
 

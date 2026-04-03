@@ -47,17 +47,19 @@ void App::Start() {
 
     vignette = std::make_shared<OptiObject>();
     vignette->SetDrawable(std::make_shared<OptiImage>("../Resources/ui/vignette.lossless.png"));
-    vignette->m_Transform.scale = glm::vec2(20.0f/3.0f, 20.0f/3.0f);
+    vignette->m_Transform.scale = glm::vec2(static_cast<float>(WINDOW_WIDTH)/192.0f, static_cast<float>(WINDOW_HEIGHT)/108);
     vignette->SetZIndex(90);
     m_Root.AddChild(vignette);
 
     std::vector<std::shared_ptr<Machine>> m_Machines;
     std::vector<std::shared_ptr<Machine>> vec2;
     m_Machines.push_back(std::make_shared<Hub>());
+    vec2 = AddMachineBenchmark10k();
+    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     // vec2 = AddChainMinerTest();
     // m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    vec2 = AddDrawableBenchmark10k();
-    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+    // vec2 = AddDrawableBenchmark10k();
+    // m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     /*
     vec2 = AddTunnelTest();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());

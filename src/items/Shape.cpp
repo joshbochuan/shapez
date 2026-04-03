@@ -9,6 +9,8 @@
 #include "Util/Image.hpp"
 #include <iostream>
 
+#include "config.hpp"
+
 Shape::Shape(std::string code)
     : Item(ItemType::SHAPE) {
     this->code = code;
@@ -40,6 +42,7 @@ Shape::Shape(std::string code)
 }
 
 void Shape::Update() {
+    m_Visible = ((std::abs(m_Transform.translation.x) < WINDOW_WIDTH) && (std::abs(m_Transform.translation.y) < WINDOW_HEIGHT));
     for (int i=0; i<this->quads.size(); i++) {
         this->quads[i]->m_Transform.translation = this->m_Transform.translation;
         this->quads[i]->m_Transform.scale = this->m_Transform.scale;

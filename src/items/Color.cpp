@@ -4,6 +4,8 @@
 
 #include "../../include/items/Color.hpp"
 
+#include "config.hpp"
+
 Color::Color(int color)
     : Item(ItemType::COLOR) {
     this->color = color;
@@ -26,7 +28,9 @@ Color::Color(std::string code)
     SetZIndex(20);
 }
 
-void Color::Update() {}
+void Color::Update() {
+    m_Visible = ((std::abs(m_Transform.translation.x) < WINDOW_WIDTH) && (std::abs(m_Transform.translation.y) < WINDOW_HEIGHT));
+}
 
 std::shared_ptr<Item> Color::copy() {
     return std::make_shared<Color>(color);

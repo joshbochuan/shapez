@@ -48,7 +48,7 @@ void GameScene::UserMoveCamera() {
     if (Util::Input::IfScroll()) {
         auto delta = Util::Input::GetScrollDistance();
         // fix: change PTSD/src/Util/Input.cpp line 110
-        // if (delta.y >= 10) {delta.y = 0;}
+        if (delta.y >= 10) {delta.y = 0;}
         cam.scale.x += delta.y * 0.05;
         cam.scale.y += delta.y * 0.05;
         cam.scale.x = std::clamp(cam.scale.x, 0.1f, 2.0f);

@@ -24,10 +24,9 @@ public:
 };
 
 class Splitter: public Machine {
-private:
+public:
     int ejectPriority = 0;
     bool mirrored = false;
-public:
     static inline std::vector<std::shared_ptr<OptiImage>> splitterTexture;
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;
@@ -38,10 +37,9 @@ public:
 };
 
 class Merger: public Machine {
-private:
+public:
     int acceptPriority = 0;
     bool mirrored = false;
-public:
     static inline std::vector<std::shared_ptr<OptiImage>> mergerTexture;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejector;

@@ -80,6 +80,14 @@ std::string World::SaveWorld(std::string save) {
             + std::to_string(machine->y) + " "
             + std::to_string(machine->r) + "\n";
         }
+        else if (machine->getName() == MachineName::SPLITTER) {
+            res += "SPLITTER "
+            + std::to_string(machine->x) + " "
+            + std::to_string(machine->y) + " "
+            + std::to_string(machine->r) + " ";
+            auto ptr = std::dynamic_pointer_cast<Splitter>(machine);
+            res += std::to_string(ptr->mirrored) + "\n";
+        }
         else if (machine->getName() == MachineName::BELT) {
             res += "BELT "
             + std::to_string(machine->x) + " "
@@ -103,7 +111,9 @@ std::string World::SaveWorld(std::string save) {
             res += "MERGER "
             + std::to_string(machine->x) + " "
             + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + "\n";
+            + std::to_string(machine->r) + " ";
+            auto ptr = std::dynamic_pointer_cast<Merger>(machine);
+            res += std::to_string(ptr->mirrored) + "\n";
         }
         else if (machine->getName() == MachineName::MINER) {
             res += "MINER "
@@ -216,6 +226,20 @@ void World::LoadWorld(std::string save) {
             int y = std::stoi(prop[2]);
             int r = std::stoi(prop[3]);
             LstMachines.push_back(std::make_shared<Balancer>(x, y, r));
+        }
+        else if (prop[0] == "SPLITTER") {
+            int x = std::stoi(prop[1]);
+            int y = std::stoi(prop[2]);
+            int r = std::stoi(prop[3]);
+            bool mirrored = std::stoi(prop[4]);
+            LstMachines.push_back(std::make_shared<Splitter>(x, y, r, mirrored));
+        }
+        else if (prop[0] == "MERGER") {
+            int x = std::stoi(prop[1]);
+            int y = std::stoi(prop[2]);
+            int r = std::stoi(prop[3]);
+            bool mirrored = std::stoi(prop[4]);
+            LstMachines.push_back(std::make_shared<Merger>(x, y, r, mirrored));
         }
         else if (prop[0] == "BELT") {
             int x = std::stoi(prop[1]);

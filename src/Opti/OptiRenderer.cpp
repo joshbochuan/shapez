@@ -34,6 +34,7 @@ void OptiRenderer::Update() {
     while (!stack.empty()) {
         curr = stack.back();
         stack.pop_back();
+        if (!curr->m_Visible) {continue;}
         buckets[static_cast<int>(curr->GetZIndex())].push_back(curr);
         for (const auto &child : curr->GetChildren()) {
             stack.push_back(child);

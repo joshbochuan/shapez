@@ -14,21 +14,75 @@
 #include "buildings/Balancer.hpp"
 #include "buildings/Hub.hpp"
 #include "buildings/Cutter.hpp"
+#include "buildings/Mixer.hpp"
+#include "buildings/Painter.hpp"
 #include "buildings/Rotator.hpp"
+#include "buildings/Stacker.hpp"
 #include "items/Shape.hpp"
 #include "items/Color.hpp"
 
 inline std::vector<std::shared_ptr<Machine>> AddMachineBenchmark(int x, int y) {
     std::vector<std::shared_ptr<Machine>> m_Machines;
+    // 40 machines
+    m_Machines.push_back(std::make_shared<Belt>(x-10, y+13, 3, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(x-2, y+10, 3, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(x-2, y+13, 1, BeltType::FORWARD));
+    m_Machines.push_back(std::make_shared<Belt>(x-11, y+10, 3, BeltType::FORWARD));
+
+    m_Machines.push_back(std::make_shared<Belt>(x-1, y+10, 3, BeltType::LEFT));
+    m_Machines.push_back(std::make_shared<Belt>(x-1, y+13, 0, BeltType::LEFT));
+    m_Machines.push_back(std::make_shared<Belt>(x-12, y+10, 2, BeltType::LEFT));
+    m_Machines.push_back(std::make_shared<Belt>(x-3, y+11, 3, BeltType::LEFT));
+    m_Machines.push_back(std::make_shared<Belt>(x-4, y+13, 1, BeltType::LEFT));
+    m_Machines.push_back(std::make_shared<Belt>(x-5, y+13, 0, BeltType::LEFT));
+    m_Machines.push_back(std::make_shared<Belt>(x-6, y+13, 1, BeltType::LEFT));
+
+    m_Machines.push_back(std::make_shared<Belt>(x-9, y+13, 3, BeltType::RIGHT));
+    m_Machines.push_back(std::make_shared<Belt>(x-9, y+12, 2, BeltType::RIGHT));
+    m_Machines.push_back(std::make_shared<Belt>(x-4, y+12, 2, BeltType::RIGHT));
+    m_Machines.push_back(std::make_shared<Belt>(x-5, y+12, 1, BeltType::RIGHT));
+
+    m_Machines.push_back(std::make_shared<Trash>(x-10, y+12));
+    m_Machines.push_back(std::make_shared<Trash>(x-6, y+12));
+
+    m_Machines.push_back(std::make_shared<Balancer>(x-11, y+12, 3));
+    m_Machines.push_back(std::make_shared<Stacker>(x-10, y+11, 3));
+    m_Machines.push_back(std::make_shared<Cutter>(x-9, y+11, 3));
+    m_Machines.push_back(std::make_shared<Mixer>(x-7, y+12, 2));
+
+    m_Machines.push_back(std::make_shared<Miner>(x-11, y+13, 3, std::make_shared<Shape>("CuCuCuCu"), 0));
+    m_Machines.push_back(std::make_shared<Miner>(x-12, y+12, 2, std::make_shared<Shape>("CuCuCuCu"), 1));
+    m_Machines.push_back(std::make_shared<Miner>(x-12, y+13, 2, std::make_shared<Shape>("CuCuCuCu"), 1));
+    m_Machines.push_back(std::make_shared<Miner>(x-8, y+13, 2, std::make_shared<Color>("Color-r"), 1));
+    m_Machines.push_back(std::make_shared<Miner>(x-7, y+13, 2, std::make_shared<Color>("Color-g"), 1));
+    m_Machines.push_back(std::make_shared<Miner>(x-4, y+10, 0, std::make_shared<Color>("Color-b"), 1));
+
+    m_Machines.push_back(std::make_shared<Rotator>(x-8, y+10, 3, RotatorType::ROTATE_CW));
+    m_Machines.push_back(std::make_shared<Rotator>(x-7, y+10, 3, RotatorType::ROTATE_180));
+    m_Machines.push_back(std::make_shared<Rotator>(x-3, y+12, 0, RotatorType::ROTATE_CCW));
+
+    m_Machines.push_back(std::make_shared<Painter>(x-8, y+11, 0, false));
+    m_Machines.push_back(std::make_shared<Painter>(x-5, y+11, 0, true));
+
+    m_Machines.push_back(std::make_shared<Splitter>(x-12, y+11, 2, true));
+    m_Machines.push_back(std::make_shared<Splitter>(x-6, y+11, 3, false));
+    m_Machines.push_back(std::make_shared<Merger>(x-6, y+10, 3, true));
+    m_Machines.push_back(std::make_shared<Merger>(x-3, y+13, 1, true));
+
+    m_Machines.push_back(std::make_shared<Tunnel>(x-5, y+10, 3, TunnelType::IN, false));
+    m_Machines.push_back(std::make_shared<Tunnel>(x-3, y+10, 3, TunnelType::OUT, false));
+    m_Machines.push_back(std::make_shared<Tunnel>(x-1, y+11, 0, TunnelType::IN, true));
+    m_Machines.push_back(std::make_shared<Tunnel>(x-1, y+12, 0, TunnelType::OUT, true));
 
     return m_Machines;
 }
 
 inline std::vector<std::shared_ptr<Machine>> AddMachineBenchmark10k() {
-    std::vector<std::shared_ptr<Machine>> m_Machines;
-    int n=100;
+    std::vector<std::shared_ptr<Machine>> m_Machines, vec2;
+    int n=250;
     for (int i=0; i<n; i++) {
-
+        vec2 = AddMachineBenchmark(-10, -625 + 5 * i);
+        m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     }
     return m_Machines;
 }
