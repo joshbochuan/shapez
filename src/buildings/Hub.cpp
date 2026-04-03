@@ -25,7 +25,7 @@ Hub::Hub()
     this->targetItem->MachineItemZIndex(51);
     this->AddChild(this->targetItem);
 
-    this->SetDrawable(std::make_shared<Util::Image>("../Resources/Sprites/buildings/hub.png"));
+    this->SetDrawable(std::make_shared<OptiImage>("../Resources/Sprites/buildings/hub.png"));
     this->SetZIndex(50);
 
     levelTxt = std::make_shared<Text>("LVL", 40, Util::Color::FromRGB(255, 255, 255));

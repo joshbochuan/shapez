@@ -21,7 +21,7 @@
 #include "items/Shape.hpp"
 #include "items/Color.hpp"
 #include "../include/scenes/GameScene.hpp"
-#include "ShapezObject.hpp"
+#include "../include/Opti/OptiObject.hpp"
 #include "scenes/TitleScene.hpp"
 #include "AssetLoader.hpp"
 #include <iostream>
@@ -39,14 +39,14 @@ void App::Start() {
     shapezBGM = std::make_shared<Util::BGM>("../Resources/sounds/music/theme-full.mp3");
     shapezBGM->Play();
 
-    background = std::make_shared<ShapezObject>();
-    background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
+    background = std::make_shared<OptiObject>();
+    background->SetDrawable(std::make_shared<OptiImage>("../Resources/background.png"));
     background->m_Transform.scale = glm::vec2(256, 256);
     background->SetZIndex(0);
     m_Root.AddChild(background);
 
-    vignette = std::make_shared<ShapezObject>();
-    vignette->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/vignette.lossless.png"));
+    vignette = std::make_shared<OptiObject>();
+    vignette->SetDrawable(std::make_shared<OptiImage>("../Resources/ui/vignette.lossless.png"));
     vignette->m_Transform.scale = glm::vec2(20.0f/3.0f, 20.0f/3.0f);
     vignette->SetZIndex(90);
     m_Root.AddChild(vignette);
@@ -108,12 +108,10 @@ void App::Update() {
     auto rootDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-t2);
     auto totalDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
 
-    /*
-    std::cout << sceneDuration.count() << " ";
-    std::cout << operationDuration.count() << " ";
-    std::cout << rootDuration.count() << " ";
-    std::cout << totalDuration.count() << std::endl;
-    */
+    std::cout << sceneDuration.count() << "+";
+    std::cout << operationDuration.count() << "+";
+    std::cout << rootDuration.count() << "=";
+    std::cout << static_cast<float>(totalDuration.count())/1000.0f << "ms\n";
 
     /*
      * Do not touch the code below as they serve the purpose for

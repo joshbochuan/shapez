@@ -8,12 +8,13 @@
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
 #include "Util/Image.hpp"
+#include "Opti/OptiImage.hpp"
 
 class Balancer: public Machine {
 private:
     int acceptPriority, ejectPriority;
 public:
-    static inline std::shared_ptr<Util::Image> balancerTexture;
+    static inline std::shared_ptr<OptiImage> balancerTexture;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;
     Balancer(int x, int y, int r);
@@ -27,7 +28,7 @@ private:
     int ejectPriority = 0;
     bool mirrored = false;
 public:
-    static inline std::vector<std::shared_ptr<Util::Image>> splitterTexture;
+    static inline std::vector<std::shared_ptr<OptiImage>> splitterTexture;
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;
     Splitter(int x, int y, int r, bool mirrored);
@@ -41,7 +42,7 @@ private:
     int acceptPriority = 0;
     bool mirrored = false;
 public:
-    static inline std::vector<std::shared_ptr<Util::Image>> mergerTexture;
+    static inline std::vector<std::shared_ptr<OptiImage>> mergerTexture;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejector;
     Merger(int x, int y, int r, bool mirrored);

@@ -27,8 +27,8 @@ public:
     void End(); // NOLINT(readability-convert-member-functions-to-static)
 
     std::shared_ptr<Scene> scene;
-    std::shared_ptr<ShapezObject> background;
-    std::shared_ptr<ShapezObject> vignette;
+    std::shared_ptr<OptiObject> background;
+    std::shared_ptr<OptiObject> vignette;
     std::shared_ptr<Util::BGM> shapezBGM;
 
 private:

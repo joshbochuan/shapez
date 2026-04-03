@@ -8,12 +8,13 @@
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
 #include "Util/Image.hpp"
+#include "Opti/OptiImage.hpp"
 
 class Cutter: public Machine {
 private:
     float cooldown;
 public:
-    static inline std::shared_ptr<Util::Image> cutterTexture;
+    static inline std::shared_ptr<OptiImage> cutterTexture;
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejectorA;
     std::shared_ptr<ItemEjector> ejectorB;

@@ -8,6 +8,7 @@
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
 #include "Util/Image.hpp"
+#include "Opti/OptiImage.hpp"
 
 enum class RotatorType {
     ROTATE_CW,
@@ -19,9 +20,9 @@ class Rotator: public Machine {
 private:
     float cooldown;
 public:
-    static inline std::shared_ptr<Util::Image> rotatorCWTexture;
-    static inline std::shared_ptr<Util::Image> rotator180Texture;
-    static inline std::shared_ptr<Util::Image> rotatorCCWTexture;
+    static inline std::shared_ptr<OptiImage> rotatorCWTexture;
+    static inline std::shared_ptr<OptiImage> rotator180Texture;
+    static inline std::shared_ptr<OptiImage> rotatorCCWTexture;
     RotatorType type;
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;

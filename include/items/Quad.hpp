@@ -8,11 +8,12 @@
 #include "Util/GameObject.hpp"
 #include <string>
 #include "Util/Image.hpp"
-#include "ShapezObject.hpp"
+#include "../Opti/OptiObject.hpp"
+#include "Opti/OptiImage.hpp"
 
-class Quad: public ShapezObject {
+class Quad: public OptiObject {
 public:
-    static inline std::unordered_map<std::string, std::shared_ptr<Util::Image>> quadTextures;
+    static inline std::unordered_map<std::string, std::shared_ptr<OptiImage>> quadTextures;
     std::string code;
     int r; // rotation, 0-3 in corresponding places
     int layer; // layer, 0 is bottom, 3 is top

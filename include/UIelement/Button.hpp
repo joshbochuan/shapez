@@ -7,12 +7,13 @@
 #include "Util/GameObject.hpp"
 #include "Text.hpp"
 #include "Util/Image.hpp"
-#include "ShapezObject.hpp"
+#include "../Opti/OptiObject.hpp"
+#include "Opti/OptiImage.hpp"
 
-class Button: public ShapezObject {
+class Button: public OptiObject {
 public:
     std::shared_ptr<Text> text;
-    std::shared_ptr<Util::Image> image, imagePressed;
+    std::shared_ptr<OptiImage> image, imagePressed;
     glm::vec2 dimension;
     bool isClicked = false;
     bool isHeld = false;

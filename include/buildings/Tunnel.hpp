@@ -8,6 +8,7 @@
 #include "ItemAcceptor.hpp"
 #include "ItemEjector.hpp"
 #include "Util/Image.hpp"
+#include "Opti/OptiImage.hpp"
 
 enum class TunnelType {
     IN, OUT
@@ -15,7 +16,7 @@ enum class TunnelType {
 
 class Tunnel: public Machine {
 public:
-    static inline std::vector<std::shared_ptr<Util::Image>> tunnelInTextures, tunnelOutTextures;
+    static inline std::vector<std::shared_ptr<OptiImage>> tunnelInTextures, tunnelOutTextures;
     std::shared_ptr<Tunnel> other;
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;

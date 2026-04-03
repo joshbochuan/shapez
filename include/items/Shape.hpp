@@ -9,12 +9,13 @@
 #include "Util/GameObject.hpp"
 #include <string>
 #include "Util/Image.hpp"
+#include "Opti/OptiImage.hpp"
 
 class Shape: public Item {
 private:
     std::string code;
 public:
-    static inline std::shared_ptr<Util::Image> shapeTexture; // dark circle below
+    static inline std::shared_ptr<OptiImage> shapeTexture; // dark circle below
     std::vector<std::shared_ptr<Quad>> quads;
     Shape(std::string code);
     void Update() override;

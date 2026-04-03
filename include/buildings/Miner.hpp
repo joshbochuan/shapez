@@ -8,18 +8,19 @@
 #include "items/Item.hpp"
 #include "Machine.hpp"
 #include "Util/Image.hpp"
+#include "Opti/OptiImage.hpp"
 
 class Miner: public Machine {
 private:
     bool chained = false; // whether it's a normal miner or chained miner
     int chainLen = 1; // how many of them are chained, maxed out at 5
     float cooldown;
-    std::shared_ptr<ShapezObject> cover;
+    std::shared_ptr<OptiObject> cover;
 
 public:
-    static inline std::shared_ptr<Util::Image> minerTexture;
-    static inline std::shared_ptr<Util::Image> chainedMinerTexture;
-    static inline std::shared_ptr<Util::Image> minerCoverTexture;
+    static inline std::shared_ptr<OptiImage> minerTexture;
+    static inline std::shared_ptr<OptiImage> chainedMinerTexture;
+    static inline std::shared_ptr<OptiImage> minerCoverTexture;
     std::shared_ptr<Miner> next = nullptr;
     std::vector<std::shared_ptr<Miner>> prev;
     std::shared_ptr<Item> product;

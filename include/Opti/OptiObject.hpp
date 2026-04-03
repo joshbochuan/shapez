@@ -12,7 +12,7 @@
 #include "Util/Transform.hpp"
 
 /**
- * @class ShapezObject
+ * @class OptiObject
  * @brief A class representing a game object.
  *
  * This class encapsulates the properties and behaviors of a game object.
@@ -20,7 +20,7 @@
  * game objects.
  *
  */
-class ShapezObject {
+class OptiObject {
 public:
     Util::Transform m_Transform; // IDC if this should be here.
 
@@ -28,7 +28,7 @@ public:
     /**
      * @brief Default constructor.
      */
-    ShapezObject() = default;
+    OptiObject() = default;
 
     /**
      * @brief Parameterized constructor.
@@ -38,11 +38,11 @@ public:
      * @param visible The visibility of the game object.
      * @param children The children of the game object.
      */
-    ShapezObject(const std::shared_ptr<Core::Drawable> &drawable,
+    OptiObject(const std::shared_ptr<Core::Drawable> &drawable,
                const float zIndex, const glm::vec2 &pivot = {0, 0},
                const bool visible = true,
-               const std::vector<std::shared_ptr<ShapezObject>> &children =
-                   std::vector<std::shared_ptr<ShapezObject>>())
+               const std::vector<std::shared_ptr<OptiObject>> &children =
+                   std::vector<std::shared_ptr<OptiObject>>())
         : m_Drawable(drawable),
           m_Children(children),
           m_ZIndex(zIndex),
@@ -56,20 +56,20 @@ public:
      * @note This is a shallow copy constructor, meaning the m_Drawable points
      * to the same reference as same as `other`'s does.
      */
-    ShapezObject(const ShapezObject &other) = default;
+    OptiObject(const OptiObject &other) = default;
 
     /**
      * @brief Default move constructor..
      */
-    ShapezObject(ShapezObject &&other) = default;
+    OptiObject(OptiObject &&other) = default;
 
     /**
      * @brief Default destructor.
      */
-    virtual ~ShapezObject() = default;
+    virtual ~OptiObject() = default;
 
     // Deleted assignment operator.
-    ShapezObject &operator=(const ShapezObject &other) = delete;
+    OptiObject &operator=(const OptiObject &other) = delete;
 
     /**
      * @brief Get the z-index of the game object.
@@ -99,7 +99,7 @@ public:
      *
      * @return The children of the game object.
      */
-    const std::vector<std::shared_ptr<ShapezObject>> &GetChildren() const {
+    const std::vector<std::shared_ptr<OptiObject>> &GetChildren() const {
         return m_Children;
     }
 
@@ -140,7 +140,7 @@ public:
      *
      * @param child The new child of the game object.
      */
-    void AddChild(const std::shared_ptr<ShapezObject> &child) {
+    void AddChild(const std::shared_ptr<OptiObject> &child) {
         m_Children.push_back(child);
     }
 
@@ -149,7 +149,7 @@ public:
      *
      * @param child The child to be removed.
      */
-    void RemoveChild(const std::shared_ptr<ShapezObject> &child) {
+    void RemoveChild(const std::shared_ptr<OptiObject> &child) {
         m_Children.erase(
             std::remove(m_Children.begin(), m_Children.end(), child),
             m_Children.end());
@@ -159,7 +159,7 @@ public:
 
 protected:
     std::shared_ptr<Core::Drawable> m_Drawable = nullptr;
-    std::vector<std::shared_ptr<ShapezObject>> m_Children;
+    std::vector<std::shared_ptr<OptiObject>> m_Children;
 
     float m_ZIndex = 0;
     bool m_Visible = true;

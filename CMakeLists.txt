@@ -85,10 +85,12 @@ add_executable(${PROJECT_NAME}
         src/scenes/TitleScene.cpp
         include/AssetLoader.hpp
         src/AssetLoader.cpp
-        include/ShapezRenderer.hpp
-        src/ShapezRenderer.cpp
-        src/ShapezObject.cpp
-        include/ShapezObject.hpp
+        include/Opti/OptiRenderer.hpp
+        src/Opti/OptiRenderer.cpp
+        src/Opti/OptiObject.cpp
+        include/Opti/OptiObject.hpp
+        include/Opti/OptiImage.hpp
+        src/Opti/OptiImage.cpp
 )
 
 if(MSVC)

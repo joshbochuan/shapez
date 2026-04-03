@@ -2,10 +2,13 @@
 // Created by joshb on 2026/4/2.
 //
 
-#include "ShapezObject.hpp"
+#include "../../include/Opti/OptiObject.hpp"
 #include "Util/Transform.hpp"
 #include "Util/TransformUtils.hpp"
 #include "config.hpp"
+#include "../../include/Opti/OptiRenderer.hpp"
+
+class OptiRenderer;
 
 constexpr glm::mat4 eye(1.F);
 constexpr float nearClip = -100;
@@ -18,7 +21,7 @@ auto view =
     glm::translate(eye, {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0});
 auto m_Projection = projection * view;
 
-void ShapezObject::Draw() {
+void OptiObject::Draw() {
     if (!m_Visible || m_Drawable == nullptr) {return;}
 
     glm::mat4 model = glm::mat4(1.0f);  // identity

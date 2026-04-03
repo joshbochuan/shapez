@@ -11,6 +11,7 @@
 #include "ItemEjector.hpp"
 #include "Util/Animation.hpp"
 #include <vector>
+#include "Opti/OptiImage.hpp"
 
 enum class BeltType {
     LEFT,
@@ -20,11 +21,11 @@ enum class BeltType {
 
 class Belt: public Machine {
 public:
-    static inline std::vector<std::shared_ptr<Util::Image>> beltForwardTexture;
-    static inline std::vector<std::shared_ptr<Util::Image>> beltLeftTexture;
-    static inline std::vector<std::shared_ptr<Util::Image>> beltRightTexture;
-    static inline std::vector<std::shared_ptr<Util::Image>> beltInTexture; // belt in
-    static inline std::vector<std::shared_ptr<Util::Image>> beltOutTexture;
+    static inline std::vector<std::shared_ptr<OptiImage>> beltForwardTexture;
+    static inline std::vector<std::shared_ptr<OptiImage>> beltLeftTexture;
+    static inline std::vector<std::shared_ptr<OptiImage>> beltRightTexture;
+    static inline std::vector<std::shared_ptr<OptiImage>> beltInTexture; // belt in
+    static inline std::vector<std::shared_ptr<OptiImage>> beltOutTexture;
     Belt(int x, int y, int r, BeltType type);
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;

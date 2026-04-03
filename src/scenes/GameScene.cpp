@@ -67,14 +67,14 @@ void GameScene::UserSelectMachine() {
         m_MachineHeld = MachineName::BELT;
         beltType = BeltType::FORWARD;
         m_MachineHeldPreview->SetVisible(true);
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/belt_top.png"));
         m_MachineHeldPreview->SetPivot({0, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_2)) {
         m_MachineHeld = MachineName::BALANCER;
         m_MachineHeldPreview->SetVisible(true);
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/balancer.png"));
         m_MachineHeldPreview->SetPivot({-84, 0});
     }
@@ -83,7 +83,7 @@ void GameScene::UserSelectMachine() {
         tunnelType = TunnelType::IN;
         tunnelUpgraded = false;
         m_MachineHeldPreview->SetVisible(true);
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/underground_belt_entry.png"));
         m_MachineHeldPreview->SetPivot({0, 0});
     }
@@ -91,14 +91,14 @@ void GameScene::UserSelectMachine() {
         m_MachineHeld = MachineName::MINER;
         minerChained = false;
         m_MachineHeldPreview->SetVisible(true);
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/miner.png"));
         m_MachineHeldPreview->SetPivot({0, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_5)) {
         m_MachineHeld = MachineName::CUTTER;
         m_MachineHeldPreview->SetVisible(true);
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/cutter.png"));
         m_MachineHeldPreview->SetPivot({-84, 0});
     }
@@ -106,21 +106,21 @@ void GameScene::UserSelectMachine() {
         m_MachineHeld = MachineName::ROTATOR;
         rotatorType = RotatorType::ROTATE_CW;
         m_MachineHeldPreview->SetVisible(true);
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/rotater.png"));
         m_MachineHeldPreview->SetPivot({0, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_7)) {
         m_MachineHeld = MachineName::STACKER;
         m_MachineHeldPreview->SetVisible(true);
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/stacker.png"));
         m_MachineHeldPreview->SetPivot({-84, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_8)) {
         m_MachineHeld = MachineName::MIXER;
         m_MachineHeldPreview->SetVisible(true);
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/mixer.png"));
         m_MachineHeldPreview->SetPivot({-84, 0});
     }
@@ -128,14 +128,14 @@ void GameScene::UserSelectMachine() {
         previewMirrored = false;
         m_MachineHeld = MachineName::PAINTER;
         m_MachineHeldPreview->SetVisible(true);
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/painter.png"));
         m_MachineHeldPreview->SetPivot({-84, 0});
     }
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_0)) {
         m_MachineHeld = MachineName::TRASH;
         m_MachineHeldPreview->SetVisible(true);
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/trash.png"));
         m_MachineHeldPreview->SetPivot({0, 0});
     }
@@ -145,17 +145,17 @@ void GameScene::UserSelectVariant() {
     if (m_MachineHeld == MachineName::BELT) {
         if (beltType == BeltType::FORWARD) {
             beltType = BeltType::LEFT;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/belt_left.png"));
         }
         else if (beltType == BeltType::LEFT) {
             beltType = BeltType::RIGHT;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/belt_right.png"));
         }
         else if (beltType == BeltType::RIGHT) {
             beltType = BeltType::FORWARD;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/belt_top.png"));
         }
     }
@@ -163,44 +163,44 @@ void GameScene::UserSelectVariant() {
         m_MachineHeld = MachineName::SPLITTER;
         m_MachineHeldPreview->SetVisible(true);
         previewMirrored = false;
-        m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+        m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/balancer-splitter.png"));
         m_MachineHeldPreview->SetPivot({0, 0});
     }
     else if (m_MachineHeld == MachineName::SPLITTER) {
         if (!previewMirrored) {
             previewMirrored = true;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
                 "../Resources/sprites/blueprints/balancer-splitter-inverse.png"));
         }
         else {
             m_MachineHeld = MachineName::MERGER;
             previewMirrored = false;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
                 "../Resources/sprites/blueprints/balancer-merger.png"));
         }
     }
     else if (m_MachineHeld == MachineName::MERGER) {
         if (!previewMirrored) {
             previewMirrored = true;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
                 "../Resources/sprites/blueprints/balancer-merger-inverse.png"));
         }
         else {
             m_MachineHeld = MachineName::BALANCER;
             previewMirrored = false;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
                 "../Resources/sprites/blueprints/balancer.png"));
             m_MachineHeldPreview->SetPivot({-84, 0});
         }
     }
     else if (m_MachineHeld == MachineName::MINER) {
         if (!minerChained) {
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/miner-chainable.png"));
         }
         else {
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/miner.png"));
         }
         minerChained = !minerChained;
@@ -208,51 +208,51 @@ void GameScene::UserSelectVariant() {
     else if (m_MachineHeld == MachineName::ROTATOR) {
         if (rotatorType == RotatorType::ROTATE_CW) {
             rotatorType = RotatorType::ROTATE_180;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/rotater-rotate180.png"));
         }
         else if (rotatorType == RotatorType::ROTATE_180) {
             rotatorType = RotatorType::ROTATE_CCW;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/rotater-ccw.png"));
         }
         else if (rotatorType == RotatorType::ROTATE_CCW) {
             rotatorType = RotatorType::ROTATE_CW;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/rotater.png"));
         }
     }
     else if (m_MachineHeld == MachineName::TUNNEL) {
         if (tunnelType == TunnelType::IN && !tunnelUpgraded) {
             tunnelType = TunnelType::OUT;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/underground_belt_exit.png"));
         }
         else if (tunnelType == TunnelType::OUT && !tunnelUpgraded) {
             tunnelType = TunnelType::IN;
             tunnelUpgraded = true;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/underground_belt_entry-tier2.png"));
         }
         else if (tunnelType == TunnelType::IN && tunnelUpgraded) {
             tunnelType = TunnelType::OUT;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/underground_belt_exit-tier2.png"));
         }
         else if (tunnelType == TunnelType::OUT && tunnelUpgraded) {
             tunnelType = TunnelType::IN;
             tunnelUpgraded = false;
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
             "../Resources/sprites/blueprints/underground_belt_entry.png"));
         }
     }
     else if (m_MachineHeld == MachineName::PAINTER) {
         if (!previewMirrored) {
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
                 "../Resources/sprites/blueprints/painter-mirrored.png"));
         }
         else {
-            m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
+            m_MachineHeldPreview->SetDrawable(std::make_shared<OptiImage>(
                 "../Resources/sprites/blueprints/painter.png"));
         }
         previewMirrored = !previewMirrored;
@@ -332,7 +332,7 @@ void GameScene::UserRemoveMachine(int mouseX, int mouseY) {
 }
 
 GameScene::GameScene() {
-    m_MachineHeldPreview = std::make_shared<ShapezObject>();
+    m_MachineHeldPreview = std::make_shared<OptiObject>();
     m_MachineHeldPreview->SetVisible(false);
     m_MachineHeldPreview->SetZIndex(99);
     m_Root.AddChild(m_MachineHeldPreview);

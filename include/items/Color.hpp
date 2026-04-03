@@ -6,12 +6,13 @@
 #define REPLACE_WITH_YOUR_PROJECT_NAME_COLOR_HPP
 #include "Item.hpp"
 #include "Util/Image.hpp"
+#include "Opti/OptiImage.hpp"
 
 class Color: public Item {
 private:
     int color = 0; // right-most bit means r, g, b, OR-ing gives the mix result
 public:
-    static inline std::vector<std::shared_ptr<Util::Image>> colorTextures;
+    static inline std::vector<std::shared_ptr<OptiImage>> colorTextures;
     Color(int color);
     Color(std::string code);
     void Update();

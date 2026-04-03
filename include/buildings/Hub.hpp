@@ -10,6 +10,7 @@
 #include "../items/Item.hpp"
 #include "../UIelement/Text.hpp"
 #include "Util/SFX.hpp"
+#include "Opti/OptiImage.hpp"
 
 class Hub: public Machine {
 public:

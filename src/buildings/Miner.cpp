@@ -26,7 +26,7 @@ Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product, bool chained)
     else {this->SetDrawable(minerTexture);}
     this->m_Transform.rotation = M_PI * 0.5 * r;
     this->SetZIndex(42 + (x+y)%2);
-    this->cover = std::make_shared<ShapezObject>();
+    this->cover = std::make_shared<OptiObject>();
     cover->SetDrawable(minerCoverTexture);
     cover->SetZIndex(40);
     this->AddChild(cover);

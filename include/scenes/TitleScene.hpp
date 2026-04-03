@@ -7,12 +7,12 @@
 #include "Scene.hpp"
 #include "Util/GameObject.hpp"
 #include "UIelement/Button.hpp"
-#include "ShapezObject.hpp"
+#include "../Opti/OptiObject.hpp"
 
 class TitleScene: public Scene {
 private:
-    std::shared_ptr<ShapezObject> title;
-    std::shared_ptr<ShapezObject> titleWindow; // #E9EAEC
+    std::shared_ptr<OptiObject> title;
+    std::shared_ptr<OptiObject> titleWindow; // #E9EAEC
     std::shared_ptr<Button> playButton;
 public:
     TitleScene();

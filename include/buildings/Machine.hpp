@@ -5,7 +5,7 @@
 #ifndef REPLACE_WITH_YOUR_PROJECT_NAME_MACHINE_HPP
 #define REPLACE_WITH_YOUR_PROJECT_NAME_MACHINE_HPP
 #include "Util/GameObject.hpp"
-#include "ShapezObject.hpp"
+#include "../Opti/OptiObject.hpp"
 
 enum class MachineName {
     NONE,
@@ -24,7 +24,7 @@ enum class MachineName {
     TUNNEL
 };
 
-class Machine: public ShapezObject, public std::enable_shared_from_this<Machine> {
+class Machine: public OptiObject, public std::enable_shared_from_this<Machine> {
 private:
     MachineName name;
 public:
