@@ -69,8 +69,8 @@ public:
 private:
     static inline std::vector<DrawCommand> commands;
     std::vector<std::shared_ptr<OptiObject>> m_Children;
-    std::vector<std::shared_ptr<OptiObject>> stack;
-    std::vector<std::shared_ptr<OptiObject>> buckets[101]; // 2d array for sorting
+    std::vector<OptiObject*> current;
+    std::vector<OptiObject*> buckets[101]; // 2d array for sorting
 
     /*
     static inline std::unique_ptr<Core::Program> s_Program = std::make_unique<Core::Program>("../PTSD/assets/shaders/Base.vert",
