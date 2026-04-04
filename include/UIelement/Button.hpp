@@ -13,7 +13,7 @@
 class Button: public OptiObject {
 public:
     std::shared_ptr<Text> text;
-    std::shared_ptr<OptiImage> image, imagePressed;
+    std::shared_ptr<Util::Image> image, imagePressed;
     glm::vec2 dimension;
     bool isClicked = false;
     bool isHeld = false;

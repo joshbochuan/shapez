@@ -40,13 +40,13 @@ void App::Start() {
     shapezBGM->Play();
 
     background = std::make_shared<OptiObject>();
-    background->SetDrawable(std::make_shared<OptiImage>("../Resources/background.png"));
+    background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
     background->m_Transform.scale = glm::vec2(256, 256);
     background->SetZIndex(0);
     m_Root.AddChild(background);
 
     vignette = std::make_shared<OptiObject>();
-    vignette->SetDrawable(std::make_shared<OptiImage>("../Resources/ui/vignette.lossless.png"));
+    vignette->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/vignette.lossless.png"));
     vignette->m_Transform.scale = glm::vec2(static_cast<float>(WINDOW_WIDTH)/192.0f, static_cast<float>(WINDOW_HEIGHT)/108);
     vignette->SetZIndex(90);
     m_Root.AddChild(vignette);
@@ -54,7 +54,7 @@ void App::Start() {
     std::vector<std::shared_ptr<Machine>> m_Machines;
     std::vector<std::shared_ptr<Machine>> vec2;
     m_Machines.push_back(std::make_shared<Hub>());
-    vec2 = AddMachineBenchmark10k();
+    vec2 = AddDrawableBenchmark10k();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     // vec2 = AddChainMinerTest();
     // m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());

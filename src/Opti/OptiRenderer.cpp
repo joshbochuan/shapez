@@ -47,19 +47,23 @@ void OptiRenderer::Update() {
         commands.clear();
         for (const auto& obj : buckets[i]) {obj->Draw();}
 
+        /*
         std::sort(commands.begin(), commands.end(),
         [](const DrawCommand& a, const DrawCommand& b) {
             return a.image->m_Texture < b.image->m_Texture;
         });
+        */
 
         Core::Texture* currentTexture = nullptr;
 
         OptiImage::s_Program->Bind();          // ideally move out later
         OptiImage::s_VertexArray->Bind();      // ideally move out later
 
+        if (commands.empty()) {continue;}
+        // commands[0].image->m_Texture->Bind(0);
+
         for (auto& cmd : commands) {
             auto* img = cmd.image;
-
             if (img->m_Texture.get() != currentTexture) {
                 currentTexture = img->m_Texture.get();
                 currentTexture->Bind(0);

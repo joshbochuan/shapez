@@ -12,7 +12,7 @@
 
 Button::Button(glm::vec2 dimension, std::string path, std::string text, float size, Util::Color color): OptiObject() {
     this->text = std::make_shared<Text>(text, size, color);
-    this->image = std::make_shared<OptiImage>(path);
+    this->image = std::make_shared<Util::Image>(path);
     this->imagePressed = nullptr;
     this->dimension = dimension;
     SetDrawable(this->image);
