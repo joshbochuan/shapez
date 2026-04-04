@@ -21,6 +21,7 @@ ItemEjector::ItemEjector(int x, int y, int r): rate(BELT_RATE){
 void ItemEjector::Init() {
     initialized = true;
     MapEjectors[{x, y, r}] = std::dynamic_pointer_cast<ItemEjector>(shared_from_this());
+    LstEjectors.push_back({shared_from_this()});
     std::tuple<int, int, int> key;
     switch (r) {
         case 0: key = {x, y+1, r}; break;
@@ -45,6 +46,7 @@ void ItemEjector::Init() {
 
 void ItemEjector::Delete() {
     MapEjectors.erase({x, y, r});
+    LstEjectors.erase(std::remove(LstEjectors.begin(), LstEjectors.end(), shared_from_this()), LstEjectors.end());
     if (next == nullptr) {return;}
     if (next->item != nullptr) {next->RemoveChild(next->item);}
     next->item = nullptr;
@@ -89,4 +91,22 @@ void ItemEjector::Update() {
     if (next->item == nullptr) {return;}
     if (item == nullptr) {return;}
     if (progress > next->progress) {progress = next->progress;}
+}
+
+void ItemEjector::Transfer() {
+    if (item == nullptr) {return;}
+    if (progress < 1) {return;}
+
+    if (next == nullptr) {return;};
+    if (next->item != nullptr) {return;};
+    if ((item->getType() == ItemType::COLOR) && (!next->takesColor)) {return;};
+    if ((item->getType() == ItemType::SHAPE) && (!next->takesShape)) {return;};
+
+    next->item = item;
+    next->progress = progress - 1;
+    next->AddChild(item);
+
+    RemoveChild(item);
+    item = nullptr;
+    progress = 0;
 }

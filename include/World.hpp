@@ -43,6 +43,7 @@ namespace World {
     inline std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<ItemEjector>, TriHash> MapEjectors;
     inline std::unordered_map<std::pair<int, int>, std::shared_ptr<Machine>, PairHash> MapMachines;
     inline std::vector<std::shared_ptr<Machine>> LstMachines;
+    inline std::vector<std::shared_ptr<ItemEjector>> LstEjectors;
 
     inline int SEED = 67;
     inline int LEVEL = 1;

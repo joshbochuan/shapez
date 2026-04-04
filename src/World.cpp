@@ -23,35 +23,54 @@
 #include "buildings/Tunnel.hpp"
 #include "items/Color.hpp"
 #include "items/Shape.hpp"
+#include <thread>
 using namespace World;
 
-void World::OperateMachines() {
-    std::for_each(std::execution::par, LstMachines.begin(), LstMachines.end(),
-        [](const auto& machine) {
-            machine->Update();
+void UpdateMachines(std::vector<std::shared_ptr<Machine>>& LstMachines) {
+    const int numThreads = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
+
+    int chunkSize = LstMachines.size() / numThreads;
+
+    for (int t = 0; t < numThreads; ++t) {
+        int start = t * chunkSize;
+        int end = (t == numThreads - 1) ? LstMachines.size() : start + chunkSize;
+
+        threads.emplace_back([start, end, &LstMachines]() {
+            for (int i = start; i < end; ++i) {LstMachines[i]->Update();}
         });
+    }
 
+    for (auto& th : threads) {th.join();}
+}
+
+void UpdateTransferrers(std::vector<std::shared_ptr<ItemEjector>>& LstEjectors) {
+    // Flatten map to vector for indexed access
+    auto t0 = std::chrono::steady_clock::now();
+    const int numThreads = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
+
+    int chunkSize = LstEjectors.size() / numThreads;
+
+    for (int t = 0; t < numThreads; ++t) {
+        int start = t * chunkSize;
+        int end = (t == numThreads - 1) ? LstEjectors.size() : start + chunkSize;
+
+        threads.emplace_back([start, end, &LstEjectors]() {
+            for (int i = start; i < end; ++i) {
+                if (LstEjectors[i] == nullptr) {throw std::invalid_argument("nullptr ejector");}
+                LstEjectors[i]->Transfer();
+            }
+        });
+    }
+
+    for (auto& th : threads) {th.join();}
+}
+
+void World::OperateMachines() {
+    UpdateMachines(LstMachines);
     // moving items from ejectors to acceptors
-    std::for_each(std::execution::par, MapEjectors.begin(), MapEjectors.end(),
-        [](const auto& pair) {
-        auto ejector = pair.second;
-        if (ejector == nullptr) {return;}
-        if (ejector->item == nullptr) {return;}
-        if (ejector->progress < 1) {return;}
-
-        auto acceptor = ejector->next;
-        if (acceptor == nullptr) {return;}
-        if (acceptor->item != nullptr) {return;}
-        if ((ejector->item->getType() == ItemType::COLOR) && (!acceptor->takesColor)) {return;}
-        if ((ejector->item->getType() == ItemType::SHAPE) && (!acceptor->takesShape)) {return;}
-
-        acceptor->item = ejector->item;
-        acceptor->progress = ejector->progress-1;
-        acceptor->AddChild(acceptor->item);
-        ejector->RemoveChild(acceptor->item);
-        ejector->item = nullptr;
-        ejector->progress = 0;
-    });
+    UpdateTransferrers(LstEjectors);
 }
 
 std::vector<std::vector<std::string>> parse2D(const std::string& input) {

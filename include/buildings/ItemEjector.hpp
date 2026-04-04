@@ -24,6 +24,7 @@ public:
     void Init();
     void Update();
     void Delete();
+    void Transfer();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_ITEMEJECTOR_HPP

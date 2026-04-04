@@ -71,8 +71,7 @@ void OptiRenderer::Update() {
             OptiImage::s_VertexArray->DrawTriangles();
         }
     }
-
-
+    
     for (int i=0; i<101; i++) {buckets[i].clear();}
     stack.clear();
 }
