@@ -47,12 +47,10 @@ void OptiRenderer::Update() {
         commands.clear();
         for (const auto& obj : buckets[i]) {obj->Draw();}
 
-        /*
         std::sort(commands.begin(), commands.end(),
         [](const DrawCommand& a, const DrawCommand& b) {
             return a.image->m_Texture < b.image->m_Texture;
         });
-        */
 
         Core::Texture* currentTexture = nullptr;
 

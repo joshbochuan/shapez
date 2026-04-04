@@ -99,7 +99,8 @@ void Tunnel::Update() {
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
     this->m_Transform.scale.x = cam.scale.x * 1.125;
     this->m_Transform.scale.y = cam.scale.y * 1.125;
-    m_Visible = ((std::abs(m_Transform.translation.x) < WINDOW_WIDTH) && (std::abs(m_Transform.translation.y) < WINDOW_HEIGHT));
+    m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)
+        && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
     if (type == TunnelType::OUT) {
         ejector->Update();

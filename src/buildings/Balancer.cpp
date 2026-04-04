@@ -107,7 +107,8 @@ void Balancer::Update() {
     this->m_Transform.scale.x = cam.scale.x * 1.1;
     this->m_Transform.scale.y = cam.scale.y * 1.1;
 
-    m_Visible = ((std::abs(m_Transform.translation.x) < WINDOW_WIDTH) && (std::abs(m_Transform.translation.y) < WINDOW_HEIGHT));
+    m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*384 < WINDOW_WIDTH>>1)
+        && (std::abs(m_Transform.translation.y)-cam.scale.y*384 < WINDOW_HEIGHT>>1));
 
     // 0 in or 0 out: don't do anything
     // 1 in 1 out: input goes to output, set priority to opposite
@@ -287,7 +288,8 @@ void Splitter::Update() {
     this->m_Transform.scale.x = cam.scale.x * 1.1;
     this->m_Transform.scale.y = cam.scale.y * 1.1;
 
-    m_Visible = ((std::abs(m_Transform.translation.x) < WINDOW_WIDTH) && (std::abs(m_Transform.translation.y) < WINDOW_HEIGHT));
+    m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)
+        && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
     const bool acceptorReady = acceptor->item!=nullptr && acceptor->progress>=1;
     const bool eA = ejectorA->item==nullptr && ejectorA->next!=nullptr;
@@ -371,7 +373,8 @@ void Merger::Update() {
     this->m_Transform.scale.x = cam.scale.x * 1.1;
     this->m_Transform.scale.y = cam.scale.y * 1.1;
 
-    m_Visible = ((std::abs(m_Transform.translation.x) < WINDOW_WIDTH) && (std::abs(m_Transform.translation.y) < WINDOW_HEIGHT));
+    m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)
+        && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
     const bool ejectorReady = ejector->next!=nullptr && ejector->item == nullptr;
     const bool aA = acceptorA->item!=nullptr && acceptorA->progress>=1;
