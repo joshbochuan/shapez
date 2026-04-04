@@ -111,11 +111,13 @@ void OptiRenderer::Update() {
 
         for (auto& cmd : commands) {
             auto* img = cmd.image;
+            img->m_UniformBuffer->SetData(0, cmd.data);
             if (img->m_Texture.get() != currentTexture) {
                 currentTexture = img->m_Texture.get();
                 currentTexture->Bind(0);
             }
-            img->m_UniformBuffer->SetData(0, cmd.data);
+            // OptiImage::s_Program->Bind();          // ideally move out later
+            // OptiImage::s_VertexArray->Bind();      // ideally move out later
 
             OptiImage::s_VertexArray->DrawTriangles();
         }

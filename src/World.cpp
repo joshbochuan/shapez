@@ -68,9 +68,9 @@ void UpdateTransferrers(std::vector<std::shared_ptr<ItemEjector>>& LstEjectors) 
 }
 
 void World::OperateMachines() {
+    hub->Update();
     UpdateMachines(LstMachines);
-    // moving items from ejectors to acceptors
-    UpdateTransferrers(LstEjectors);
+    UpdateTransferrers(LstEjectors); // moving items from ejectors to acceptors
 }
 
 std::vector<std::vector<std::string>> parse2D(const std::string& input) {
@@ -122,9 +122,6 @@ std::string World::SaveWorld(std::string save) {
             + std::to_string(machine->x) + " "
             + std::to_string(machine->y) + " "
             + std::to_string(machine->r) + "\n";
-        }
-        else if (machine->getName() == MachineName::HUB) {
-            res += "HUB\n";
         }
         else if (machine->getName() == MachineName::MERGER) {
             res += "MERGER "
@@ -274,9 +271,6 @@ void World::LoadWorld(std::string save) {
             int y = std::stoi(prop[2]);
             int r = std::stoi(prop[3]);
             LstMachines.push_back(std::make_shared<Cutter>(x, y, r));
-        }
-        else if (prop[0] == "HUB") {
-            LstMachines.push_back(std::make_shared<Hub>());
         }
         else if (prop[0] == "MINER") {
             int x = std::stoi(prop[1]);

@@ -10,11 +10,13 @@
 #include <utility>
 
 #include "config.hpp"
+#include "buildings/Hub.hpp"
 #include "Opti/OptiRenderer.hpp"
 #include "buildings/ItemAcceptor.hpp"
 #include "buildings/ItemEjector.hpp"
 #include "buildings/Machine.hpp"
 #include "Util/Renderer.hpp"
+#include "buildings/Hub.hpp"
 
 struct PairHash {
     std::size_t operator()(const std::pair<int,int>& t) const {
@@ -35,6 +37,8 @@ struct TriHash {
     }
 };
 
+class Hub;
+
 namespace World {
     inline OptiRenderer m_Root;
 
@@ -44,6 +48,8 @@ namespace World {
     inline std::unordered_map<std::pair<int, int>, std::shared_ptr<Machine>, PairHash> MapMachines;
     inline std::vector<std::shared_ptr<Machine>> LstMachines;
     inline std::vector<std::shared_ptr<ItemEjector>> LstEjectors;
+
+    inline std::shared_ptr<Hub> hub;
 
     inline int SEED = 67;
     inline int LEVEL = 1;

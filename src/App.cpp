@@ -35,6 +35,10 @@ void App::Start() {
     AssetLoader::loadAudio();
     AssetLoader::loadTextures();
 
+    hub = std::make_shared<Hub>();
+    hub->Init();
+    m_Root.AddChild(hub);
+
     // 41 minutes of ABSOLUTE BANGER
     shapezBGM = std::make_shared<Util::BGM>("../Resources/sounds/music/theme-full.mp3");
     shapezBGM->Play();
@@ -53,8 +57,7 @@ void App::Start() {
 
     std::vector<std::shared_ptr<Machine>> m_Machines;
     std::vector<std::shared_ptr<Machine>> vec2;
-    m_Machines.push_back(std::make_shared<Hub>());
-    vec2 = AddMachineBenchmark100k();
+    vec2 = AddMachineBenchmark10k();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     // vec2 = AddChainMinerTest();
     // m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
