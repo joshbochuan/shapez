@@ -13,7 +13,7 @@ ItemEjector::ItemEjector(int x, int y, int r): rate(BELT_RATE){
     this->item = nullptr;
     this->progress = 0;
     this->next = nullptr;
-    SetVisible(false);
+    // SetVisible(false);
     SetZIndex(10+(x+y)%2);
     m_Transform.rotation = 0.5f * M_PI * r;
 }
@@ -40,8 +40,8 @@ void ItemEjector::Init() {
     next->item = nullptr;
     next->progress = 0;
     next->prev = std::dynamic_pointer_cast<ItemEjector>(shared_from_this());
-    SetVisible(true);
-    next->SetVisible(true);
+    // SetVisible(true);
+    // next->SetVisible(true);
 }
 
 void ItemEjector::Delete() {
@@ -52,7 +52,7 @@ void ItemEjector::Delete() {
     next->item = nullptr;
     next->progress = 0;
     next->prev = nullptr;
-    next->SetVisible(false);
+    // next->SetVisible(false);
 }
 
 void ItemEjector::Update() {

@@ -100,6 +100,10 @@ void Balancer::Update() {
     acceptorB->SetDrawable(Belt::beltInTexture[frame]);
     ejectorA->SetDrawable(Belt::beltOutTexture[frame]);
     ejectorB->SetDrawable(Belt::beltOutTexture[frame]);
+    acceptorA->SetVisible(acceptorA->prev != nullptr);
+    acceptorB->SetVisible(acceptorB->prev != nullptr);
+    ejectorA->SetVisible(ejectorA->next != nullptr);
+    ejectorB->SetVisible(ejectorB->next != nullptr);
 
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
@@ -281,6 +285,8 @@ void Splitter::Update() {
     int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
     acceptor->SetDrawable(Belt::beltInTexture[frame]);
     ejectorA->SetDrawable(Belt::beltOutTexture[frame]);
+    acceptor->SetVisible(acceptor->prev != nullptr);
+    ejectorA->SetVisible(ejectorA->next != nullptr);
 
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
@@ -366,6 +372,8 @@ void Merger::Update() {
     int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
     acceptorA->SetDrawable(Belt::beltInTexture[frame]);
     ejector->SetDrawable(Belt::beltOutTexture[frame]);
+    acceptorA->SetVisible(acceptorA->prev != nullptr);
+    ejector->SetVisible(ejector->next != nullptr);
 
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);

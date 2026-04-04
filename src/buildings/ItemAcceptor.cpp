@@ -16,7 +16,7 @@ ItemAcceptor::ItemAcceptor(int x, int y, int r) : rate(BELT_RATE) {
     this->takesColor = true;
     this->takesShape = true;
     this->prev = nullptr;
-    SetVisible(false);
+    // SetVisible(false);
     SetZIndex(10+(x+y)%2);
     m_Transform.rotation = 0.5f * M_PI * r;
 }
@@ -42,8 +42,8 @@ void ItemAcceptor::Init() {
     prev->item = nullptr;
     prev->progress = 0;
     prev->next = std::dynamic_pointer_cast<ItemAcceptor>(shared_from_this());
-    SetVisible(true);
-    prev->SetVisible(true);
+    // SetVisible(true);
+    // prev->SetVisible(true);
 }
 
 void ItemAcceptor::Delete() {
@@ -53,7 +53,7 @@ void ItemAcceptor::Delete() {
     prev->item = nullptr;
     prev->progress = 0;
     prev->next = nullptr;
-    prev->SetVisible(false);
+    // prev->SetVisible(false);
 }
 
 void ItemAcceptor::Update() {
