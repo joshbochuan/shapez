@@ -15,10 +15,8 @@
 class Hub: public Machine {
 public:
     std::shared_ptr<Util::SFX> levelUpSFX = nullptr;
-    int level;
     std::shared_ptr<Item> targetItem;
     int targetAmount;
-    int progress; // how much of the item is thrown into the hub already
     std::vector<std::shared_ptr<ItemAcceptor>> m_Acceptors;
 
     // og are
@@ -49,6 +47,7 @@ public:
     void Init();
     void Update();
     void Delete();
+    void LoadState();
     std::shared_ptr<Text> levelTxt;
     std::shared_ptr<Text> levelNumTxt;
     std::shared_ptr<Text> progressTxt;

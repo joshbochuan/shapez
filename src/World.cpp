@@ -236,6 +236,9 @@ void World::LoadWorld(std::string save) {
     LEVEL = std::stoi(MachinesToAdd[0][1]);
     PROGRESS = std::stoi(MachinesToAdd[0][2]);
 
+    hub->Init();
+    hub->LoadState();
+
     for (auto& prop : MachinesToAdd) {
         if (prop[0] == "BALANCER") {
             int x = std::stoi(prop[1]);
@@ -342,11 +345,17 @@ void World::LoadWorld(std::string save) {
         else if (prop[4] != "NULL") {item = std::make_shared<Shape>(prop[4]);}
         float progress = std::stof(prop[5]);
         if (prop[0] == "ACCEPTOR") {
+            if (MapAcceptors[{x, y, r}] == nullptr) {
+                throw std::invalid_argument("acceptor doesn't exist at " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(r));
+            }
             MapAcceptors[{x, y, r}]->item = item;
             MapAcceptors[{x, y, r}]->progress = progress;
             MapAcceptors[{x, y, r}]->AddChild(item);
         }
         else if (prop[0] == "EJECTOR") {
+            if (MapEjectors[{x, y, r}] == nullptr) {
+                throw std::invalid_argument("ejector doesn't exist at " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(r));
+            }
             MapEjectors[{x, y, r}]->item = item;
             MapEjectors[{x, y, r}]->progress = progress;
             MapEjectors[{x, y, r}]->AddChild(item);

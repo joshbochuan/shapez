@@ -57,7 +57,7 @@ void App::Start() {
 
     std::vector<std::shared_ptr<Machine>> m_Machines;
     std::vector<std::shared_ptr<Machine>> vec2;
-    vec2 = AddMachineBenchmark10k();
+    vec2 = AddChainMinerTest();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     // vec2 = AddChainMinerTest();
     // m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());

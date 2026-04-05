@@ -16,10 +16,8 @@ Hub::Hub()
     : Machine(0, 0, 0, BELT_RATE, MachineName::HUB) {
     levelUpSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/level_complete.wav");
 
-    this->level = 1;
     auto [a, b, c] = levelTargets[0];
     this->targetItem = std::make_shared<Shape>(a); // first level
-    this->progress = 0;
     this->targetAmount = b;
 
     this->targetItem->MachineItemZIndex(51);
@@ -31,7 +29,7 @@ Hub::Hub()
     levelTxt = std::make_shared<Text>("LVL", 40, Util::Color::FromRGB(255, 255, 255));
     levelNumTxt = std::make_shared<Text>("1", 64, Util::Color::FromRGB(255, 255, 255));
     deliverTxt = std::make_shared<Text>("DELIVER", 64, Util::Color::FromRGB(100, 102, 110));
-    progressTxt = std::make_shared<Text>(BigNumStr(progress), 160, Util::Color::FromRGB(100, 102, 110));
+    progressTxt = std::make_shared<Text>(BigNumStr(PROGRESS), 160, Util::Color::FromRGB(100, 102, 110));
     targetTxt = std::make_shared<Text>("/ " + BigNumStr(targetAmount), 80, Util::Color::FromRGB(164, 166, 176));
     toUnlockTxt = std::make_shared<Text>("TO UNLOCK", 64, Util::Color::FromRGB(100, 102, 110));
     lockedItemTxt = std::make_shared<Text>(c, 56, Util::Color::FromRGB(253, 7, 82));
@@ -97,13 +95,34 @@ std::shared_ptr<Shape> GenerateRandomTarget(int seed, int level) {
     return std::make_shared<Shape>("CuCuCuCu");
 }
 
+void Hub::LoadState() { // properly update contents after loading a save
+    RemoveChild(targetItem);
+    if (LEVEL <= levelTargets.size()) {
+        auto [a, b, c] = levelTargets[LEVEL-1];
+        targetItem = std::make_shared<Shape>(a);
+        targetAmount = b;
+        lockedItemTxt->m_Text->SetText(c);
+    }
+    else {
+        targetItem = GenerateRandomTarget(SEED, LEVEL);
+        targetAmount = 9999999;
+        toUnlockTxt->m_Text->SetText("Next Level");
+    }
+    targetItem->MachineItemZIndex(51);
+    AddChild(targetItem);
+
+    levelNumTxt->m_Text->SetText(std::to_string(LEVEL));
+    targetTxt->m_Text->SetText("/ " + BigNumStr(targetAmount));
+    progressTxt->m_Text->SetText(BigNumStr(PROGRESS));
+}
+
 void Hub::Update() {
     for (int i=0; i<m_Acceptors.size(); i++) {
         m_Acceptors[i]->Update();
         if (m_Acceptors[i]->item == nullptr) {continue;}
         if (m_Acceptors[i]->progress < 1) {continue;}
 
-        if (targetItem->getCode() == m_Acceptors[i]->item->getCode()) {progress++;}
+        if (targetItem->getCode() == m_Acceptors[i]->item->getCode()) {PROGRESS++;}
 
         m_Acceptors[i]->item->Update();
         m_Acceptors[i]->RemoveChild(this->m_Acceptors[i]->item);
@@ -112,20 +131,20 @@ void Hub::Update() {
     }
 
     // level up
-    if (progress >= targetAmount) {
-        progress = 0;
-        level++;
+    if (PROGRESS >= targetAmount) {
+        PROGRESS = 0;
+        LEVEL++;
 
         RemoveChild(targetItem);
 
-        if (level <= levelTargets.size()) {
-            auto [a, b, c] = levelTargets[level-1];
+        if (LEVEL <= levelTargets.size()) {
+            auto [a, b, c] = levelTargets[LEVEL-1];
             targetItem = std::make_shared<Shape>(a);
             targetAmount = b;
             lockedItemTxt->m_Text->SetText(c);
         }
         else {
-            targetItem = GenerateRandomTarget(SEED, level);
+            targetItem = GenerateRandomTarget(SEED, LEVEL);
             targetAmount = 9999999;
             toUnlockTxt->m_Text->SetText("Next Level");
         }
@@ -133,12 +152,12 @@ void Hub::Update() {
         targetItem->MachineItemZIndex(51);
         AddChild(targetItem);
 
-        levelNumTxt->m_Text->SetText(std::to_string(level));
+        levelNumTxt->m_Text->SetText(std::to_string(LEVEL));
         targetTxt->m_Text->SetText("/ " + BigNumStr(targetAmount));
 
         levelUpSFX->Play();
     }
-    progressTxt->m_Text->SetText(BigNumStr(progress));
+    progressTxt->m_Text->SetText(BigNumStr(PROGRESS));
 
     this->m_Transform.translation.x = std::round(((192.0f*static_cast<float>(x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0f*static_cast<float>(y)) - cam.translation.y) * cam.scale.y);
