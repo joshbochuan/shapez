@@ -47,13 +47,12 @@ void App::Start() {
     background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
     background->m_Transform.scale = glm::vec2(256, 256);
     background->SetZIndex(0);
-    // m_Root.AddChild(background);
 
     vignette = std::make_shared<OptiObject>();
     vignette->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/vignette.lossless.png"));
     vignette->m_Transform.scale = glm::vec2(static_cast<float>(WINDOW_WIDTH)/192.0f, static_cast<float>(WINDOW_HEIGHT)/108);
     vignette->SetZIndex(90);
-    // m_Root.AddChild(vignette);
+    m_Root.AddChild(vignette);
 
     gridLine = std::make_shared<OptiObject>();
     gridLine->SetDrawable(std::make_shared<Util::Image>("../Resources/1px/E3E7EA.png"));
@@ -123,7 +122,6 @@ void App::Update() {
         gridLine->Draw();
     }
     m_Root.Update();
-    vignette->Draw();
 
     auto end = std::chrono::steady_clock::now();
     if (Util::Input::IsKeyDown(Util::Keycode::K)) {

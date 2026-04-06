@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 project(REPLACE_WITH_YOUR_PROJECT_NAME)
 
+# let claude cook
+# Suppress the policy version check for subdirectories
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+
 set(CMAKE_CXX_STANDARD 17)
 
 cmake_policy(SET CMP0135 NEW)
