@@ -47,13 +47,18 @@ void App::Start() {
     background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
     background->m_Transform.scale = glm::vec2(256, 256);
     background->SetZIndex(0);
-    m_Root.AddChild(background);
+    // m_Root.AddChild(background);
 
     vignette = std::make_shared<OptiObject>();
     vignette->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/vignette.lossless.png"));
     vignette->m_Transform.scale = glm::vec2(static_cast<float>(WINDOW_WIDTH)/192.0f, static_cast<float>(WINDOW_HEIGHT)/108);
     vignette->SetZIndex(90);
-    m_Root.AddChild(vignette);
+    // m_Root.AddChild(vignette);
+
+    gridLine = std::make_shared<OptiObject>();
+    gridLine->SetDrawable(std::make_shared<Util::Image>("../Resources/1px/E3E7EA.png"));
+    gridLine->SetZIndex(1);
+    gridLine->m_Visible = true;
 
     std::vector<std::shared_ptr<Machine>> m_Machines;
     std::vector<std::shared_ptr<Machine>> vec2;
@@ -99,7 +104,27 @@ void App::Update() {
     auto t1 = std::chrono::steady_clock::now();
     OperateMachines();
     auto t2 = std::chrono::steady_clock::now();
+
+    background->Draw();
+
+    float gridThickness = 9; // thickness of gridlines when the cam scale is 1
+    float gridStart = std::fmod(-cam.translation.x, 192.0f)*cam.scale.x;
+    while (-gridStart < WINDOW_WIDTH>>1) {gridStart -= 192.0f * cam.scale.x;}
+    gridLine->m_Transform.scale = {gridThickness*cam.scale.x, WINDOW_HEIGHT};
+    for (float i = gridStart; i < static_cast<float>(WINDOW_WIDTH)/2.0f; i += cam.scale.x*192.0f) {
+        gridLine->m_Transform.translation = {i, 0};
+        gridLine->Draw();
+    }
+    gridStart = std::fmod(-cam.translation.y, 192.0f)*cam.scale.y;
+    while (-gridStart < WINDOW_HEIGHT>>1) {gridStart -= 192.0f * cam.scale.y;}
+    gridLine->m_Transform.scale = {WINDOW_WIDTH, gridThickness*cam.scale.y};
+    for (float i = gridStart; i < static_cast<float>(WINDOW_HEIGHT)/2.0f; i += cam.scale.y*192.0f) {
+        gridLine->m_Transform.translation = {0, i};
+        gridLine->Draw();
+    }
     m_Root.Update();
+    vignette->Draw();
+
     auto end = std::chrono::steady_clock::now();
     if (Util::Input::IsKeyDown(Util::Keycode::K)) {
         std::cout << SaveWorld("test.txt") << std::endl;
