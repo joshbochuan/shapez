@@ -155,11 +155,13 @@ public:
             m_Children.end());
     }
 
+    void CalData(); // called before draw
     void Draw();
 
     std::shared_ptr<Core::Drawable> m_Drawable = nullptr;
     std::vector<std::shared_ptr<OptiObject>> m_Children;
 
+    Core::Matrices data = {glm::mat4(1.0f), glm::mat4(1.0f)};
     float m_ZIndex = 0;
     bool m_Visible = true;
     glm::vec2 m_Pivot = {0, 0};

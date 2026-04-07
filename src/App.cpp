@@ -61,7 +61,7 @@ void App::Start() {
 
     std::vector<std::shared_ptr<Machine>> m_Machines;
     std::vector<std::shared_ptr<Machine>> vec2;
-    vec2 = AddChainMinerTest();
+    vec2 = AddMachineBenchmark100k();
     m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
     // vec2 = AddChainMinerTest();
     // m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
@@ -104,14 +104,15 @@ void App::Update() {
     OperateMachines();
     auto t2 = std::chrono::steady_clock::now();
 
+    background->CalData();
     background->Draw();
-
     float gridThickness = 9; // thickness of gridlines when the cam scale is 1
     float gridStart = std::fmod(-cam.translation.x, 192.0f)*cam.scale.x;
     while (-gridStart < WINDOW_WIDTH>>1) {gridStart -= 192.0f * cam.scale.x;}
     gridLine->m_Transform.scale = {gridThickness*cam.scale.x, WINDOW_HEIGHT};
     for (float i = gridStart; i < static_cast<float>(WINDOW_WIDTH)/2.0f; i += cam.scale.x*192.0f) {
         gridLine->m_Transform.translation = {i, 0};
+        gridLine->CalData();
         gridLine->Draw();
     }
     gridStart = std::fmod(-cam.translation.y, 192.0f)*cam.scale.y;
@@ -119,6 +120,7 @@ void App::Update() {
     gridLine->m_Transform.scale = {WINDOW_WIDTH, gridThickness*cam.scale.y};
     for (float i = gridStart; i < static_cast<float>(WINDOW_HEIGHT)/2.0f; i += cam.scale.y*192.0f) {
         gridLine->m_Transform.translation = {0, i};
+        gridLine->CalData();
         gridLine->Draw();
     }
     m_Root.Update();
@@ -136,10 +138,10 @@ void App::Update() {
     auto rootDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-t2);
     auto totalDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
 
-    std::cout << sceneDuration.count() << "+";
-    std::cout << operationDuration.count() << "+";
-    std::cout << rootDuration.count() << "=";
-    std::cout << static_cast<float>(totalDuration.count())/1000.0f << "ms\n";
+    std::cout << sceneDuration.count() << " us\t+ ";
+    std::cout << operationDuration.count() << " us\t+ ";
+    std::cout << rootDuration.count() << " us\t= ";
+    std::cout << static_cast<float>(totalDuration.count())/1000.0f << " ms\n";
 
     /*
      * Do not touch the code below as they serve the purpose for

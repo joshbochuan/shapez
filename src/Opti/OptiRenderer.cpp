@@ -66,6 +66,7 @@ void OptiRenderer::Update() {
                 for (size_t i = start; i < end; ++i) {
                     auto& curr = current[i];
                     if (!curr->m_Visible) continue;
+                    curr->CalData();
                     int z = static_cast<int>(curr->GetZIndex());
                     localBuckets[t][z].push_back(curr);
                     for (const auto& child : curr->GetChildren()) {
