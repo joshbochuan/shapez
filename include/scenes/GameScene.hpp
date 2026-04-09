@@ -22,6 +22,9 @@ class GameScene: public Scene {
     bool minerChained = false;
     bool previewMirrored = false;
     std::shared_ptr<OptiObject> m_MachineHeldPreview = nullptr;
+
+    std::shared_ptr<Util::Image> hoveredTexture;
+    std::shared_ptr<Util::Image> selectedTexture;
     void UserMoveCamera();
     void UserSelectMachine();
     void UserSelectVariant();
@@ -29,6 +32,9 @@ class GameScene: public Scene {
     void UserRemoveMachine(int mouseX, int mouseY);
 public:
     static inline std::shared_ptr<Util::SFX> placeBuildingSFX, placeBeltSFX, destroyBuildingSFX;
+    std::shared_ptr<OptiObject> toolbar;
+    std::vector<std::shared_ptr<OptiObject>> icons;
+    std::vector<std::shared_ptr<OptiObject>> buttons;
     GameScene();
     std::shared_ptr<Scene> Update();
 };

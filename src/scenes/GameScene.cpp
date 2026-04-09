@@ -332,6 +332,32 @@ void GameScene::UserRemoveMachine(int mouseX, int mouseY) {
 }
 
 GameScene::GameScene() {
+    glm::vec2 windowPercentVec = {1, 1}; // the window size compared to 1440p
+    windowPercentVec.x = static_cast<float>(WINDOW_WIDTH)/2560.0f;
+    windowPercentVec.y = static_cast<float>(WINDOW_HEIGHT)/1440.0f;
+    float windowPercent = 0;
+    if (windowPercentVec.x < windowPercentVec.y) {windowPercent = windowPercentVec.x;}
+    else {windowPercent = windowPercentVec.y;}
+
+    hoveredTexture = std::make_shared<Util::Image>("../Resources/ui/blobs/toolHovered.png");
+    selectedTexture = std::make_shared<Util::Image>("../Resources/ui/blobs/toolSelected.png");
+
+    for (int i=0; i<10; i++) {
+        buttons.push_back(std::make_shared<OptiObject>());
+        icons.push_back(std::make_shared<OptiObject>());
+        buttons.back()->m_Transform.translation = {windowPercent*(-517.5 + 115*i), -windowPercent*630};
+        buttons.back()->SetDrawable(selectedTexture);
+        buttons.back()->SetZIndex(81);
+        m_Root.AddChild(buttons.back());
+    }
+
+    toolbar = std::make_shared<OptiObject>();
+    toolbar->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/blobs/toolbar.png"));
+    toolbar->m_Transform.translation = {0, -windowPercent * 630};
+    toolbar->m_Transform.scale = {windowPercent, windowPercent};
+    toolbar->SetZIndex(80);
+    m_Root.AddChild(toolbar);
+
     m_MachineHeldPreview = std::make_shared<OptiObject>();
     m_MachineHeldPreview->SetVisible(false);
     m_MachineHeldPreview->SetZIndex(99);
