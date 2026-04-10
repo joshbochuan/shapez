@@ -49,8 +49,8 @@ void Belt::Update() {
     }
 
     // add progress to both accept progress and eject progress
-    this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
-    this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
+    this->m_Transform.translation.x = (((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
+    this->m_Transform.translation.y = (((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
     this->m_Transform.scale.x = cam.scale.x * 1.01f; // adding tiny size to avoid gap
     this->m_Transform.scale.y = cam.scale.y * 1.01f;
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)

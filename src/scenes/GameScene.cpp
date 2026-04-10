@@ -342,6 +342,7 @@ GameScene::GameScene() {
     hoveredTexture = std::make_shared<Util::Image>("../Resources/ui/blobs/toolHovered.png");
     selectedTexture = std::make_shared<Util::Image>("../Resources/ui/blobs/toolSelected.png");
 
+    /*
     for (int i=0; i<10; i++) {
         buttons.push_back(std::make_shared<OptiObject>());
         icons.push_back(std::make_shared<OptiObject>());
@@ -357,6 +358,7 @@ GameScene::GameScene() {
     toolbar->m_Transform.scale = {windowPercent, windowPercent};
     toolbar->SetZIndex(80);
     m_Root.AddChild(toolbar);
+    */
 
     m_MachineHeldPreview = std::make_shared<OptiObject>();
     m_MachineHeldPreview->SetVisible(false);

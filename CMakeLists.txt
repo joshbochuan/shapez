@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(REPLACE_WITH_YOUR_PROJECT_NAME)
+project(shapez)
 
 # let claude cook
 # Suppress the policy version check for subdirectories

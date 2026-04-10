@@ -32,13 +32,9 @@ void OptiRenderer::AddChildren(
 }
 
 void OptiRenderer::Update(ThreadPool& pool) {
-    auto start = std::chrono::steady_clock::now();
     unsigned int numThreads = pool.size();
     if (numThreads > 12) {numThreads = 12;}
 
-    // =========================
-    // 1. Filter visible objects
-    // =========================
     size_t total = m_Children.size();
     size_t chunkSize = (total + numThreads - 1) / numThreads;
 
@@ -46,7 +42,6 @@ void OptiRenderer::Update(ThreadPool& pool) {
 
     WaitGroup wg;
 
-    auto t1 = std::chrono::steady_clock::now();
     for (unsigned int t = 0; t < numThreads; ++t) {
         size_t start = t * chunkSize;
         size_t end = std::min(start + chunkSize, total);
@@ -74,30 +69,15 @@ void OptiRenderer::Update(ThreadPool& pool) {
         current.insert(current.end(), vec.begin(), vec.end());
     }
 
-    auto t2 = std::chrono::steady_clock::now();
     // =========================
     // 2. BFS traversal
     // =========================
     numThreads = pool.size();
-    if (numThreads > 6) {numThreads = 6;}
+    // if (numThreads > 6) {numThreads = 6;}
     std::vector<std::array<std::vector<OptiObject*>, 101>> localBuckets(numThreads);
-    std::array<std::vector<OptiObject*>, 101> buckets;
-    OptiObject* obj;
 
     while (!current.empty()) {
-        // trying to do this serially instead
-        /*
-        obj = current.back();
-        current.pop_back();
-        if (!obj->m_Visible) {continue;}
-        obj->CalData();
-        buckets[static_cast<int>(obj->GetZIndex())].push_back(obj);
-        for (auto& child : obj->m_Children) {
-            current.push_back(child.get());
-        }
-        */
-
-        std::vector<OptiObject*> currentSnapshot = current; // 🔥 FIXED
+        std::vector<OptiObject*> currentSnapshot = current;
         size_t total = currentSnapshot.size();
         size_t chunkSize = (total + numThreads - 1) / numThreads;
 
@@ -144,7 +124,6 @@ void OptiRenderer::Update(ThreadPool& pool) {
         }
     }
 
-    auto t3 = std::chrono::steady_clock::now();
     // =========================
     // 3. Merge buckets
     // =========================
@@ -156,7 +135,6 @@ void OptiRenderer::Update(ThreadPool& pool) {
         }
     }
 
-    auto t4 = std::chrono::steady_clock::now();
     // =========================
     // 4. Rendering (unchanged)
     // =========================
@@ -192,18 +170,6 @@ void OptiRenderer::Update(ThreadPool& pool) {
     for (int i = 0; i < 101; i++) {
         buckets[i].clear();
     }
-    auto end = std::chrono::steady_clock::now();
-    auto prepDuration = std::chrono::duration_cast<std::chrono::microseconds>(t1-start);
-    auto filterDuration = std::chrono::duration_cast<std::chrono::microseconds>(t2-t1);
-    auto BFSDuration = std::chrono::duration_cast<std::chrono::microseconds>(t3-t2);
-    auto MergeDuration = std::chrono::duration_cast<std::chrono::microseconds>(t4-t3);
-    auto DrawDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-t4);
-    std::cout << "( " << prepDuration.count();
-    std::cout << " " << filterDuration.count();
-    std::cout << " " << MergeDuration.count();
-    std::cout << " " << BFSDuration.count();
-    std::cout << " " << DrawDuration.count();
-    std::cout << " )" << std::endl;
 }
 
 

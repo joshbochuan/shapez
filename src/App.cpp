@@ -62,28 +62,9 @@ void App::Start() {
     std::vector<std::shared_ptr<Machine>> m_Machines;
     std::vector<std::shared_ptr<Machine>> vec2;
     //vec2 = AddMachineBenchmark50k();
-    vec2 = AddDrawableBenchmark10k();
-    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    // vec2 = AddChainMinerTest();
+    // vec2 = AddMachineBenchmark100k();
+    m_Machines = MidTermDemo();
     // m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    // vec2 = AddDrawableBenchmark10k();
-    // m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    /*
-    vec2 = AddTunnelTest();
-    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    vec2 = AddColorTest();
-    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    vec2 = AddBalancerTest();
-    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    vec2 = AddBeltTest();
-    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    vec2 = AddCutterTest();
-    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    vec2 = AddRotatorTest();
-    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    vec2 = AddPenguinTest();
-    m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
-    */
 
     for (int i=0; i<m_Machines.size(); i++) {
         m_Machines[i]->Init();

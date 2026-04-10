@@ -59,9 +59,9 @@ void ItemAcceptor::Delete() {
 void ItemAcceptor::Update() {
     if (!initialized) {throw std::invalid_argument("acceptor not initialized");}
 
-    this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
-    this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
-    this->m_Transform.scale = cam.scale * 1.02f;
+    this->m_Transform.translation.x = (((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
+    this->m_Transform.translation.y = (((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
+    this->m_Transform.scale = cam.scale * 1.01f;
 
     if (item == nullptr) {return;}
     if (progress < 1) {progress += rate;}

@@ -21,6 +21,42 @@
 #include "items/Shape.hpp"
 #include "items/Color.hpp"
 
+inline std::vector<std::shared_ptr<Machine>> MidTermDemo() {
+    // contains all miners having uncolored whole shapes and rgb colors
+    std::vector<std::shared_ptr<Machine>> m_Machines;
+    for (int i=-24; i<=-20; i++) {
+        m_Machines.push_back(std::make_shared<Miner>(-20, i, 0, std::make_shared<Shape>("CuCuCuCu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-19, i, 0, std::make_shared<Shape>("CuCuCuCu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-18, i, 0, std::make_shared<Shape>("CuCuCuCu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-17, i, 0, std::make_shared<Shape>("CuCuCuCu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-16, i, 0, std::make_shared<Shape>("RuRuRuRu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-15, i, 0, std::make_shared<Shape>("RuRuRuRu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-14, i, 0, std::make_shared<Shape>("RuRuRuRu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-13, i, 0, std::make_shared<Shape>("RuRuRuRu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-12, i, 0, std::make_shared<Shape>("SuSuSuSu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-11, i, 0, std::make_shared<Shape>("SuSuSuSu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-10, i, 0, std::make_shared<Shape>("SuSuSuSu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-9, i, 0, std::make_shared<Shape>("SuSuSuSu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-8, i, 0, std::make_shared<Shape>("WuWuWuWu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-7, i, 0, std::make_shared<Shape>("WuWuWuWu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-6, i, 0, std::make_shared<Shape>("WuWuWuWu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-5, i, 0, std::make_shared<Shape>("WuWuWuWu"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-4, i, 0, std::make_shared<Color>("Color-r"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-3, i, 0, std::make_shared<Color>("Color-r"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-2, i, 0, std::make_shared<Color>("Color-r"), true));
+        m_Machines.push_back(std::make_shared<Miner>(-1, i, 0, std::make_shared<Color>("Color-r"), true));
+        m_Machines.push_back(std::make_shared<Miner>(0, i, 0, std::make_shared<Color>("Color-g"), true));
+        m_Machines.push_back(std::make_shared<Miner>(1, i, 0, std::make_shared<Color>("Color-g"), true));
+        m_Machines.push_back(std::make_shared<Miner>(2, i, 0, std::make_shared<Color>("Color-g"), true));
+        m_Machines.push_back(std::make_shared<Miner>(3, i, 0, std::make_shared<Color>("Color-g"), true));
+        m_Machines.push_back(std::make_shared<Miner>(4, i, 0, std::make_shared<Color>("Color-b"), true));
+        m_Machines.push_back(std::make_shared<Miner>(5, i, 0, std::make_shared<Color>("Color-b"), true));
+        m_Machines.push_back(std::make_shared<Miner>(6, i, 0, std::make_shared<Color>("Color-b"), true));
+        m_Machines.push_back(std::make_shared<Miner>(7, i, 0, std::make_shared<Color>("Color-b"), true));
+    }
+    return m_Machines;
+}
+
 inline std::vector<std::shared_ptr<Machine>> AddMachineBenchmark(int x, int y) {
     std::vector<std::shared_ptr<Machine>> m_Machines;
     // 40 machines
