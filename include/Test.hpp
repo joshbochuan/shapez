@@ -88,6 +88,18 @@ inline std::vector<std::shared_ptr<Machine>> AddMachineBenchmark10k() {
     return m_Machines;
 }
 
+inline std::vector<std::shared_ptr<Machine>> AddMachineBenchmark50k() {
+    // roughly the amount of machines needed to finish the game
+    std::vector<std::shared_ptr<Machine>> m_Machines, vec2;
+    for (int i=0; i<25; i++) {
+        for (int j=0; j<50; j++) {
+            vec2 = AddMachineBenchmark(-10 + 13*j, 10 + 5 * i);
+            m_Machines.insert(m_Machines.end(), vec2.begin(), vec2.end());
+        }
+    }
+    return m_Machines;
+}
+
 inline std::vector<std::shared_ptr<Machine>> AddMachineBenchmark100k() {
     // new baseline for 60fps instead of 10k because optimization got better
     std::vector<std::shared_ptr<Machine>> m_Machines, vec2;

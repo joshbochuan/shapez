@@ -12,6 +12,7 @@
 #include "Util/Image.hpp"
 #include "Core/Drawable.hpp"
 #include "OptiImage.hpp"
+#include "ThreadPool.hpp"
 
 class App;
 
@@ -62,13 +63,14 @@ public:
      *
      * @note The user is not recommended to modify this function.
      */
-    void Update();
+    void Update(ThreadPool& pool);
 
     static void Submit(OptiImage* img, const Core::Matrices& data);
 
 private:
     static inline std::vector<DrawCommand> commands;
     std::vector<std::shared_ptr<OptiObject>> m_Children;
+    std::vector<std::shared_ptr<OptiObject>> stack;
     std::vector<OptiObject*> current;
     std::vector<OptiObject*> buckets[101]; // 2d array for sorting
 

@@ -95,6 +95,8 @@ add_executable(${PROJECT_NAME}
         include/Opti/OptiObject.hpp
         include/Opti/OptiImage.hpp
         src/Opti/OptiImage.cpp
+        include/ThreadPool.hpp
+        include/WaitGroup.hpp
 )
 
 if(MSVC)

@@ -24,53 +24,83 @@
 #include "items/Color.hpp"
 #include "items/Shape.hpp"
 #include <thread>
+#include "ThreadPool.hpp"
+#include "WaitGroup.hpp"
 using namespace World;
 
-void UpdateMachines(std::vector<std::shared_ptr<Machine>>& LstMachines) {
-    const int numThreads = std::thread::hardware_concurrency();
-    std::vector<std::thread> threads;
+void UpdateMachines(
+    ThreadPool& pool,
+    std::vector<std::shared_ptr<Machine>>& LstMachines)
+{
+    int total = (int)LstMachines.size();
+    int numThreads = pool.size();
+    int chunkSize = (total + numThreads - 1) / numThreads;
 
-    int chunkSize = LstMachines.size() / numThreads;
+    WaitGroup wg;
 
     for (int t = 0; t < numThreads; ++t) {
         int start = t * chunkSize;
-        int end = (t == numThreads - 1) ? LstMachines.size() : start + chunkSize;
+        int end = std::min(start + chunkSize, total);
+        if (start >= total) break;
 
-        threads.emplace_back([start, end, &LstMachines]() {
-            for (int i = start; i < end; ++i) {LstMachines[i]->Update();}
+        wg.Add(1);
+
+        pool.Enqueue([start, end, &LstMachines, &wg]() {
+            try {
+                for (int i = start; i < end; ++i) {
+                    if (LstMachines[i]) {
+                        LstMachines[i]->Update();
+                    }
+                }
+            } catch (...) {
+                // log if needed
+            }
+
+            wg.Done();
         });
     }
 
-    for (auto& th : threads) {th.join();}
+    wg.Wait();
 }
 
-void UpdateTransferrers(std::vector<std::shared_ptr<ItemEjector>>& LstEjectors) {
-    // Flatten map to vector for indexed access
-    auto t0 = std::chrono::steady_clock::now();
-    const int numThreads = std::thread::hardware_concurrency();
-    std::vector<std::thread> threads;
+void UpdateTransferrers(
+    ThreadPool& pool,
+    std::vector<std::shared_ptr<ItemEjector>>& LstEjectors)
+{
+    int total = (int)LstEjectors.size();
+    int numThreads = pool.size();
+    int chunkSize = (total + numThreads - 1) / numThreads;
 
-    int chunkSize = LstEjectors.size() / numThreads;
+    WaitGroup wg;
 
     for (int t = 0; t < numThreads; ++t) {
         int start = t * chunkSize;
-        int end = (t == numThreads - 1) ? LstEjectors.size() : start + chunkSize;
+        int end = std::min(start + chunkSize, total);
+        if (start >= total) break;
 
-        threads.emplace_back([start, end, &LstEjectors]() {
-            for (int i = start; i < end; ++i) {
-                if (LstEjectors[i] == nullptr) {throw std::invalid_argument("nullptr ejector");}
-                LstEjectors[i]->Transfer();
-            }
+        wg.Add(1);
+
+        pool.Enqueue([start, end, &LstEjectors, &wg]() {
+            try {
+                for (int i = start; i < end; ++i) {
+                    auto& obj = LstEjectors[i];
+                    if (obj) {
+                        obj->Transfer();
+                    }
+                }
+            } catch (...) {}
+
+            wg.Done();
         });
     }
 
-    for (auto& th : threads) {th.join();}
+    wg.Wait();
 }
 
 void World::OperateMachines() {
     hub->Update();
-    UpdateMachines(LstMachines);
-    UpdateTransferrers(LstEjectors); // moving items from ejectors to acceptors
+    UpdateMachines(pool, LstMachines);
+    UpdateTransferrers(pool, LstEjectors); // moving items from ejectors to acceptors
 }
 
 std::vector<std::vector<std::string>> parse2D(const std::string& input) {
@@ -214,15 +244,6 @@ std::string World::SaveWorld(std::string save) {
 }
 
 void World::LoadWorld(std::string save) {
-    std::vector<std::vector<std::string>> MachinesToAdd;
-    std::ifstream file("../Saves/" + save);
-    if (file.is_open()) {
-        std::ostringstream ss;
-        ss << file.rdbuf(); // Read the entire file buffer into the stream
-        MachinesToAdd = parse2D(ss.str());
-    }
-    else {return;}
-
     for (auto& machine : LstMachines) {
         machine->Delete();
         m_Root.RemoveChild(machine);
@@ -231,6 +252,15 @@ void World::LoadWorld(std::string save) {
     MapMachines.clear();
     MapAcceptors.clear();
     MapEjectors.clear();
+
+    std::vector<std::vector<std::string>> MachinesToAdd;
+    std::ifstream file("../Saves/" + save);
+    if (file.is_open()) {
+        std::ostringstream ss;
+        ss << file.rdbuf(); // Read the entire file buffer into the stream
+        MachinesToAdd = parse2D(ss.str());
+    }
+    else {return;}
 
     SEED = std::stoi(MachinesToAdd[0][0]);
     LEVEL = std::stoi(MachinesToAdd[0][1]);
