@@ -33,28 +33,41 @@ using namespace World;
 
 void GameScene::UserMoveCamera() {
     float camSpeed = 10;
-    if (Util::Input::IsKeyPressed(Util::Keycode::W)) {
-        cam.translation.y += camSpeed / cam.scale.y;
+    glm::vec2 cursorPos = Util::Input::GetCursorPosition();
+    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) && (!toolbar->hovered) && heldMachine==MachineName::NONE) {
+        cam.translation.x -= (cursorPos.x-lastMousePos.x) / cam.scale.x;
+        cam.translation.y -= (cursorPos.y-lastMousePos.y) / cam.scale.y;
     }
-    if (Util::Input::IsKeyPressed(Util::Keycode::S)) {
-        cam.translation.y -= camSpeed / cam.scale.y;
+    else {
+        if (Util::Input::IsKeyPressed(Util::Keycode::W)) {
+            cam.translation.y += camSpeed / cam.scale.y;
+        }
+        if (Util::Input::IsKeyPressed(Util::Keycode::S)) {
+            cam.translation.y -= camSpeed / cam.scale.y;
+        }
+        if (Util::Input::IsKeyPressed(Util::Keycode::A)) {
+            cam.translation.x -= camSpeed / cam.scale.x;
+        }
+        if (Util::Input::IsKeyPressed(Util::Keycode::D)) {
+            cam.translation.x += camSpeed / cam.scale.x;
+        }
     }
-    if (Util::Input::IsKeyPressed(Util::Keycode::A)) {
-        cam.translation.x -= camSpeed / cam.scale.x;
-    }
-    if (Util::Input::IsKeyPressed(Util::Keycode::D)) {
-        cam.translation.x += camSpeed / cam.scale.x;
-    }
+
     if (Util::Input::IfScroll()) {
         auto delta = Util::Input::GetScrollDistance();
         // fix: change PTSD/src/Util/Input.cpp line 110
         if (delta.y >= 10) {delta.y = 0;}
-        cam.scale.x += delta.y * 0.1;
-        cam.scale.y += delta.y * 0.1;
-        cam.scale.x = std::clamp(cam.scale.x, 0.2f, 2.0f);
-        cam.scale.y = std::clamp(cam.scale.y, 0.2f, 2.0f);
-        LOG_DEBUG("Scrolling: x: {}, y: {}", delta.x, delta.y);
+        glm::vec2 newScale = cam.scale;
+        newScale.x += delta.y * 0.1;
+        newScale.y += delta.y * 0.1;
+        newScale.x = std::clamp(newScale.x, 0.2f, 2.0f);
+        newScale.y = std::clamp(newScale.y, 0.2f, 2.0f);
+        cam.translation.x += cursorPos.x/cam.scale.x - cursorPos.x/newScale.x;
+        cam.translation.y += cursorPos.y/cam.scale.y - cursorPos.y/newScale.y;
+        cam.scale = newScale;
     }
+
+    lastMousePos = cursorPos;
 }
 
 void GameScene::UserSelectMachine() {
@@ -350,6 +363,7 @@ void GameScene::UserRemoveMachine(int mouseX, int mouseY) {
 }
 
 GameScene::GameScene() {
+    lastMousePos = Util::Input::GetCursorPosition();
     glm::vec2 windowPercentVec = {1, 1}; // the window size compared to 1440p
     windowPercentVec.x = static_cast<float>(WINDOW_WIDTH)/2560.0f;
     windowPercentVec.y = static_cast<float>(WINDOW_HEIGHT)/1440.0f;

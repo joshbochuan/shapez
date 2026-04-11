@@ -33,6 +33,7 @@ class GameScene: public Scene {
     void UserSelectVariant();
     void UserPlaceMachine(int mouseX, int mouseY);
     void UserRemoveMachine(int mouseX, int mouseY);
+    glm::vec2 lastMousePos = glm::vec2();
 public:
     static inline std::shared_ptr<Util::SFX> placeBuildingSFX, placeBeltSFX, destroyBuildingSFX;
     std::shared_ptr<Button> toolbar;
