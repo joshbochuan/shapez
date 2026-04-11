@@ -11,20 +11,23 @@
 #include "scenes/Scene.hpp"
 #include "Util/SFX.hpp"
 #include "../Opti/OptiObject.hpp"
+#include "UIelement/Button.hpp"
 
 class GameScene: public Scene {
-    MachineName m_MachineHeld = MachineName::NONE; // the machine user is currently trying to place
     BeltType beltType = BeltType::FORWARD;
     RotatorType rotatorType = RotatorType::ROTATE_CW;
     TunnelType tunnelType = TunnelType::IN;
-    int m_MachineHeldR = 0; // rotation of m_MachineHeld
     bool tunnelUpgraded = false;
     bool minerChained = false;
     bool previewMirrored = false;
-    std::shared_ptr<OptiObject> m_MachineHeldPreview = nullptr;
+    int heldIdx = 9;
+    MachineName heldMachine = MachineName::NONE; // the machine user is currently trying to place
+    int heldR = 0; // rotation of m_MachineHeld
+    std::shared_ptr<OptiObject> heldPreview = nullptr;
 
     std::shared_ptr<Util::Image> hoveredTexture;
     std::shared_ptr<Util::Image> selectedTexture;
+    std::shared_ptr<Util::Image> lockedTexture;
     void UserMoveCamera();
     void UserSelectMachine();
     void UserSelectVariant();
@@ -32,9 +35,8 @@ class GameScene: public Scene {
     void UserRemoveMachine(int mouseX, int mouseY);
 public:
     static inline std::shared_ptr<Util::SFX> placeBuildingSFX, placeBeltSFX, destroyBuildingSFX;
-    std::shared_ptr<OptiObject> toolbar;
-    std::vector<std::shared_ptr<OptiObject>> icons;
-    std::vector<std::shared_ptr<OptiObject>> buttons;
+    std::shared_ptr<Button> toolbar;
+    std::vector<std::shared_ptr<Button>> buttons;
     GameScene();
     std::shared_ptr<Scene> Update();
 };

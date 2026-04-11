@@ -27,19 +27,19 @@ public:
         {"RuRu----",                            125, "Rotator (CW)"}, // og4
         {"Cu----Cu",                            170, "Tunnel"}, // level 5, og5
         {"Cu------",                            270, "Painter"}, // og6
-        {"CrCrCrCr",                            300, "Splitter"}, // og7
+        {"CrCrCrCr",                            300, "Rotator (CCW)"}, // og7
         {"RbRbRbRb",                            480, "Color Mixer"}, // og8
-        {"CpCpCpCp",                            600, "Merger"}, // og9
+        {"CpCpCpCp",                            600, "Compact Merger"}, // og9
         {"ScScScSc",                            800, "Stacker"}, // level 10, og10
-        {"CbCbCbRb:CwCwCwCw",                   1000, "Blueprint"}, // bp, og12
-        {"RpRpRpRp:CwCwCwCw",                   1000, "Next Level"}, // og13
-        {"SrSrSrSr:CyCyCyCy:SwSwSwSw",          2500, "Rotator (CCW)"}, // og16
-        {"CbRbRbCb:CwCwCwCw:WbWbWbWb",          3800, "Rotator (180)"}, // og17
-        {"Sg----Sg:CgCgCgCg:--CyCy--",          6000, "Chaining Miner"}, // level 15, og18
-        {"Cg----Cr:Cw----Cw:Sy------:Cy----Cy", 20000, "Next Level"}, // og22
-        {"CcRcCcRc:RwCwRwCw:Sr--Sw--:CyCyCyCy", 20000, "Tunnel Tier II"}, // og24
-        {"Rg--Rg--:CwRwCwRw:--Rg--Rg"         , 25000, "Double Painter"}, // og25
-        {"CbCuCbCu:Sr------:--CrSrCr:CwCwCwCw", 25000, "Quad Cutter"}, // og26
+        {"CgScScCg",                            1000, "Chaining Extractor"}, // bp, og11
+        {"CbCbCbRb:CwCwCwCw",                   1000, "Blueprints"}, // og12
+        {"SrSrSrSr:CyCyCyCy:SwSwSwSw",          2500, "Tunnel Tier II"}, // og16
+        {"CbRbRbCb:CwCwCwCw:WbWbWbWb",          3800, "Belt Reader"}, // og17
+        {"Sg----Sg:CgCgCgCg:--CyCy--",          6000, "Storage"}, // level 15, og18
+        {"Cg----Cr:Cw----Cw:Sy------:Cy----Cy", 20000, "Quad Cutter"}, // og22
+        {"CcRcCcRc:RwCwRwCw:Sr--Sw--:CyCyCyCy", 20000, "Double Painter"}, // og24
+        {"Rg--Rg--:CwRwCwRw:--Rg--Rg"         , 25000, "Rotator (180)"}, // og25
+        {"CbCuCbCu:Sr------:--CrSrCr:CwCwCwCw", 25000, "Compact Splitter"}, // og26
         {"RuCw--Cw:----Ru--",                   50000, "Freeplay"} // level 20, og20
     };
 
