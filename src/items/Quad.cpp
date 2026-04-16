@@ -17,5 +17,5 @@ Quad::Quad(std::string code, int r, int layer): OptiObject() {
     this->SetDrawable(quadTextures[code + std::to_string(layer)]);
     this->m_Transform.translation = glm::vec2({0, 0});
     this->m_Transform.rotation = M_PI*(-0.5)*(double)r;
-    this->SetZIndex(21+ (layer*4) + r);
+    this->SetZIndex(21+ static_cast<float>((layer*4) + r)/16.0f);
 }

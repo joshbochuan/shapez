@@ -73,6 +73,7 @@ void App::Start() {
     }
 
     scene = std::make_shared<TitleScene>();
+    m_Root.AddChild(scene);
     OperateMachines();
     m_Root.Update(pool);
 
@@ -81,7 +82,14 @@ void App::Start() {
 
 void App::Update() {
     auto start = std::chrono::steady_clock::now();
-    scene = scene->Update();
+
+    std::shared_ptr<Scene> nextScene = scene->Update();
+    if (nextScene != nullptr) {
+        m_Root.RemoveChild(scene);
+        m_Root.AddChild(nextScene);
+        scene = nextScene;
+    }
+
     auto t1 = std::chrono::steady_clock::now();
     OperateMachines();
     auto t2 = std::chrono::steady_clock::now();

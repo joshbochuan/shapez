@@ -97,6 +97,10 @@ add_executable(${PROJECT_NAME}
         src/Opti/OptiImage.cpp
         include/ThreadPool.hpp
         include/WaitGroup.hpp
+        include/scenes/UpgradeScene.hpp
+        include/UIelement/ProgressBar.hpp
+        src/UIelement/ProgressBar.cpp
+        src/scenes/UpgradeScene.cpp
 )
 
 if(MSVC)

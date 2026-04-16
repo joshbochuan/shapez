@@ -29,6 +29,7 @@
 #include <cmath>
 #include <algorithm>
 #include <vector>
+#include "scenes/UpgradeScene.hpp"
 using namespace World;
 
 void GameScene::UserMoveCamera() {
@@ -394,7 +395,7 @@ GameScene::GameScene() {
         buttons.back()->lockedImage->SetZIndex(82);
         buttons.back()->lockedImageScale = 0.3;
         buttons.back()->locked = true;
-        m_Root.AddChild(buttons.back());
+        AddChild(buttons.back());
     }
 
     buttons[0]->SetImage(std::make_shared<Util::Image>("../Resources/ui/building_icons/belt.png"));
@@ -423,15 +424,29 @@ GameScene::GameScene() {
     toolbar->m_Transform.translation = {0, -windowPercent * 630};
     toolbar->m_Transform.scale = {windowPercent, windowPercent};
     toolbar->SetZIndex(80);
-    m_Root.AddChild(toolbar);
+    AddChild(toolbar);
 
     heldPreview = std::make_shared<OptiObject>();
     heldPreview->SetVisible(false);
     heldPreview->SetZIndex(99);
-    m_Root.AddChild(heldPreview);
+    AddChild(heldPreview);
 }
 
 std::shared_ptr<Scene> GameScene::Update() {
+    if (Util::Input::IsKeyUp(Util::Keycode::F)) {
+        subScene = std::make_shared<UpgradeScene>();
+        AddChild(subScene);
+    }
+    if (subScene != nullptr) {
+        auto next = subScene->Update();
+        if (next == nullptr) {
+            RemoveChild(subScene);
+            subScene = nullptr;
+        }
+        else {return shared_from_this();}
+    }
+
+    UserMoveCamera();
     toolbar->Update();
     buttons[0]->locked = (LEVEL < BELT_LEVEL);
     buttons[1]->locked = (LEVEL < BALANCER_LEVEL);
@@ -461,6 +476,6 @@ std::shared_ptr<Scene> GameScene::Update() {
     int mouseY = std::floor((((Util::Input::GetCursorPosition().y / cam.scale.y) + cam.translation.y))/192.0f);
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) && !(toolbar->hovered)) {UserPlaceMachine(mouseX, mouseY);}
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB) && !(toolbar->hovered)) {UserRemoveMachine(mouseX, mouseY);}
-    UserMoveCamera();
-    return shared_from_this();
+
+    return nullptr;
 }

@@ -7,7 +7,7 @@
 #include <string>
 
 // thanks chatgpt
-std::string BigNumStr(int x) {
+inline std::string BigNumStr(int x) {
     const char* suffixes[] = {"", "k", "m", "b", "t", "qd", "qt", "sx", "sp", "o", "n", "d"};
     int suffixIndex = 0;
 

@@ -13,14 +13,14 @@ TitleScene::TitleScene() {
     title->SetZIndex(80);
     title->m_Transform.translation = glm::vec2(0, windowPercent * 550);
     title->m_Transform.scale = glm::vec2(windowPercent, windowPercent);
-    m_Root.AddChild(title);
+    AddChild(title);
 
     titleWindow = std::make_shared<OptiObject>();
     titleWindow->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/blobs/shapezbackground.png"));
     titleWindow->SetZIndex(80);
     titleWindow->m_Transform.translation = glm::vec2(windowPercent*0, windowPercent*(-100));
     titleWindow->m_Transform.scale = glm::vec2(windowPercent, windowPercent);
-    m_Root.AddChild(titleWindow);
+    AddChild(titleWindow);
 
     playButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/blobs/playButton.png"));
     playButton->text = std::make_shared<Text>("P L A Y", 54, Util::Color::FromRGB(255, 255, 255));
@@ -34,7 +34,7 @@ TitleScene::TitleScene() {
     playButton->m_Transform.translation.x -= windowPercent * 170;
     playButton->m_Transform.translation.y += windowPercent * 318;
     playButton->m_Transform.scale = glm::vec2(windowPercent, windowPercent);
-    m_Root.AddChild(playButton);
+    AddChild(playButton);
 
     importButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/blobs/importButton.png"));
     importButton->text = std::make_shared<Text>("IMPORT", 36, Util::Color::FromRGB(255, 255, 255));
@@ -48,7 +48,7 @@ TitleScene::TitleScene() {
     importButton->m_Transform.translation.x += windowPercent * 210;
     importButton->m_Transform.translation.y += windowPercent * (318+40);
     importButton->m_Transform.scale = glm::vec2(windowPercent, windowPercent);
-    m_Root.AddChild(importButton);
+    AddChild(importButton);
 
     newGameButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/blobs/importButton.png"));
     newGameButton->text = std::make_shared<Text>("NEW GAME", 36, Util::Color::FromRGB(255, 255, 255));
@@ -62,7 +62,7 @@ TitleScene::TitleScene() {
     newGameButton->m_Transform.translation.x += windowPercent * 210;
     newGameButton->m_Transform.translation.y += windowPercent * (318-40);
     newGameButton->m_Transform.scale = glm::vec2(windowPercent, windowPercent);
-    m_Root.AddChild(newGameButton);
+    AddChild(newGameButton);
 }
 
 std::shared_ptr<Scene> TitleScene::Update() {
@@ -70,12 +70,7 @@ std::shared_ptr<Scene> TitleScene::Update() {
     newGameButton->Update();
     importButton->Update();
     if (playButton->released) {
-        m_Root.RemoveChild(playButton);
-        m_Root.RemoveChild(title);
-        m_Root.RemoveChild(titleWindow);
-        m_Root.RemoveChild(importButton);
-        m_Root.RemoveChild(newGameButton);
         return std::make_shared<GameScene>();
     }
-    return shared_from_this();
+    return nullptr;
 }
