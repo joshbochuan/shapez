@@ -49,6 +49,7 @@ namespace World {
         static_cast<float>(WINDOW_HEIGHT)/1440.0f
         );
 
+    inline std::unordered_map<std::string, int> warehouse; // key: item code, value: amount
     inline std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<ItemAcceptor>, TriHash> MapAcceptors;
     inline std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<ItemEjector>, TriHash> MapEjectors;
     inline std::unordered_map<std::pair<int, int>, std::shared_ptr<Machine>, PairHash> MapMachines;
@@ -60,6 +61,17 @@ namespace World {
     inline int SEED = 67;
     inline int LEVEL = 1;
     inline int PROGRESS = 0;
+    inline long long CREATION_TIME = 0;
+
+    inline int UPGRADE_BELT = 1;
+    inline int UPGRADE_PROCESS = 1;
+    inline int UPGRADE_MINE = 1;
+    inline int UPGRADE_PAINT = 1;
+
+    inline float MULTIPLIER_BELT = 1;
+    inline float MULTIPLIER_PROCESS = 1;
+    inline float MULTIPLIER_MINE = 1;
+    inline float MULTIPLIER_PAINT = 1;
 
     inline int BELT_LEVEL = 1;
     inline int MINER_LEVEL = 1;
@@ -91,8 +103,18 @@ namespace World {
     inline float PAINT_RATE = 0.334/FPS_CAP;
     inline float MIX_RATE = 0.4/FPS_CAP;
 
+    enum class UpgradeType {
+        BELT,
+        PROCESS,
+        MINE,
+        PAINT
+    };
+
+    float getMultiplierByLevel(int level);
+
     void OperateMachines();
 
+    void ClearWorld();
     std::string SaveWorld(std::string save);
     void LoadWorld(std::string save);
 };

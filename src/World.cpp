@@ -119,9 +119,50 @@ std::vector<std::vector<std::string>> parse2D(const std::string& input) {
     return result;
 }
 
+void World::ClearWorld() {
+    for (int i = LstMachines.size()-1; i >= 0; i--) {
+        LstMachines[i]->Delete();
+        m_Root.RemoveChild(LstMachines[i]);
+    }
+    LstMachines.clear();
+    MapMachines.clear();
+    MapAcceptors.clear();
+    MapEjectors.clear();
+    warehouse.clear();
+
+    SEED = 0;
+    LEVEL = 1;
+    PROGRESS = 0;
+    UPGRADE_BELT = 1;
+    UPGRADE_PROCESS = 1;
+    UPGRADE_MINE = 1;
+    UPGRADE_PAINT = 1;
+    MULTIPLIER_BELT = 1;
+    MULTIPLIER_PROCESS = 1;
+    MULTIPLIER_MINE = 1;
+    MULTIPLIER_PAINT = 1;
+}
+
+
 std::string World::SaveWorld(std::string save) {
     std::string res;
-    res += std::to_string(SEED) + " " + std::to_string(LEVEL) + " " + std::to_string(PROGRESS) + "\n";
+    res += "LEVEL " + std::to_string(LEVEL) + "\n";
+    long long time = std::chrono::duration_cast<std::chrono::seconds>(
+                      std::chrono::system_clock::now().time_since_epoch()
+                  ).count();
+    res += "LAST_PLAYED_AT " + std::to_string(time) + "\n";
+    res += "CREATED_AT " + std::to_string(CREATION_TIME) + "\n";
+    res += "SEED " + std::to_string(SEED) + "\n";
+    res += "PROGRESS " + std::to_string(PROGRESS) + "\n";
+    res += "UPGRADE_BELT " + std::to_string(UPGRADE_BELT) + "\n";
+    res += "UPGRADE_PROCESS " + std::to_string(UPGRADE_PROCESS) + "\n";
+    res += "UPGRADE_MINE " + std::to_string(UPGRADE_MINE) + "\n";
+    res += "UPGRADE_PAINT " + std::to_string(UPGRADE_PAINT) + "\n";
+
+    for (auto& [item, cnt] : warehouse) {
+        if (cnt == 0) {continue;}
+        res += "WAREHOUSE " + item + " " + std::to_string(cnt) + "\n";
+    }
     for (auto& machine: LstMachines) {
         if (machine->getName() == MachineName::BALANCER) {
             res += "BALANCER "
@@ -244,14 +285,7 @@ std::string World::SaveWorld(std::string save) {
 }
 
 void World::LoadWorld(std::string save) {
-    for (auto& machine : LstMachines) {
-        machine->Delete();
-        m_Root.RemoveChild(machine);
-    }
-    LstMachines.clear();
-    MapMachines.clear();
-    MapAcceptors.clear();
-    MapEjectors.clear();
+    ClearWorld();
 
     std::vector<std::vector<std::string>> MachinesToAdd;
     std::ifstream file("../Saves/" + save);
@@ -262,15 +296,27 @@ void World::LoadWorld(std::string save) {
     }
     else {return;}
 
-    SEED = std::stoi(MachinesToAdd[0][0]);
-    LEVEL = std::stoi(MachinesToAdd[0][1]);
-    PROGRESS = std::stoi(MachinesToAdd[0][2]);
+    for (auto& prop : MachinesToAdd) {
+        if (prop[0] == "LEVEL") {LEVEL = std::stoi(prop[1]);}
+        if (prop[0] == "CREATED_AT") {CREATION_TIME = std::stoi(prop[1]);}
+        if (prop[0] == "SEED") {SEED = std::stoi(prop[1]);}
+        if (prop[0] == "PROGRESS") {PROGRESS = std::stoi(prop[1]);}
+        if (prop[0] == "UPGRADE_BELT") {UPGRADE_BELT = std::stoi(prop[1]);}
+        if (prop[0] == "UPGRADE_PROCESS") {UPGRADE_PROCESS = std::stoi(prop[1]);}
+        if (prop[0] == "UPGRADE_MINE") {UPGRADE_MINE = std::stoi(prop[1]);}
+        if (prop[0] == "UPGRADE_PAINT") {UPGRADE_PAINT = std::stoi(prop[1]);}
+    }
 
     hub->Init();
     hub->LoadState();
+    MULTIPLIER_BELT = getMultiplierByLevel(UPGRADE_BELT);
+    MULTIPLIER_PROCESS = getMultiplierByLevel(UPGRADE_PROCESS);
+    MULTIPLIER_MINE = getMultiplierByLevel(UPGRADE_MINE);
+    MULTIPLIER_PAINT = getMultiplierByLevel(UPGRADE_PAINT);
 
     for (auto& prop : MachinesToAdd) {
-        if (prop[0] == "BALANCER") {
+        if (prop[0] == "WAREHOUSE") {warehouse[prop[1]] = std::stoi(prop[2]);}
+        else if (prop[0] == "BALANCER") {
             int x = std::stoi(prop[1]);
             int y = std::stoi(prop[2]);
             int r = std::stoi(prop[3]);
@@ -390,5 +436,19 @@ void World::LoadWorld(std::string save) {
             MapEjectors[{x, y, r}]->progress = progress;
             MapEjectors[{x, y, r}]->AddChild(item);
         }
+    }
+}
+
+float World::getMultiplierByLevel(int level) {
+    switch (level) {
+        case 1: return 1;
+        case 2: return 1.5;
+        case 3: return 2;
+        case 4: return 3;
+        case 5: return 4;
+        case 6: return 6;
+        case 7: return 7;
+        case 8: return 8;
+        default: return 8;
     }
 }

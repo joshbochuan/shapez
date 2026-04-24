@@ -9,9 +9,11 @@
 #include "UIelement/Text.hpp"
 #include "items/Shape.hpp"
 #include "Scene.hpp"
+#include "World.hpp"
 
 class UpgradeBlob: public OptiObject {
 public:
+    World::UpgradeType type;
     std::shared_ptr<Button> upgradeButton;
     std::vector<std::shared_ptr<Item>> itemTargets;
     std::vector<std::shared_ptr<ProgressBar>> progressBars;
@@ -20,10 +22,9 @@ public:
 
     std::shared_ptr<OptiObject> tierBackground;
     std::shared_ptr<Text> tierText;
-    std::vector<std::reference_wrapper<int>> progresses;
-    UpgradeBlob(std::string title);
+    UpgradeBlob(World::UpgradeType type, std::string title);
     void ClearTarget();
-    void AddTarget(std::shared_ptr<Item> item, int& progress, int target);
+    void AddTarget(std::shared_ptr<Item> item, int target);
     void Update();
 };
 

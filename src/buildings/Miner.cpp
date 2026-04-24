@@ -112,7 +112,7 @@ void Miner::Update() {
         this->product->Update();
     }
 
-    cooldown += rate * static_cast<float>(chainLen);
+    cooldown += rate * static_cast<float>(chainLen) * MULTIPLIER_MINE;
     if ((cooldown >= 1)
         && (product != nullptr)
         && (ejector->item == nullptr)) {

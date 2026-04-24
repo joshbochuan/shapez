@@ -5,10 +5,158 @@
 
 #include "BigNumStr.hpp"
 #include "World.hpp"
+#include <string>
+#include <iomanip>
+#include <sstream>
+
+#include "spdlog/fmt/bundled/color.h"
 
 using namespace World;
 
-UpgradeBlob::UpgradeBlob(std::string title) {
+void AddTargetsByLevel(std::shared_ptr<UpgradeBlob> blob, int level) {
+    blob->ClearTarget();
+    UpgradeType type = blob->type;
+    if (level == 6) {
+        blob->AddTarget(std::make_shared<Shape>("CpRpCp--:SwSwSwSw"), 25000);
+    }
+    else if (level == 7) {
+        blob->AddTarget(std::make_shared<Shape>("CpRpCp--:SwSwSwSw"), 25000);
+        blob->AddTarget(std::make_shared<Shape>("RuCw--Cw:----Ru--"), 50000);
+    }
+    else if (level >= 8) {
+        blob->AddTarget(std::make_shared<Shape>("CpRpCp--:SwSwSwSw"), 30000);
+        blob->AddTarget(std::make_shared<Shape>("RuCw--Cw:----Ru--"), 20000);
+        blob->AddTarget(std::make_shared<Shape>("CbCuCbCu:Sr------:--CrSrCr:CwCwCwCw"), 20000);
+    }
+    else if (type == UpgradeType::BELT) {
+        if (level == 1) {
+            blob->AddTarget(std::make_shared<Shape>("CuCuCuCu"), 30);
+        }
+        else if (level == 2) {
+            blob->AddTarget(std::make_shared<Shape>("CuCuCuCu"), 75);
+            blob->AddTarget(std::make_shared<Shape>("--CuCu--"), 500);
+        }
+        else if (level == 3) {
+            blob->AddTarget(std::make_shared<Shape>("CuCuCuCu"), 180);
+            blob->AddTarget(std::make_shared<Shape>("--CuCu--"), 1200);
+            blob->AddTarget(std::make_shared<Shape>("CpCpCpCp"), 1000);
+        }
+        else if (level == 4) {
+            blob->AddTarget(std::make_shared<Shape>("CuCuCuCu"), 440);
+            blob->AddTarget(std::make_shared<Shape>("--CuCu--"), 3000);
+            blob->AddTarget(std::make_shared<Shape>("CpCpCpCp"), 2500);
+            blob->AddTarget(std::make_shared<Shape>("SrSrSrSr:CyCyCyCy"), 6000);
+        }
+        else if (level == 5) {
+            blob->AddTarget(std::make_shared<Shape>("CuCuCuCu"), 1100);
+            blob->AddTarget(std::make_shared<Shape>("--CuCu--"), 7000);
+            blob->AddTarget(std::make_shared<Shape>("CpCpCpCp"), 6000);
+            blob->AddTarget(std::make_shared<Shape>("SrSrSrSr:CyCyCyCy"), 15000);
+            blob->AddTarget(std::make_shared<Shape>("SrSrSrSr:CyCyCyCy:SwSwSwSw"), 25000);
+        }
+    }
+    else if (type == UpgradeType::PROCESS) {
+        if (level == 1) {
+            blob->AddTarget(std::make_shared<Shape>("SuSuSuSu"), 500);
+        }
+        else if (level == 2) {
+            blob->AddTarget(std::make_shared<Shape>("SuSuSuSu"), 1200);
+            blob->AddTarget(std::make_shared<Shape>("RuRu----"), 600);
+        }
+        else if (level == 3) {
+            blob->AddTarget(std::make_shared<Shape>("SuSuSuSu"), 3000);
+            blob->AddTarget(std::make_shared<Shape>("RuRu----"), 1500);
+            blob->AddTarget(std::make_shared<Shape>("CgScScCg"), 3500);
+        }
+        else if (level == 4) {
+            blob->AddTarget(std::make_shared<Shape>("SuSuSuSu"), 7000);
+            blob->AddTarget(std::make_shared<Shape>("RuRu----"), 3500);
+            blob->AddTarget(std::make_shared<Shape>("CgScScCg"), 8000);
+            blob->AddTarget(std::make_shared<Shape>("CwCrCwCr:SgSgSgSg"), 25000);
+        }
+        else if (level == 5) {
+            blob->AddTarget(std::make_shared<Shape>("SuSuSuSu"), 17000);
+            blob->AddTarget(std::make_shared<Shape>("RuRu----"), 800);
+            blob->AddTarget(std::make_shared<Shape>("CgScScCg"), 20000);
+            blob->AddTarget(std::make_shared<Shape>("CwCrCwCr:SgSgSgSg"), 60000);
+            blob->AddTarget(std::make_shared<Shape>("WrRgWrRg:CwCrCwCr:SgSgSgSg"), 50000);
+        }
+    }
+    else if (type == UpgradeType::MINE) {
+        if (level == 1) {
+            blob->AddTarget(std::make_shared<Shape>("RuRuRuRu"), 300);
+        }
+        else if (level == 2) {
+            blob->AddTarget(std::make_shared<Shape>("RuRuRuRu"), 740);
+            blob->AddTarget(std::make_shared<Shape>("Cu------"), 800);
+        }
+        else if (level == 3) {
+            blob->AddTarget(std::make_shared<Shape>("RuRuRuRu"), 1800);
+            blob->AddTarget(std::make_shared<Shape>("Cu------"), 2000);
+            blob->AddTarget(std::make_shared<Shape>("ScScScSc"), 3500);
+        }
+        else if (level == 4) {
+            blob->AddTarget(std::make_shared<Shape>("RuRuRuRu"), 4500);
+            blob->AddTarget(std::make_shared<Shape>("Cu------"), 5000);
+            blob->AddTarget(std::make_shared<Shape>("ScScScSc"), 8000);
+            blob->AddTarget(std::make_shared<Shape>("CwCwCwCw:WbWbWbWb"), 23000);
+        }
+        else if (level == 5) {
+            blob->AddTarget(std::make_shared<Shape>("RuRuRuRu"), 11000);
+            blob->AddTarget(std::make_shared<Shape>("Cu------"), 12000);
+            blob->AddTarget(std::make_shared<Shape>("ScScScSc"), 20000);
+            blob->AddTarget(std::make_shared<Shape>("CwCwCwCw:WbWbWbWb"), 50000);
+            blob->AddTarget(std::make_shared<Shape>("CbRbRbCb:CwCwCwCw:WbWbWbWb"), 50000);
+        }
+    }
+    else if (type == UpgradeType::PAINT) {
+        if (level == 1) {
+            blob->AddTarget(std::make_shared<Shape>("RbRb----"), 600);
+        }
+        else if (level == 2) {
+            blob->AddTarget(std::make_shared<Shape>("RbRb----"), 1500);
+            blob->AddTarget(std::make_shared<Shape>("WrWrWrWr"), 3800);
+        }
+        else if (level == 3) {
+            blob->AddTarget(std::make_shared<Shape>("RbRb----"), 3500);
+            blob->AddTarget(std::make_shared<Shape>("WrWrWrWr"), 9000);
+            blob->AddTarget(std::make_shared<Shape>("RpRpRpRp:CwCwCwCw"), 6500);
+        }
+        else if (level == 4) {
+            blob->AddTarget(std::make_shared<Shape>("RbRb----"), 8000);
+            blob->AddTarget(std::make_shared<Shape>("WrWrWrWr"), 20000);
+            blob->AddTarget(std::make_shared<Shape>("RpRpRpRp:CwCwCwCw"), 16000);
+            blob->AddTarget(std::make_shared<Shape>("WpWpWpWp:CwCwCwCw:WpWpWpWp"), 25000);
+        }
+        else if (level == 5) {
+            blob->AddTarget(std::make_shared<Shape>("RbRb----"), 20000);
+            blob->AddTarget(std::make_shared<Shape>("WrWrWrWr"), 50000);
+            blob->AddTarget(std::make_shared<Shape>("RpRpRpRp:CwCwCwCw"), 40000);
+            blob->AddTarget(std::make_shared<Shape>("WpWpWpWp:CwCwCwCw:WpWpWpWp"), 60000);
+            blob->AddTarget(std::make_shared<Shape>("WpWpWpWp:CwCwCwCw:WpWpWpWp:CwCwCwCw"), 50000);
+        }
+    }
+}
+
+std::string intToRoman(int num) {
+    // Value-symbol pairs in descending order
+    int values[] =    {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    std::string symbols[] ={"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+
+    std::string result = "";
+
+    for (int i = 0; i < 13; i++) {
+        while (num >= values[i]) {
+            result += symbols[i];
+            num -= values[i];
+        }
+    }
+
+    return result;
+}
+
+UpgradeBlob::UpgradeBlob(UpgradeType type, std::string title) {
+    this->type = type;
     SetDrawable(std::make_shared<Util::Image>("../Resources/ui/blobs/upgradeBlob.png"));
     this->title = std::make_shared<Text>(title, 36, Util::Color::FromRGB(0, 0, 0));
     this->title->SetZIndex(93);
@@ -35,19 +183,45 @@ UpgradeBlob::UpgradeBlob(std::string title) {
     AddChild(multiplier);
 }
 
+std::string formatSpeed(float from, float to) {
+    std::ostringstream oss;
+    oss << "Speed x"
+        << std::fixed << std::setprecision(2) << from
+        << " -> x"
+        << std::fixed << std::setprecision(2) << to;
+    return oss.str();
+}
+
 void UpgradeBlob::Update() {
     title->m_Transform.scale = m_Transform.scale;
     title->m_Transform.translation.x = m_Transform.translation.x - windowPercent * 480;
     title->m_Transform.translation.y = m_Transform.translation.y + windowPercent * 90;
     tierBackground->m_Transform.translation.x = -575*m_Transform.scale.x + m_Transform.translation.x;
     tierBackground->m_Transform.translation.y = 90*m_Transform.scale.y + m_Transform.translation.y;
+
     tierText->m_Transform = tierBackground->m_Transform;
+    switch (type) {
+        case UpgradeType::BELT: tierText->m_Text->SetText("TIER " + intToRoman(UPGRADE_BELT)); break;
+        case UpgradeType::MINE: tierText->m_Text->SetText("TIER " + intToRoman(UPGRADE_MINE)); break;
+        case UpgradeType::PROCESS: tierText->m_Text->SetText("TIER " + intToRoman(UPGRADE_PROCESS)); break;
+        case UpgradeType::PAINT: tierText->m_Text->SetText("TIER " + intToRoman(UPGRADE_PAINT)); break;
+    }
+
     upgradeButton->m_Transform.translation.x = 550*m_Transform.scale.x + m_Transform.translation.x;
     upgradeButton->m_Transform.translation.y = -25*m_Transform.scale.y + m_Transform.translation.y;
     upgradeButton->Update();
     multiplier->m_Transform.scale = m_Transform.scale;
+
     multiplier->m_Transform.translation.x = m_Transform.translation.x + m_Transform.scale.x * 675;
     multiplier->m_Transform.translation.y = m_Transform.translation.y + m_Transform.scale.y * 90;
+    switch (type) {
+        // Speed x1.00 -> x1.50
+        case UpgradeType::BELT: multiplier->m_Text->SetText(formatSpeed(getMultiplierByLevel(UPGRADE_BELT), getMultiplierByLevel(UPGRADE_BELT+1))); break;
+        case UpgradeType::MINE: multiplier->m_Text->SetText(formatSpeed(getMultiplierByLevel(UPGRADE_MINE), getMultiplierByLevel(UPGRADE_MINE+1))); break;
+        case UpgradeType::PROCESS: multiplier->m_Text->SetText(formatSpeed(getMultiplierByLevel(UPGRADE_PROCESS), getMultiplierByLevel(UPGRADE_PROCESS+1))); break;
+        case UpgradeType::PAINT: multiplier->m_Text->SetText(formatSpeed(getMultiplierByLevel(UPGRADE_PAINT), getMultiplierByLevel(UPGRADE_PAINT+1))); break;
+    }
+
     for (int i=0; i<itemTargets.size(); i++) {
         itemTargets[i]->SetItemSize(m_Transform.scale);
         itemTargets[i]->m_Transform.translation.x = m_Transform.scale.x * static_cast<float>(-575 + (212.5*i));
@@ -56,8 +230,8 @@ void UpgradeBlob::Update() {
         progressBars[i]->m_Transform.scale = m_Transform.scale;
         progressBars[i]->m_Transform.translation.x = m_Transform.scale.x * static_cast<float>(-575 + (212.5*i));
         progressBars[i]->m_Transform.translation.y = m_Transform.translation.y + m_Transform.scale.y * -90.0f;
-        progressBars[i]->progress = progresses[i];
-        progressBars[i]->text->m_Text->SetText(BigNumStr(progresses[i]) + " / " + BigNumStr(static_cast<int>(progressBars[i]->target)));
+        progressBars[i]->progress = warehouse[itemTargets[i]->getCode()];
+        progressBars[i]->text->m_Text->SetText(BigNumStr(warehouse[itemTargets[i]->getCode()]) + " / " + BigNumStr(static_cast<int>(progressBars[i]->target)));
         progressBars[i]->Update();
     }
 }
@@ -67,10 +241,9 @@ void UpgradeBlob::ClearTarget() {
     itemTargets.clear();
     for (auto& bar: progressBars) {RemoveChild(bar);}
     progressBars.clear();
-    progresses.clear();
 }
 
-void UpgradeBlob::AddTarget(std::shared_ptr<Item> item, int &progress, int target) {
+void UpgradeBlob::AddTarget(std::shared_ptr<Item> item, int target) {
     item->MachineItemZIndex(93);
     itemTargets.push_back(item);
     item->Update();
@@ -79,14 +252,13 @@ void UpgradeBlob::AddTarget(std::shared_ptr<Item> item, int &progress, int targe
     progressBars.back()->SetBackground(std::make_shared<Util::Image>("../Resources/1px/E9EAEC.png"));
     progressBars.back()->SetBar(std::make_shared<Util::Image>("../Resources/1px/E3E7EA.png"));
     progressBars.back()->SetBarComplete(std::make_shared<Util::Image>("../Resources/1px/58B55C.png"));
-    progressBars.back()->progress = progress;
+    progressBars.back()->progress = warehouse[item->getCode()];
     progressBars.back()->target = target;
     progressBars.back()->SetBarZIndex(93);
     progressBars.back()->text = std::make_shared<Text>("0 / " + BigNumStr(target), 24, Util::Color::FromRGB(0, 0, 0));
     progressBars.back()->text->SetZIndex(94);
     progressBars.back()->AddChild(progressBars.back()->text);
     AddChild(progressBars.back());
-    progresses.push_back(progress);
 }
 
 UpgradeScene::UpgradeScene() {
@@ -108,30 +280,32 @@ UpgradeScene::UpgradeScene() {
     closeButton->m_Transform.translation = {windowPercent*650, windowPercent*550};
     AddChild(closeButton);
 
-    beltBlob = std::make_shared<UpgradeBlob>("Belts, Distributor & Tunnels");
+    beltBlob = std::make_shared<UpgradeBlob>(UpgradeType::BELT, "Belts, Distributor & Tunnels");
     beltBlob->m_Transform.scale = {windowPercent, windowPercent};
     beltBlob->m_Transform.translation = {windowPercent * (-12), windowPercent * 360};
     beltBlob->SetZIndex(92);
-    beltBlob->AddTarget(std::make_shared<Shape>("CuCuCuCu"), PROGRESS, 20);
-    beltBlob->AddTarget(std::make_shared<Shape>("RuRuRuRu"), PROGRESS, 30);
+    AddTargetsByLevel(beltBlob, UPGRADE_BELT);
     AddChild(beltBlob);
 
-    mineBlob = std::make_shared<UpgradeBlob>("Extraction");
+    mineBlob = std::make_shared<UpgradeBlob>(UpgradeType::MINE, "Extraction");
     mineBlob->m_Transform.scale = {windowPercent, windowPercent};
     mineBlob->m_Transform.translation = {windowPercent * (-12), windowPercent * 90};
     mineBlob->SetZIndex(92);
+    AddTargetsByLevel(mineBlob, UPGRADE_MINE);
     AddChild(mineBlob);
 
-    processBlob = std::make_shared<UpgradeBlob>("Cutting, Rotating & Stacking");
+    processBlob = std::make_shared<UpgradeBlob>(UpgradeType::PROCESS, "Cutting, Rotating & Stacking");
     processBlob->m_Transform.scale = {windowPercent, windowPercent};
     processBlob->m_Transform.translation = {windowPercent * (-12), windowPercent * -180};
     processBlob->SetZIndex(92);
+    AddTargetsByLevel(processBlob, UPGRADE_PROCESS);
     AddChild(processBlob);
 
-    paintBlob = std::make_shared<UpgradeBlob>("Mixing & Painting");
+    paintBlob = std::make_shared<UpgradeBlob>(UpgradeType::PAINT, "Mixing & Painting");
     paintBlob->m_Transform.scale = {windowPercent, windowPercent};
     paintBlob->m_Transform.translation = {windowPercent * (-12), windowPercent * -450};
     paintBlob->SetZIndex(92);
+    AddTargetsByLevel(paintBlob, UPGRADE_PAINT);
     AddChild(paintBlob);
 }
 

@@ -123,6 +123,8 @@ void Hub::Update() {
         if (m_Acceptors[i]->progress < 1) {continue;}
 
         if (targetItem->getCode() == m_Acceptors[i]->item->getCode()) {PROGRESS++;}
+        warehouse[m_Acceptors[i]->item->getCode()];
+        warehouse[m_Acceptors[i]->item->getCode()]++; // ik this is scuffed
 
         m_Acceptors[i]->item->Update();
         m_Acceptors[i]->RemoveChild(this->m_Acceptors[i]->item);

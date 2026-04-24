@@ -64,7 +64,7 @@ void ItemAcceptor::Update() {
     this->m_Transform.scale = cam.scale * 1.01f;
 
     if (item == nullptr) {return;}
-    if (progress < 1) {progress += rate;}
+    if (progress < 1) {progress += rate * MULTIPLIER_BELT;}
 
     int dx, dy;
     glm::vec2 p1, p2;

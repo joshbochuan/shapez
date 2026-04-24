@@ -91,7 +91,7 @@ void Cutter::Update() {
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*384 < WINDOW_WIDTH>>1)
         && (std::abs(m_Transform.translation.y)-cam.scale.y*384 < WINDOW_HEIGHT>>1));
 
-    cooldown += rate;
+    cooldown += rate * MULTIPLIER_PROCESS;
     if ((cooldown >= 1)
         && (acceptor->item != nullptr)
         && (acceptor->progress >= 1)
