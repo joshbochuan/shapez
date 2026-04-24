@@ -7,7 +7,7 @@
 using namespace World;
 
 TitleScene::TitleScene() {
-    cam.scale = glm::vec2(0.2, 0.2);
+    cam.scale = glm::vec2(0.4 * windowPercent, 0.4 * windowPercent);
     LoadWorld("title.txt");
 
     blur = std::make_shared<OptiObject>();
