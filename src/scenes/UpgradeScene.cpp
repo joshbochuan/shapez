@@ -158,29 +158,33 @@ std::string intToRoman(int num) {
 UpgradeBlob::UpgradeBlob(UpgradeType type, std::string title) {
     this->type = type;
     SetDrawable(std::make_shared<Util::Image>("../Resources/ui/blobs/upgradeBlob.png"));
-    this->title = std::make_shared<Text>(title, 36, Util::Color::FromRGB(0, 0, 0));
-    this->title->SetZIndex(93);
+    this->title = std::make_shared<Text>(title, 36, Util::Color::FromRGB(94, 94, 94));
+    this->title->SetZIndex(94);
     this->title->SetPivot({-(this->title->m_Drawable->GetSize().x/2.0), 0});
     AddChild(this->title);
     this->tierBackground = std::make_shared<OptiObject>();
-    this->tierBackground->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/blobs/upgradeTier1.png"));
+    this->tierBackground->SetDrawable(tierBackgroundImages[0]);
     this->tierBackground->m_Transform.scale = {windowPercent, windowPercent};
-    this->tierBackground->SetZIndex(93);
+    this->tierBackground->SetZIndex(94);
     AddChild(this->tierBackground);
     this->tierText = std::make_shared<Text>("TIER I", 36, Util::Color::FromRGB(255, 255, 255));
-    this->tierText->SetZIndex(94);
+    this->tierText->SetZIndex(95);
+    this->tierText->SetPivot({-5, 0});
     AddChild(this->tierText);
-    upgradeButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/blobs/upgradeButtonLocked.png"));
+    upgradeButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/blobs/upgradeButton.png"));
+    upgradeButton->hoveredBackground = std::make_shared<Util::Image>("../Resources/ui/blobs/upgradeButtonHovered.png");
+    upgradeButton->lockedBackground = std::make_shared<Util::Image>("../Resources/ui/blobs/upgradeButtonLocked.png");
     upgradeButton->text = std::make_shared<Text>("UPGRADE", 36, Util::Color::FromRGB(255, 255, 255));
     upgradeButton->text->SetPivot({-7.5, 0});
-    upgradeButton->SetZIndex(93);
-    upgradeButton->text->SetZIndex(94);
+    upgradeButton->SetZIndex(94);
+    upgradeButton->text->SetZIndex(95);
     upgradeButton->AddChild(upgradeButton->text);
     AddChild(upgradeButton);
     multiplier = std::make_shared<Text>("Speed x1.00 -> x1.50", 36, Util::Color::FromRGB(172, 172, 172));
     multiplier->SetPivot({multiplier->m_Text->GetSize().x/2.0f, 0});
-    multiplier->SetZIndex(93);
+    multiplier->SetZIndex(94);
     AddChild(multiplier);
+    Update();
 }
 
 std::string formatSpeed(float from, float to) {
@@ -193,35 +197,33 @@ std::string formatSpeed(float from, float to) {
 }
 
 void UpgradeBlob::Update() {
+    int* contextLevel;
+    switch (type) {
+        case UpgradeType::BELT: contextLevel = &UPGRADE_BELT; break;
+        case UpgradeType::MINE: contextLevel = &UPGRADE_MINE; break;
+        case UpgradeType::PROCESS: contextLevel = &UPGRADE_PROCESS; break;
+        case UpgradeType::PAINT: contextLevel = &UPGRADE_PAINT; break;
+        default: contextLevel = nullptr; break;
+    }
+    if (contextLevel == nullptr) {throw std::invalid_argument("invalid upgrade blob type");}
+
     title->m_Transform.scale = m_Transform.scale;
     title->m_Transform.translation.x = m_Transform.translation.x - windowPercent * 480;
     title->m_Transform.translation.y = m_Transform.translation.y + windowPercent * 90;
     tierBackground->m_Transform.translation.x = -575*m_Transform.scale.x + m_Transform.translation.x;
     tierBackground->m_Transform.translation.y = 90*m_Transform.scale.y + m_Transform.translation.y;
+    if (*contextLevel >= 8) {tierBackground->SetDrawable(tierBackgroundImages[7]);}
+    else {tierBackground->SetDrawable(tierBackgroundImages[(*contextLevel)-1]);}
 
     tierText->m_Transform = tierBackground->m_Transform;
-    switch (type) {
-        case UpgradeType::BELT: tierText->m_Text->SetText("TIER " + intToRoman(UPGRADE_BELT)); break;
-        case UpgradeType::MINE: tierText->m_Text->SetText("TIER " + intToRoman(UPGRADE_MINE)); break;
-        case UpgradeType::PROCESS: tierText->m_Text->SetText("TIER " + intToRoman(UPGRADE_PROCESS)); break;
-        case UpgradeType::PAINT: tierText->m_Text->SetText("TIER " + intToRoman(UPGRADE_PAINT)); break;
-    }
+    tierText->m_Text->SetText("TIER " + intToRoman(*contextLevel));
 
-    upgradeButton->m_Transform.translation.x = 550*m_Transform.scale.x + m_Transform.translation.x;
-    upgradeButton->m_Transform.translation.y = -25*m_Transform.scale.y + m_Transform.translation.y;
-    upgradeButton->Update();
     multiplier->m_Transform.scale = m_Transform.scale;
-
     multiplier->m_Transform.translation.x = m_Transform.translation.x + m_Transform.scale.x * 675;
     multiplier->m_Transform.translation.y = m_Transform.translation.y + m_Transform.scale.y * 90;
-    switch (type) {
-        // Speed x1.00 -> x1.50
-        case UpgradeType::BELT: multiplier->m_Text->SetText(formatSpeed(getMultiplierByLevel(UPGRADE_BELT), getMultiplierByLevel(UPGRADE_BELT+1))); break;
-        case UpgradeType::MINE: multiplier->m_Text->SetText(formatSpeed(getMultiplierByLevel(UPGRADE_MINE), getMultiplierByLevel(UPGRADE_MINE+1))); break;
-        case UpgradeType::PROCESS: multiplier->m_Text->SetText(formatSpeed(getMultiplierByLevel(UPGRADE_PROCESS), getMultiplierByLevel(UPGRADE_PROCESS+1))); break;
-        case UpgradeType::PAINT: multiplier->m_Text->SetText(formatSpeed(getMultiplierByLevel(UPGRADE_PAINT), getMultiplierByLevel(UPGRADE_PAINT+1))); break;
-    }
+    multiplier->m_Text->SetText(formatSpeed(getMultiplierByLevel(*contextLevel), getMultiplierByLevel((*contextLevel)+1)));
 
+    bool upgradeAvailable = true;
     for (int i=0; i<itemTargets.size(); i++) {
         itemTargets[i]->SetItemSize(m_Transform.scale);
         itemTargets[i]->m_Transform.translation.x = m_Transform.scale.x * static_cast<float>(-575 + (212.5*i));
@@ -231,9 +233,29 @@ void UpgradeBlob::Update() {
         progressBars[i]->m_Transform.translation.x = m_Transform.scale.x * static_cast<float>(-575 + (212.5*i));
         progressBars[i]->m_Transform.translation.y = m_Transform.translation.y + m_Transform.scale.y * -90.0f;
         progressBars[i]->progress = warehouse[itemTargets[i]->getCode()];
+        if (progressBars[i]->progress < progressBars[i]->target) {upgradeAvailable = false;}
         progressBars[i]->text->m_Text->SetText(BigNumStr(warehouse[itemTargets[i]->getCode()]) + " / " + BigNumStr(static_cast<int>(progressBars[i]->target)));
         progressBars[i]->Update();
     }
+    upgradeButton->locked = !upgradeAvailable;
+    upgradeButton->m_Transform.translation.x = 550*m_Transform.scale.x + m_Transform.translation.x;
+    upgradeButton->m_Transform.translation.y = -25*m_Transform.scale.y + m_Transform.translation.y;
+    upgradeButton->Update();
+    if (!upgradeButton->released) {return;}
+
+
+    (*contextLevel)++;
+    AddTargetsByLevel(shared_from_this(), *contextLevel);
+    for (int i=0; i<itemTargets.size(); i++) {warehouse[itemTargets[i]->getCode()] -= progressBars[i]->target;}
+    switch (type) {
+        case UpgradeType::BELT: MULTIPLIER_BELT = getMultiplierByLevel(*contextLevel); break;
+        case UpgradeType::MINE: MULTIPLIER_MINE = getMultiplierByLevel(*contextLevel); break;
+        case UpgradeType::PROCESS: MULTIPLIER_PROCESS = getMultiplierByLevel(*contextLevel); break;
+        case UpgradeType::PAINT: MULTIPLIER_PAINT = getMultiplierByLevel(*contextLevel); break;
+        default: contextLevel = nullptr; break;
+    }
+    upgradeSFX->Play();
+    Update();
 }
 
 void UpgradeBlob::ClearTarget() {
@@ -244,26 +266,27 @@ void UpgradeBlob::ClearTarget() {
 }
 
 void UpgradeBlob::AddTarget(std::shared_ptr<Item> item, int target) {
-    item->MachineItemZIndex(93);
+    item->MachineItemZIndex(94);
     itemTargets.push_back(item);
     item->Update();
     AddChild(item);
     progressBars.push_back(std::make_shared<ProgressBar>(std::make_shared<Util::Image>("../Resources/ui/blobs/upgradeProgressBar.png")));
-    progressBars.back()->SetBackground(std::make_shared<Util::Image>("../Resources/1px/E9EAEC.png"));
-    progressBars.back()->SetBar(std::make_shared<Util::Image>("../Resources/1px/E3E7EA.png"));
+    progressBars.back()->SetBackground(std::make_shared<Util::Image>("../Resources/1px/E2E4E6.png"));
+    progressBars.back()->SetBar(std::make_shared<Util::Image>("../Resources/1px/BDBFCA.png"));
     progressBars.back()->SetBarComplete(std::make_shared<Util::Image>("../Resources/1px/58B55C.png"));
     progressBars.back()->progress = warehouse[item->getCode()];
     progressBars.back()->target = target;
-    progressBars.back()->SetBarZIndex(93);
-    progressBars.back()->text = std::make_shared<Text>("0 / " + BigNumStr(target), 24, Util::Color::FromRGB(0, 0, 0));
-    progressBars.back()->text->SetZIndex(94);
+    progressBars.back()->SetBarZIndex(94);
+    progressBars.back()->text = std::make_shared<Text>("0 / " + BigNumStr(target), 24, Util::Color::FromRGB(94, 94, 94));
+    progressBars.back()->text->SetZIndex(95);
     progressBars.back()->AddChild(progressBars.back()->text);
+    progressBars.back()->text->SetPivot({-5, 0});
     AddChild(progressBars.back());
 }
 
 UpgradeScene::UpgradeScene() {
-    title = std::make_shared<Text>("UPGRADES", 64, Util::Color::FromRGB(0, 0, 0));
-    title->SetZIndex(92);
+    title = std::make_shared<Text>("UPGRADES", 64, Util::Color::FromRGB(94, 94, 94));
+    title->SetZIndex(93);
     title->m_Transform.scale = {windowPercent, windowPercent};
     title->m_Transform.translation = {windowPercent * (-520), windowPercent * 540};
     AddChild(title);
@@ -271,42 +294,52 @@ UpgradeScene::UpgradeScene() {
     background = std::make_shared<OptiObject>();
     background->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/blobs/upgradebackground.png"));
     background->m_Transform.scale = {windowPercent, windowPercent};
-    background->SetZIndex(91);
+    background->SetZIndex(92);
     AddChild(background);
+
+    blur = std::make_shared<OptiObject>();
+    blur->SetDrawable(std::make_shared<Util::Image>("../Resources/1px/blur.png"));
+    blur->m_Transform.scale = {WINDOW_WIDTH, WINDOW_HEIGHT};
+    blur->SetZIndex(91);
+    AddChild(blur);
 
     closeButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/icons/close.png"));
     closeButton->m_Transform.scale = {windowPercent, windowPercent};
-    closeButton->SetZIndex(92);
+    closeButton->SetZIndex(93);
     closeButton->m_Transform.translation = {windowPercent*650, windowPercent*550};
     AddChild(closeButton);
 
     beltBlob = std::make_shared<UpgradeBlob>(UpgradeType::BELT, "Belts, Distributor & Tunnels");
     beltBlob->m_Transform.scale = {windowPercent, windowPercent};
     beltBlob->m_Transform.translation = {windowPercent * (-12), windowPercent * 360};
-    beltBlob->SetZIndex(92);
+    beltBlob->SetZIndex(93);
     AddTargetsByLevel(beltBlob, UPGRADE_BELT);
     AddChild(beltBlob);
+    beltBlob->Update();
 
     mineBlob = std::make_shared<UpgradeBlob>(UpgradeType::MINE, "Extraction");
     mineBlob->m_Transform.scale = {windowPercent, windowPercent};
     mineBlob->m_Transform.translation = {windowPercent * (-12), windowPercent * 90};
-    mineBlob->SetZIndex(92);
+    mineBlob->SetZIndex(93);
     AddTargetsByLevel(mineBlob, UPGRADE_MINE);
     AddChild(mineBlob);
+    mineBlob->Update();
 
     processBlob = std::make_shared<UpgradeBlob>(UpgradeType::PROCESS, "Cutting, Rotating & Stacking");
     processBlob->m_Transform.scale = {windowPercent, windowPercent};
     processBlob->m_Transform.translation = {windowPercent * (-12), windowPercent * -180};
-    processBlob->SetZIndex(92);
+    processBlob->SetZIndex(93);
     AddTargetsByLevel(processBlob, UPGRADE_PROCESS);
     AddChild(processBlob);
+    processBlob->Update();
 
     paintBlob = std::make_shared<UpgradeBlob>(UpgradeType::PAINT, "Mixing & Painting");
     paintBlob->m_Transform.scale = {windowPercent, windowPercent};
     paintBlob->m_Transform.translation = {windowPercent * (-12), windowPercent * -450};
-    paintBlob->SetZIndex(92);
+    paintBlob->SetZIndex(93);
     AddTargetsByLevel(paintBlob, UPGRADE_PAINT);
     AddChild(paintBlob);
+    paintBlob->Update();
 }
 
 std::shared_ptr<Scene> UpgradeScene::Update() {
@@ -315,7 +348,7 @@ std::shared_ptr<Scene> UpgradeScene::Update() {
     mineBlob->Update();
     paintBlob->Update();
     closeButton->Update();
-    if (closeButton->released) {
+    if (closeButton->released || Util::Input::IsKeyUp(Util::Keycode::F)) {
         return nullptr;
     }
     return shared_from_this();

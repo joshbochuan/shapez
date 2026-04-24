@@ -77,6 +77,7 @@ namespace World {
     inline int MINER_LEVEL = 1;
     inline int CUTTER_LEVEL = 2;
     inline int TRASH_LEVEL = 2;
+    inline int UPGRADE_LEVEL = 3;
     inline int BALANCER_LEVEL = 4;
     inline int ROTATOR_LEVEL = 5;
     inline int TUNNEL_LEVEL = 6;

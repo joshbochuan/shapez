@@ -11,8 +11,11 @@
 #include "Scene.hpp"
 #include "World.hpp"
 
-class UpgradeBlob: public OptiObject {
+class UpgradeBlob: public OptiObject, public std::enable_shared_from_this<UpgradeBlob> {
 public:
+    static inline std::shared_ptr<Util::SFX> upgradeSFX;
+    static inline std::vector<std::shared_ptr<Util::Image>> tierBackgroundImages;
+
     World::UpgradeType type;
     std::shared_ptr<Button> upgradeButton;
     std::vector<std::shared_ptr<Item>> itemTargets;
@@ -30,6 +33,7 @@ public:
 
 class UpgradeScene: public Scene {
     std::shared_ptr<OptiObject> background;
+    std::shared_ptr<OptiObject> blur;
     std::shared_ptr<Text> title;
     std::shared_ptr<Button> closeButton;
     std::shared_ptr<UpgradeBlob> beltBlob;

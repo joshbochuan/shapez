@@ -379,10 +379,10 @@ GameScene::GameScene() {
     for (int i=0; i<10; i++) {
         buttons.push_back(std::make_shared<Button>(hoveredTexture));
         buttons.back()->m_Transform.translation = {windowPercent*(-517.5 + 115*i), -windowPercent*630};
-        buttons.back()->idleImage = nullptr;
-        buttons.back()->hoveredImage = hoveredTexture;
-        buttons.back()->heldImage = hoveredTexture;
-        buttons.back()->selectedImage = selectedTexture;
+        buttons.back()->idleBackground = nullptr;
+        buttons.back()->hoveredBackground = hoveredTexture;
+        buttons.back()->heldBackground = hoveredTexture;
+        buttons.back()->selectedBackground = selectedTexture;
         buttons.back()->SetZIndex(81);
         buttons.back()->idleSpeed = 3;
         buttons.back()->hoverSpeed = 3;
@@ -421,9 +421,11 @@ GameScene::GameScene() {
     buttons[9]->keys.push_back(Util::Keycode::NUM_0);
 
     toolbar = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/blobs/toolbar.png"));
+    toolbar->lockedBackground = toolbar->idleBackground;
     toolbar->m_Transform.translation = {0, -windowPercent * 630};
     toolbar->m_Transform.scale = {windowPercent, windowPercent};
     toolbar->SetZIndex(80);
+    toolbar->locked = true;
     AddChild(toolbar);
 
     heldPreview = std::make_shared<OptiObject>();
@@ -433,10 +435,6 @@ GameScene::GameScene() {
 }
 
 std::shared_ptr<Scene> GameScene::Update() {
-    if (Util::Input::IsKeyUp(Util::Keycode::F)) {
-        subScene = std::make_shared<UpgradeScene>();
-        AddChild(subScene);
-    }
     if (subScene != nullptr) {
         auto next = subScene->Update();
         if (next == nullptr) {
@@ -444,6 +442,10 @@ std::shared_ptr<Scene> GameScene::Update() {
             subScene = nullptr;
         }
         else {return shared_from_this();}
+    }
+    else if (Util::Input::IsKeyUp(Util::Keycode::F) && (LEVEL >= UPGRADE_LEVEL)) {
+        subScene = std::make_shared<UpgradeScene>();
+        AddChild(subScene);
     }
 
     UserMoveCamera();

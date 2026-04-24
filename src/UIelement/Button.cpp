@@ -9,18 +9,20 @@
 #include "Util/Image.hpp"
 #include "Util/Input.hpp"
 #include <cmath>
+#include <iostream>
 
 #include "World.hpp"
 using namespace World;
 
 Button::Button(std::shared_ptr<Util::Image> idleImage): OptiObject() {
     this->dimension = idleImage->GetSize();
-    this->idleImage = idleImage;
-    SetDrawable(this->idleImage);
+    this->idleBackground = idleImage;
+    SetDrawable(this->idleBackground);
     this->image = std::make_shared<OptiObject>();
     this->lockedImage = std::make_shared<OptiObject>();
     AddChild(this->image);
     AddChild(this->lockedImage);
+    this->clickSFX = buttonSFX;
 }
 
 void Button::Update() {
@@ -31,7 +33,7 @@ void Button::Update() {
         clicked = false;
         released = false;
         selected = false;
-        SetDrawable(idleImage);
+        SetDrawable(lockedBackground);
         lockedImage->SetVisible(true);
         image->SetVisible(false);
     }
@@ -39,9 +41,10 @@ void Button::Update() {
         lockedImage->SetVisible(false);
         image->SetVisible(true);
 
-        clicked = (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB) && hovered);
+        clicked = (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB) && hovered && !held);
         for (auto& key : keys) {if (Util::Input::IsKeyDown(key)) {clicked = true;}}
         if (clicked) {held = true;}
+        if (clicked && (clickSFX != nullptr)) {clickSFX->Play();}
 
         released = (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) && held);
         for (auto& key : keys) {if (Util::Input::IsKeyUp(key)) {released = true;}}
@@ -54,10 +57,10 @@ void Button::Update() {
         else if (hovered) {scaleState += (hoverScale-scaleState)/hoverSpeed;}
         else {scaleState += (hoverScale-scaleState)/hoverSpeed;}
 
-        if (selected && (selectedImage!=nullptr)) {SetDrawable(selectedImage);}
-        else if (held && (heldImage != nullptr)) {SetDrawable(heldImage);}
-        else if (hovered && (hoveredImage != nullptr)) {SetDrawable(hoveredImage);}
-        else {SetDrawable(idleImage);}
+        if (selected && (selectedBackground!=nullptr)) {SetDrawable(selectedBackground);}
+        else if (held && (heldBackground != nullptr)) {SetDrawable(heldBackground);}
+        else if (hovered && (hoveredBackground != nullptr)) {SetDrawable(hoveredBackground);}
+        else {SetDrawable(idleBackground);}
     }
 
     m_Transform.scale = {windowPercent * scaleState, windowPercent * scaleState};

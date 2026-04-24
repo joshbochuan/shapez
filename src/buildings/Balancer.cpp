@@ -95,7 +95,7 @@ void Balancer::Delete() {
 }
 
 void Balancer::Update() {
-    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
+    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f*MULTIPLIER_BELT, 14.0f));
     acceptorA->SetDrawable(Belt::beltInTexture[frame]);
     acceptorB->SetDrawable(Belt::beltInTexture[frame]);
     ejectorA->SetDrawable(Belt::beltOutTexture[frame]);
@@ -282,7 +282,7 @@ void Splitter::Delete() {
 }
 
 void Splitter::Update() {
-    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
+    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f*MULTIPLIER_BELT, 14.0f));
     acceptor->SetDrawable(Belt::beltInTexture[frame]);
     ejectorA->SetDrawable(Belt::beltOutTexture[frame]);
     acceptor->SetVisible(acceptor->prev != nullptr);
@@ -369,7 +369,7 @@ void Merger::Delete() {
 }
 
 void Merger::Update() {
-    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
+    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f*MULTIPLIER_BELT, 14.0f));
     acceptorA->SetDrawable(Belt::beltInTexture[frame]);
     ejector->SetDrawable(Belt::beltOutTexture[frame]);
     acceptorA->SetVisible(acceptorA->prev != nullptr);

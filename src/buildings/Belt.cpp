@@ -40,7 +40,7 @@ void Belt::Delete() {
 }
 
 void Belt::Update() {
-    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f, 14.0f));
+    int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f*MULTIPLIER_BELT, 14.0f));
     switch (type) {
         case BeltType::FORWARD: SetDrawable(beltForwardTexture[frame]); break;
         case BeltType::LEFT: SetDrawable(beltLeftTexture[frame]); break;

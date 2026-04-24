@@ -10,15 +10,17 @@
 #include "../Opti/OptiObject.hpp"
 #include "Opti/OptiImage.hpp"
 #include "Util/Input.hpp"
+#include "Util/SFX.hpp"
 
 class Button: public OptiObject {
 public:
     std::shared_ptr<Text> text;
     std::shared_ptr<OptiObject> image, lockedImage;
-    std::shared_ptr<Util::Image> idleImage;
-    std::shared_ptr<Util::Image> hoveredImage;
-    std::shared_ptr<Util::Image> heldImage;
-    std::shared_ptr<Util::Image> selectedImage;
+    std::shared_ptr<Util::Image> idleBackground;
+    std::shared_ptr<Util::Image> hoveredBackground;
+    std::shared_ptr<Util::Image> heldBackground;
+    std::shared_ptr<Util::Image> selectedBackground;
+    std::shared_ptr<Util::Image> lockedBackground;
     std::vector<Util::Keycode> keys; // other keys that can be used to do stuff with the button
     bool locked = false; // locked in idle state, no animation or responses
 
@@ -42,6 +44,9 @@ public:
     bool hovered = false;
     bool selected = false;
     float scaleState = 1;
+
+    inline static std::shared_ptr<Util::SFX> buttonSFX = nullptr;
+    std::shared_ptr<Util::SFX> clickSFX = nullptr;
 
     Button(std::shared_ptr<Util::Image> idleImage);
     void Update();

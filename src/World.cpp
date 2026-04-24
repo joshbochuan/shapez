@@ -141,8 +141,10 @@ void World::ClearWorld() {
     MULTIPLIER_PROCESS = 1;
     MULTIPLIER_MINE = 1;
     MULTIPLIER_PAINT = 1;
-}
 
+    hub->Init();
+    hub->LoadState();
+}
 
 std::string World::SaveWorld(std::string save) {
     std::string res;

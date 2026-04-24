@@ -15,6 +15,7 @@
 #include "buildings/Trash.hpp"
 #include "buildings/Tunnel.hpp"
 #include "scenes/GameScene.hpp"
+#include "scenes/UpgradeScene.hpp"
 
 void AssetLoader::loadTextures() {
     Shape::shapeTexture = std::make_shared<OptiImage>("../Resources/shapes/shape.png");
@@ -77,6 +78,9 @@ void AssetLoader::loadTextures() {
     Tunnel::tunnelInTextures.push_back(std::make_shared<OptiImage>("../Resources/sprites/buildings/underground_belt_entry-tier2.png"));
     Tunnel::tunnelOutTextures.push_back(std::make_shared<OptiImage>("../Resources/sprites/buildings/underground_belt_exit.png"));
     Tunnel::tunnelOutTextures.push_back(std::make_shared<OptiImage>("../Resources/sprites/buildings/underground_belt_exit-tier2.png"));
+    for (int i=1; i<=8; i++) {
+        UpgradeBlob::tierBackgroundImages.push_back(std::make_shared<Util::Image>("../Resources/ui/blobs/upgradeTier" + std::to_string(i) + ".png"));
+    }
 }
 
 void AssetLoader::loadAudio() {
@@ -84,4 +88,6 @@ void AssetLoader::loadAudio() {
     GameScene::placeBeltSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/place_belt.wav");
     GameScene::placeBuildingSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/place_building.wav");
     GameScene::destroyBuildingSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/destroy_building.wav");
+    Button::buttonSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/ui_click.wav");
+    UpgradeBlob::upgradeSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/unlock_upgrade.wav");
 }
