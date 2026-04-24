@@ -243,10 +243,9 @@ void UpgradeBlob::Update() {
     upgradeButton->Update();
     if (!upgradeButton->released) {return;}
 
-
+    for (int i=0; i<itemTargets.size(); i++) {warehouse[itemTargets[i]->getCode()] -= progressBars[i]->target;}
     (*contextLevel)++;
     AddTargetsByLevel(shared_from_this(), *contextLevel);
-    for (int i=0; i<itemTargets.size(); i++) {warehouse[itemTargets[i]->getCode()] -= progressBars[i]->target;}
     switch (type) {
         case UpgradeType::BELT: MULTIPLIER_BELT = getMultiplierByLevel(*contextLevel); break;
         case UpgradeType::MINE: MULTIPLIER_MINE = getMultiplierByLevel(*contextLevel); break;
