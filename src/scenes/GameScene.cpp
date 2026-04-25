@@ -34,6 +34,7 @@ using namespace World;
 
 void GameScene::UserMoveCamera() {
     float camSpeed = 10;
+    if (Util::Input::IsKeyPressed(Util::Keycode::LSHIFT)) {camSpeed = 50;}
     glm::vec2 cursorPos = Util::Input::GetCursorPosition();
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) && (!toolbar->hovered) && heldMachine==MachineName::NONE) {
         cam.translation.x -= (cursorPos.x-lastMousePos.x) / cam.scale.x;

@@ -72,9 +72,10 @@ std::shared_ptr<Shape> GenerateRandomMapShape(int seed, int x, int y) {
     // generates shapes
     // no complete windmills
     int val = pseudo_random(seed, x, y);
-    float variance = std::sqrt(static_cast<float>(x*x+y*y)) * 0.05f;
-    if (variance > 1) {variance = 1;}
-    int maxShapeAllowed = 2;
+    float distance = std::sqrt(static_cast<float>(x*x+y*y));
+    int maxShapeAllowed = 1 + distance/10;
+    if (maxShapeAllowed < 1) {maxShapeAllowed = 1;}
+    if (maxShapeAllowed > 4) {maxShapeAllowed = 4;}
 
     std::vector<std::string> combinations = {
         "CRSW", "CRWS", "CSRW", "CSWR", "CWRS", "CWSR",
@@ -83,10 +84,10 @@ std::shared_ptr<Shape> GenerateRandomMapShape(int seed, int x, int y) {
         "WCRS", "WCSR", "WRCS", "WRSC", "WSCR", "WSRC"
     };
     std::string deck = combinations[val%24];
-    int q1Idx = (val & 0x00000FFF) % maxShapeAllowed;
-    int q2Idx = ((val & 0x0000FFF0) >> 1) % maxShapeAllowed;
-    int q3Idx = ((val & 0x000FFF00) >> 2) % maxShapeAllowed;
-    int q4Idx = ((val & 0x00FFF000) >> 3) % maxShapeAllowed;
+    int q1Idx = val % maxShapeAllowed;
+    int q2Idx = (val >> 2) % maxShapeAllowed;
+    int q3Idx = (val >> 4) % maxShapeAllowed;
+    int q4Idx = (val >> 6) % maxShapeAllowed;
     std::string code;
     code += deck[q1Idx];
     code += "u";
@@ -119,10 +120,10 @@ void Chunk::Generate(int seed) {
     // always put a circle and a square at 0, 0 and -1, -1
     if ((x == 0) && (y == 0)) {item = std::make_shared<Shape>("CuCuCuCu");}
     else if ((x == -1) && (y == -1)) {item = std::make_shared<Shape>("RuRuRuRu");}
-    else if (val < 0.88) {item = nullptr;}
-    else if (val < 0.94) {item = GenerateRandomMapShape(seed, x, y);}
-    else if (val < 0.96) {item = std::make_shared<Color>(4);}
-    else if (val < 0.98) {item = std::make_shared<Color>(2);}
+    else if (val < 0.75) {item = nullptr;}
+    else if (val < 0.88) {item = GenerateRandomMapShape(seed, x, y);}
+    else if (val < 0.92) {item = std::make_shared<Color>(4);}
+    else if (val < 0.96) {item = std::make_shared<Color>(2);}
     else {item = std::make_shared<Color>(1);}
 
     if (item == nullptr) {return;}
@@ -138,10 +139,15 @@ void Chunk::Generate(int seed) {
     tr.y = std::sin(pseudo_random(SEED, x+1, y+1));
 
     // tune those
-    float height = 0;
     float variance = 1;
     float exponent = 1;
 
+    float distance = std::sqrt(static_cast<float>(x*x+y*y));
+    float size = 0;
+    if (distance < 40) {size = 1.4 - 0.01 * distance;}
+    else {size = 1.0;}
+
+    float height = 0;
     float blVal=0, brVal=0, tlVal=0, trVal=0;
     float bottomVal=0, topVal=0;
     for (int i=0; i<16; i++) {
@@ -159,7 +165,7 @@ void Chunk::Generate(int seed) {
             height += std::pow(std::sin(M_PI*0.0625f*j), exponent);
             height *= 0.5f;
             height += lerp(bottomVal, topVal, smoothstep(0.0625f * j)) * variance;
-            minePoints[i][j] = height >= 1.15f;
+            minePoints[i][j] = height >= size;
         }
     }
 }
