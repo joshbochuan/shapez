@@ -2,6 +2,8 @@
 // Created by joshb on 2026/3/31.
 //
 #include "AssetLoader.hpp"
+
+#include "Chunk.hpp"
 #include "items/Shape.hpp"
 #include "items/Color.hpp"
 #include "buildings/Belt.hpp"
@@ -62,7 +64,10 @@ void AssetLoader::loadTextures() {
     Cutter::cutterTexture = std::make_shared<OptiImage>("../Resources/sprites/buildings/cutter.png");
     Miner::minerTexture = std::make_shared<OptiImage>("../Resources/sprites/buildings/miner.png");
     Miner::chainedMinerTexture = std::make_shared<OptiImage>("../Resources/sprites/buildings/miner-chainable.png");
-    Miner::minerCoverTexture = std::make_shared<OptiImage>("../Resources/sprites/buildings/miner-cover.png");
+    Miner::minerCoverTextureGray = std::make_shared<OptiImage>("../Resources/1px/miner_cover_gray.png");
+    Miner::minerCoverTextureRed = std::make_shared<OptiImage>("../Resources/1px/miner_cover_red.png");
+    Miner::minerCoverTextureGreen = std::make_shared<OptiImage>("../Resources/1px/miner_cover_green.png");
+    Miner::minerCoverTextureBlue = std::make_shared<OptiImage>("../Resources/1px/miner_cover_blue.png");
     Mixer::mixerTexture = std::make_shared<OptiImage>("../Resources/sprites/buildings/mixer.png");
     Rotator::rotatorCWTexture = std::make_shared<OptiImage>("../Resources/sprites/buildings/rotater.png");
     Rotator::rotator180Texture = std::make_shared<OptiImage>("../Resources/sprites/buildings/rotater-rotate180.png");
@@ -81,6 +86,10 @@ void AssetLoader::loadTextures() {
     for (int i=1; i<=8; i++) {
         UpgradeBlob::tierBackgroundImages.push_back(std::make_shared<Util::Image>("../Resources/ui/blobs/upgradeTier" + std::to_string(i) + ".png"));
     }
+    Cell::cellTextureGray = std::make_shared<OptiImage>("../Resources/1px/background_gray.png");
+    Cell::cellTextureRed = std::make_shared<OptiImage>("../Resources/1px/background_red.png");
+    Cell::cellTextureGreen = std::make_shared<OptiImage>("../Resources/1px/background_green.png");
+    Cell::cellTextureBlue = std::make_shared<OptiImage>("../Resources/1px/background_blue.png");
 }
 
 void AssetLoader::loadAudio() {

@@ -101,6 +101,8 @@ add_executable(${PROJECT_NAME}
         include/UIelement/ProgressBar.hpp
         src/UIelement/ProgressBar.cpp
         src/scenes/UpgradeScene.cpp
+        include/Chunk.hpp
+        src/Chunk.cpp
 )
 
 if(MSVC)

@@ -6,6 +6,8 @@
 #include "buildings/Machine.hpp"
 #include "Util/Image.hpp"
 #include <iostream>
+
+#include "items/Color.hpp"
 using namespace World;
 
 Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product, bool chained)
@@ -16,7 +18,15 @@ Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product, bool chained)
     this->chained = chained;
     this->cooldown = 0;
     this->product = product;
-    if (product != nullptr) {
+    std::shared_ptr<Chunk> insideChunk = chunks[{x>>4, y>>4}];
+    if (insideChunk == nullptr) {chunks.erase({x>>4, y>>4});}
+    if ((product == nullptr)
+        && (insideChunk != nullptr)
+        && (insideChunk->item != nullptr)
+        && (insideChunk->minePoints[x&15][y&15])) {
+        this->product = insideChunk->item->copy();
+    }
+    if (this->product != nullptr) {
         this->product->MachineItemZIndex(44);
         this->AddChild(this->product);
     }
@@ -27,9 +37,20 @@ Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product, bool chained)
     this->m_Transform.rotation = M_PI * 0.5 * r;
     this->SetZIndex(42 + (x+y)%2);
     this->cover = std::make_shared<OptiObject>();
-    cover->SetDrawable(minerCoverTexture);
     cover->SetZIndex(40);
     this->AddChild(cover);
+
+    if (this->product == nullptr) {return;}
+    if (this->product->getType() == ItemType::SHAPE) {
+        cover->SetDrawable(minerCoverTextureGray);
+        return;
+    }
+    switch (std::dynamic_pointer_cast<Color>(this->product)->getColor()) {
+        case 1: cover->SetDrawable(minerCoverTextureBlue); break;
+        case 2: cover->SetDrawable(minerCoverTextureGreen); break;
+        case 4: cover->SetDrawable(minerCoverTextureRed); break;
+        default: cover->SetDrawable(minerCoverTextureGray); break;
+    }
 }
 
 void Miner::Init() {
@@ -52,7 +73,7 @@ void Miner::Init() {
     if (machineNext != nullptr && machineNext->getName() == MachineName::MINER) {
         minerNext = std::dynamic_pointer_cast<Miner>(machineNext);
     }
-    if (minerNext != nullptr && minerNext->isChained()) {
+    if (minerNext != nullptr && minerNext->isChained() && (minerNext->product->getCode() == this->product->getCode())) {
         next = minerNext;
         minerNext->prev.push_back(std::dynamic_pointer_cast<Miner>(shared_from_this()));
     }
@@ -65,6 +86,7 @@ void Miner::Init() {
         if (machineNext->r != (r+i+2)%4) {continue;}
         minerNext = std::dynamic_pointer_cast<Miner>(machineNext);
         if (!minerNext->isChained()) {continue;}
+        if (minerNext->product->getCode() != this->product->getCode()) {continue;}
         minerNext->next = std::dynamic_pointer_cast<Miner>(shared_from_this());
         prev.push_back(minerNext);
     }
@@ -103,8 +125,8 @@ void Miner::Update() {
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)
         && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
-    cover->m_Transform.scale.x = cam.scale.x * 0.85f;
-    cover->m_Transform.scale.y = cam.scale.y * 0.85f;
+    cover->m_Transform.scale.x = cam.scale.x * 160.0f;
+    cover->m_Transform.scale.y = cam.scale.y * 160.0f;
     cover->m_Transform.translation = this->m_Transform.translation;
     if (this->product != nullptr) {
         this->product->m_Transform.translation = this->m_Transform.translation;

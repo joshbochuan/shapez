@@ -103,6 +103,24 @@ void World::OperateMachines() {
     UpdateTransferrers(pool, LstEjectors); // moving items from ejectors to acceptors
 }
 
+void World::UpdateWorld() {
+    int chunkStartX = static_cast<int>(std::floor((cam.translation.x - (WINDOW_WIDTH * 0.5f)/cam.scale.x)/(192.0f ))) >> 4;
+    int chunkStartY = static_cast<int>(std::floor((cam.translation.y - (WINDOW_HEIGHT * 0.5f)/cam.scale.y)/(192.0f))) >> 4;
+    int chunkEndX = static_cast<int>(std::ceil((cam.translation.x + (WINDOW_WIDTH * 0.5f)/cam.scale.x)/(192.0f))) >> 4;
+    int chunkEndY = static_cast<int>(std::ceil((cam.translation.y + (WINDOW_HEIGHT * 0.5f)/cam.scale.y)/(192.0f))) >> 4;
+    for (int i=chunkStartX-1; i<=chunkEndX+1; i++) {
+        for (int j=chunkStartY-1; j<=chunkEndY+1; j++) {
+            if (chunks[{i, j}] != nullptr) {continue;}
+            chunks[{i, j}] = std::make_shared<Chunk>(i, j);
+            m_Root.AddChild(chunks[{i, j}]);
+        }
+    }
+    for (auto& [t, chunk] : chunks) {
+        if (chunk == nullptr) {continue;}
+        chunk->Update();
+    }
+}
+
 std::vector<std::vector<std::string>> parse2D(const std::string& input) {
     std::vector<std::vector<std::string>> result;
     std::stringstream ss(input);
@@ -129,6 +147,10 @@ void World::ClearWorld() {
     MapAcceptors.clear();
     MapEjectors.clear();
     warehouse.clear();
+    for (auto& [t, chunk]: chunks) {
+        m_Root.RemoveChild(chunk);
+    }
+    chunks.clear();
 
     SEED = 0;
     LEVEL = 1;

@@ -20,7 +20,10 @@ private:
 public:
     static inline std::shared_ptr<OptiImage> minerTexture;
     static inline std::shared_ptr<OptiImage> chainedMinerTexture;
-    static inline std::shared_ptr<OptiImage> minerCoverTexture;
+    static inline std::shared_ptr<OptiImage> minerCoverTextureGray;
+    static inline std::shared_ptr<OptiImage> minerCoverTextureRed;
+    static inline std::shared_ptr<OptiImage> minerCoverTextureGreen;
+    static inline std::shared_ptr<OptiImage> minerCoverTextureBlue;
     std::shared_ptr<Miner> next = nullptr;
     std::vector<std::shared_ptr<Miner>> prev;
     std::shared_ptr<Item> product;

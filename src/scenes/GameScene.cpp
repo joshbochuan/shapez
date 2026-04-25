@@ -304,12 +304,7 @@ void GameScene::UserPlaceMachine(int mouseX, int mouseY) {
             break;
 
         case MachineName::MINER:
-            MachineToAdd = std::make_shared<Miner>(
-                mouseX, mouseY, heldR,
-                std::make_shared<Shape>("CuCuCuCu"),
-                minerChained
-            );
-            break;
+            MachineToAdd = std::make_shared<Miner>(mouseX, mouseY, heldR,nullptr, minerChained); break;
 
         case MachineName::CUTTER:
             MachineToAdd = std::make_shared<Cutter>(mouseX, mouseY, heldR);

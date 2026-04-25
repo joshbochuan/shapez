@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "Chunk.hpp"
 #include "config.hpp"
 #include "buildings/Hub.hpp"
 #include "Opti/OptiRenderer.hpp"
@@ -49,6 +50,7 @@ namespace World {
         static_cast<float>(WINDOW_HEIGHT)/1440.0f
         );
 
+    inline std::unordered_map<std::pair<int, int>, std::shared_ptr<Chunk>, PairHash> chunks;
     inline std::unordered_map<std::string, int> warehouse; // key: item code, value: amount
     inline std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<ItemAcceptor>, TriHash> MapAcceptors;
     inline std::unordered_map<std::tuple<int, int, int>, std::shared_ptr<ItemEjector>, TriHash> MapEjectors;
@@ -114,6 +116,7 @@ namespace World {
     float getMultiplierByLevel(int level);
 
     void OperateMachines();
+    void UpdateWorld();
 
     void ClearWorld();
     std::string SaveWorld(std::string save);
