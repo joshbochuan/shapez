@@ -19,6 +19,8 @@ public:
     std::shared_ptr<ItemEjector> ejector;
     bool mirrored;
     Painter(int x, int y, int r, bool mirrored);
+    std::string getSaveString();
+    static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();

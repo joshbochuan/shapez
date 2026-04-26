@@ -24,6 +24,8 @@ public:
     int distance; // distance between two tunnels
     bool upgraded;
     Tunnel(int x, int y, int r, TunnelType type, bool upgraded);
+    std::string getSaveString();
+    static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();

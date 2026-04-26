@@ -71,6 +71,28 @@ Balancer::Balancer(int x, int y, int r)
     ejectPriority = 0;
 }
 
+std::string Balancer::getSaveString() {
+    std::string res = "BALANCER ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    res += std::to_string(acceptPriority) + " ";
+    res += std::to_string(ejectPriority);
+    return res;
+}
+
+std::shared_ptr<Machine> Balancer::fromSaveString(std::vector<std::string> prop) {
+    int x = std::stoi(prop[1]);
+    int y = std::stoi(prop[2]);
+    int r = std::stoi(prop[3]);
+    int acceptPriority = std::stoi(prop[4]);
+    int ejectPriority = std::stoi(prop[5]);
+    std::shared_ptr<Balancer> res = std::make_shared<Balancer>(x, y, r);
+    res->acceptPriority = acceptPriority;
+    res->ejectPriority = ejectPriority;
+    return res;
+}
+
 void Balancer::Init() {
     MapMachines[{x, y}] = shared_from_this();
     MapMachines[{ejectorB->x, ejectorB->y}] = shared_from_this();
@@ -264,6 +286,27 @@ Splitter::Splitter(int x, int y, int r, bool mirrored)
     ejectPriority = 0;
 }
 
+std::string Splitter::getSaveString() {
+    std::string res = "SPLITTER ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    res += std::to_string(mirrored) + " ";
+    res += std::to_string(ejectPriority);
+    return res;
+}
+
+std::shared_ptr<Machine> Splitter::fromSaveString(std::vector<std::string> prop) {
+    int x = std::stoi(prop[1]);
+    int y = std::stoi(prop[2]);
+    int r = std::stoi(prop[3]);
+    bool mirrored = std::stoi(prop[4]);
+    int ejectPriority = std::stoi(prop[5]);
+    std::shared_ptr<Splitter> res = std::make_shared<Splitter>(x, y, r, mirrored);
+    res->ejectPriority = ejectPriority;
+    return res;
+}
+
 void Splitter::Init() {
     MapMachines[{x, y}] = shared_from_this();
     acceptor->Init();
@@ -349,6 +392,27 @@ Merger::Merger(int x, int y, int r, bool mirrored)
     acceptorA->SetDrawable(Belt::beltInTexture[0]);
     ejector->SetDrawable(Belt::beltOutTexture[0]);
     acceptPriority = 0;
+}
+
+std::string Merger::getSaveString() {
+    std::string res = "MERGER ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    res += std::to_string(mirrored) + " ";
+    res += std::to_string(acceptPriority);
+    return res;
+}
+
+std::shared_ptr<Machine> Merger::fromSaveString(std::vector<std::string> prop) {
+    int x = std::stoi(prop[1]);
+    int y = std::stoi(prop[2]);
+    int r = std::stoi(prop[3]);
+    bool mirrored = std::stoi(prop[4]);
+    int acceptPriority = std::stoi(prop[5]);
+    std::shared_ptr<Merger> res = std::make_shared<Merger>(x, y, r, mirrored);
+    res->acceptPriority = acceptPriority;
+    return res;
 }
 
 void Merger::Init() {

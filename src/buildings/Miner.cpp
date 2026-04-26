@@ -53,6 +53,32 @@ Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product, bool chained)
     }
 }
 
+std::string Miner::getSaveString() {
+    std::string res = "MINER ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    if (product == nullptr) {res += "NULL ";}
+    else {res += product->getCode() + " ";}
+    res += std::to_string(chained) + " ";
+    res += std::to_string(cooldown);
+    return res;
+}
+
+std::shared_ptr<Machine> Miner::fromSaveString(std::vector<std::string> prop) {
+    int x = std::stoi(prop[1]);
+    int y = std::stoi(prop[2]);
+    int r = std::stoi(prop[3]);
+    std::shared_ptr<Item> item = nullptr;
+    if (prop[4].substr(0, 5) == "Color") {item = std::make_shared<Color>(prop[4]);}
+    else if (prop[4] != "NULL") {item = std::make_shared<Shape>(prop[4]);}
+    bool chained = std::stoi(prop[5]);
+    float cd = std::stof(prop[6]);
+    auto res = std::make_shared<Miner>(x, y, r, item, chained);
+    res->cooldown = cd;
+    return res;
+}
+
 void Miner::Init() {
     MapMachines[{x, y}] = shared_from_this();
     ejector->Init();
@@ -73,7 +99,11 @@ void Miner::Init() {
     if (machineNext != nullptr && machineNext->getName() == MachineName::MINER) {
         minerNext = std::dynamic_pointer_cast<Miner>(machineNext);
     }
-    if (minerNext != nullptr && minerNext->isChained() && (minerNext->product->getCode() == this->product->getCode())) {
+    if ((minerNext != nullptr)
+        && (minerNext->isChained())
+        && (product != nullptr)
+        && (minerNext->product != nullptr)
+        && (minerNext->product->getCode() == this->product->getCode())) {
         next = minerNext;
         minerNext->prev.push_back(std::dynamic_pointer_cast<Miner>(shared_from_this()));
     }
@@ -84,8 +114,10 @@ void Miner::Init() {
         if (machineNext == nullptr) {continue;}
         if (machineNext->getName() != MachineName::MINER) {continue;}
         if (machineNext->r != (r+i+2)%4) {continue;}
+        if (product == nullptr) {continue;}
         minerNext = std::dynamic_pointer_cast<Miner>(machineNext);
         if (!minerNext->isChained()) {continue;}
+        if (minerNext->product == nullptr) {continue;}
         if (minerNext->product->getCode() != this->product->getCode()) {continue;}
         minerNext->next = std::dynamic_pointer_cast<Miner>(shared_from_this());
         prev.push_back(minerNext);

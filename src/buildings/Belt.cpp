@@ -23,6 +23,29 @@ Belt::Belt(int x, int y, int r, BeltType type)
     this->ejector = std::make_shared<ItemEjector>(x, y, r);
 }
 
+std::string Belt::getSaveString() {
+    std::string res = "BELT ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    switch (type) {
+        case BeltType::FORWARD: res += "FORWARD"; break;
+        case BeltType::LEFT: res += "LEFT"; break;
+        case BeltType::RIGHT: res += "RIGHT"; break;
+    }
+    return res;
+}
+
+std::shared_ptr<Machine> Belt::fromSaveString(std::vector<std::string> prop) {
+    int x = std::stoi(prop[1]);
+    int y = std::stoi(prop[2]);
+    int r = std::stoi(prop[3]);
+    BeltType type = BeltType::FORWARD;
+    if (prop[4] == "LEFT") {type = BeltType::LEFT;}
+    else if (prop[4] == "RIGHT") {type = BeltType::RIGHT;}
+    return std::make_shared<Belt>(x, y, r, type);
+}
+
 void Belt::Init() {
     MapMachines[{x, y}] = shared_from_this();
     acceptor->Init();;

@@ -21,6 +21,17 @@ ItemAcceptor::ItemAcceptor(int x, int y, int r) : rate(BELT_RATE) {
     m_Transform.rotation = 0.5f * M_PI * r;
 }
 
+std::string ItemAcceptor::getSaveString() {
+    std::string res = "ACCEPTOR ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    if (item == nullptr) {res += "NULL ";}
+    else {res += item->getCode() + " ";}
+    res += std::to_string(progress);
+    return res;
+}
+
 void ItemAcceptor::Init() {
     initialized = true;
     MapAcceptors[{x, y, r}] = std::dynamic_pointer_cast<ItemAcceptor>(shared_from_this());

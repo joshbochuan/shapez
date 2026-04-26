@@ -19,6 +19,8 @@ public:
     std::shared_ptr<ItemEjector> ejectorA;
     std::shared_ptr<ItemEjector> ejectorB;
     Cutter(int x, int y, int r);
+    std::string getSaveString();
+    static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();

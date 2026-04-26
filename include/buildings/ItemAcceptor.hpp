@@ -22,6 +22,7 @@ public:
     bool takesShape, takesColor;
     std::shared_ptr<ItemEjector> prev;
     ItemAcceptor(int x, int y, int r);
+    std::string getSaveString();
     void Init();
     void Update();
     void Delete();

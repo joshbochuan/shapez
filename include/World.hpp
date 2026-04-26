@@ -113,6 +113,8 @@ namespace World {
         PAINT
     };
 
+    int pseudo_random(int seed, int x, int y);
+
     float getMultiplierByLevel(int level);
 
     void OperateMachines();

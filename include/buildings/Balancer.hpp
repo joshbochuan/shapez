@@ -18,6 +18,8 @@ public:
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;
     Balancer(int x, int y, int r);
+    std::string getSaveString();
+    static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();
@@ -31,6 +33,8 @@ public:
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;
     Splitter(int x, int y, int r, bool mirrored);
+    std::string getSaveString();
+    static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();
@@ -44,6 +48,8 @@ public:
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejector;
     Merger(int x, int y, int r, bool mirrored);
+    std::string getSaveString();
+    static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();

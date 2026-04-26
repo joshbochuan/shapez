@@ -51,23 +51,6 @@ Chunk::Chunk(int x, int y) {
     }}
 }
 
-int pseudo_random(int seed, int x, int y) {
-    int n = seed;
-
-    // Mix in x and y
-    n ^= x * 0x9E3779B9;
-    n ^= y * 0x85EBCA6B;
-
-    // Bit mixing (hash-style scrambling)
-    n ^= (n >> 16);
-    n *= 0x7FEB352D;
-    n ^= (n >> 15);
-    n *= 0x846CA68B;
-    n ^= (n >> 16);
-
-    return n;
-}
-
 std::shared_ptr<Shape> GenerateRandomMapShape(int seed, int x, int y) {
     // generates shapes
     // no complete windmills

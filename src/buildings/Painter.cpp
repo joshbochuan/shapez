@@ -59,6 +59,27 @@ Painter::Painter(int x, int y, int r, bool mirrored)
     acceptorB->takesShape = false;
 }
 
+std::string Painter::getSaveString() {
+    std::string res = "PAINTER ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    res += std::to_string(mirrored) + " ";
+    res += std::to_string(cooldown);
+    return res;
+}
+
+std::shared_ptr<Machine> Painter::fromSaveString(std::vector<std::string> prop) {
+    int x = std::stoi(prop[1]);
+    int y = std::stoi(prop[2]);
+    int r = std::stoi(prop[3]);
+    bool mirrored = std::stoi(prop[4]);
+    float cd = std::stof(prop[5]);
+    auto res = std::make_shared<Painter>(x, y, r, mirrored);
+    res->cooldown = cd;
+    return res;
+}
+
 void Painter::Init() {
     MapMachines[{x, y}] = shared_from_this();
     MapMachines[{ejector->x, ejector->y}] = shared_from_this();

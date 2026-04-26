@@ -187,118 +187,14 @@ std::string World::SaveWorld(std::string save) {
         if (cnt == 0) {continue;}
         res += "WAREHOUSE " + item + " " + std::to_string(cnt) + "\n";
     }
-    for (auto& machine: LstMachines) {
-        if (machine->getName() == MachineName::BALANCER) {
-            res += "BALANCER "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + "\n";
-        }
-        else if (machine->getName() == MachineName::SPLITTER) {
-            res += "SPLITTER "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + " ";
-            auto ptr = std::dynamic_pointer_cast<Splitter>(machine);
-            res += std::to_string(ptr->mirrored) + "\n";
-        }
-        else if (machine->getName() == MachineName::BELT) {
-            res += "BELT "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + " ";
-            auto ptr = std::dynamic_pointer_cast<Belt>(machine);
-            if (ptr->type == BeltType::FORWARD) {res += "FORWARD\n";}
-            else if (ptr->type == BeltType::LEFT) {res += "LEFT\n";}
-            else if (ptr->type == BeltType::RIGHT) {res += "RIGHT\n";}
-        }
-        else if (machine->getName() == MachineName::CUTTER) {
-            res += "CUTTER "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + "\n";
-        }
-        else if (machine->getName() == MachineName::MERGER) {
-            res += "MERGER "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + " ";
-            auto ptr = std::dynamic_pointer_cast<Merger>(machine);
-            res += std::to_string(ptr->mirrored) + "\n";
-        }
-        else if (machine->getName() == MachineName::MINER) {
-            res += "MINER "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + " ";
-            auto ptr = std::dynamic_pointer_cast<Miner>(machine);
-            if (ptr->product == nullptr) {res += "NULL ";}
-            else {res += ptr->product->getCode() + " ";}
-            res += std::to_string(ptr->isChained()) + "\n";
-        }
-        else if (machine->getName() == MachineName::MIXER) {
-            res += "MIXER "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + "\n";
-        }
-        else if (machine->getName() == MachineName::PAINTER) {
-            res += "PAINTER "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + " ";
-            auto ptr = std::dynamic_pointer_cast<Painter>(machine);
-            res += std::to_string(ptr->mirrored) + "\n";
-        }
-        else if (machine->getName() == MachineName::ROTATOR) {
-            res += "ROTATOR "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + " ";
-            auto ptr = std::dynamic_pointer_cast<Rotator>(machine);
-            if (ptr->type == RotatorType::ROTATE_CW) {res += "ROTATE_CW\n";}
-            else if (ptr->type == RotatorType::ROTATE_180) {res += "ROTATE_180\n";}
-            else if (ptr->type == RotatorType::ROTATE_CCW) {res += "ROTATE_CCW\n";}
-        }
-        else if (machine->getName() == MachineName::STACKER) {
-            res += "STACKER "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + "\n";
-        }
-        else if (machine->getName() == MachineName::TRASH) {
-            res += "TRASH "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + "\n";
-        }
-        else if (machine->getName() == MachineName::TUNNEL) {
-            res += "TUNNEL "
-            + std::to_string(machine->x) + " "
-            + std::to_string(machine->y) + " "
-            + std::to_string(machine->r) + " ";
-            auto ptr = std::dynamic_pointer_cast<Tunnel>(machine);
-            if (ptr->type == TunnelType::IN) {res += "IN ";}
-            else if (ptr->type == TunnelType::OUT) {res += "OUT ";}
-            res += std::to_string(ptr->upgraded) + "\n";
-        }
-    }
+    for (auto& machine: LstMachines) {res += machine->getSaveString() + "\n";}
     for (auto& [pos, ac] : MapAcceptors) {
         if (ac->item == nullptr) {continue;}
-        res += "ACCEPTOR "
-            + std::to_string(ac->x) + " "
-            + std::to_string(ac->y) + " "
-            + std::to_string(ac->r) + " "
-            + ac->item->getCode() + " "
-            + std::to_string(ac->progress) + "\n";
+        res += ac->getSaveString() + "\n";
     }
     for (auto& [pos, ej] : MapEjectors) {
         if (ej->item == nullptr) {continue;}
-        res += "EJECTOR "
-            + std::to_string(ej->x) + " "
-            + std::to_string(ej->y) + " "
-            + std::to_string(ej->r) + " "
-            + ej->item->getCode() + " "
-            + std::to_string(ej->progress) + "\n";
+        res += ej->getSaveString() + "\n";
     }
 
     std::ofstream file("../Saves/" + save);  // open file
@@ -340,94 +236,18 @@ void World::LoadWorld(std::string save) {
 
     for (auto& prop : MachinesToAdd) {
         if (prop[0] == "WAREHOUSE") {warehouse[prop[1]] = std::stoi(prop[2]);}
-        else if (prop[0] == "BALANCER") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            LstMachines.push_back(std::make_shared<Balancer>(x, y, r));
-        }
-        else if (prop[0] == "SPLITTER") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            bool mirrored = std::stoi(prop[4]);
-            LstMachines.push_back(std::make_shared<Splitter>(x, y, r, mirrored));
-        }
-        else if (prop[0] == "MERGER") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            bool mirrored = std::stoi(prop[4]);
-            LstMachines.push_back(std::make_shared<Merger>(x, y, r, mirrored));
-        }
-        else if (prop[0] == "BELT") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            BeltType type = BeltType::FORWARD;
-            if (prop[4] == "LEFT") {type = BeltType::LEFT;}
-            else if (prop[4] == "RIGHT") {type = BeltType::RIGHT;}
-            LstMachines.push_back(std::make_shared<Belt>(x, y, r, type));
-        }
-        else if (prop[0] == "CUTTER") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            LstMachines.push_back(std::make_shared<Cutter>(x, y, r));
-        }
-        else if (prop[0] == "MINER") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            std::shared_ptr<Item> item = nullptr;
-            if (prop[4].substr(0, 5) == "Color") {item = std::make_shared<Color>(prop[4]);}
-            else if (prop[4] != "NULL") {item = std::make_shared<Shape>(prop[4]);}
-            bool chained = std::stoi(prop[5]);
-            LstMachines.push_back(std::make_shared<Miner>(x, y, r, item, chained));
-            item = nullptr;
-        }
-        else if (prop[0] == "MIXER") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            LstMachines.push_back(std::make_shared<Mixer>(x, y, r));
-        }
-        else if (prop[0] == "PAINTER") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            bool mirrored = std::stoi(prop[4]);
-            LstMachines.push_back(std::make_shared<Painter>(x, y, r, mirrored));
-        }
-        else if (prop[0] == "ROTATOR") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            RotatorType type = RotatorType::ROTATE_CW;
-            if (prop[4] == "ROTATE_180") {type = RotatorType::ROTATE_180;}
-            else if (prop[4] == "ROTATE_CCW") {type = RotatorType::ROTATE_CCW;}
-            LstMachines.push_back(std::make_shared<Rotator>(x, y, r, type));
-        }
-        else if (prop[0] == "STACKER") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            LstMachines.push_back(std::make_shared<Stacker>(x, y, r));
-        }
-        else if (prop[0] == "TRASH") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            LstMachines.push_back(std::make_shared<Trash>(x, y));
-        }
-        else if (prop[0] == "TUNNEL") {
-            int x = std::stoi(prop[1]);
-            int y = std::stoi(prop[2]);
-            int r = std::stoi(prop[3]);
-            TunnelType type = TunnelType::IN;
-            if (prop[4] == "OUT") {type = TunnelType::OUT;}
-            bool upgraded = std::stoi(prop[5]);
-            LstMachines.push_back(std::make_shared<Tunnel>(x, y, r, type, upgraded));
-        }
+        else if (prop[0] == "BALANCER") {LstMachines.push_back(Balancer::fromSaveString(prop));}
+        else if (prop[0] == "SPLITTER") {LstMachines.push_back(Splitter::fromSaveString(prop));}
+        else if (prop[0] == "MERGER") {LstMachines.push_back(Merger::fromSaveString(prop));}
+        else if (prop[0] == "BELT") {LstMachines.push_back(Belt::fromSaveString(prop));}
+        else if (prop[0] == "CUTTER") {LstMachines.push_back(Cutter::fromSaveString(prop));}
+        else if (prop[0] == "MINER") {LstMachines.push_back(Miner::fromSaveString(prop));}
+        else if (prop[0] == "MIXER") {LstMachines.push_back(Mixer::fromSaveString(prop));}
+        else if (prop[0] == "PAINTER") {LstMachines.push_back(Painter::fromSaveString(prop));}
+        else if (prop[0] == "ROTATOR") {LstMachines.push_back(Rotator::fromSaveString(prop));}
+        else if (prop[0] == "STACKER") {LstMachines.push_back(Stacker::fromSaveString(prop));}
+        else if (prop[0] == "TRASH") {LstMachines.push_back(Trash::fromSaveString(prop));}
+        else if (prop[0] == "TUNNEL") {LstMachines.push_back(Tunnel::fromSaveString(prop));}
         else if (prop[0] == "ACCEPTOR") {break;}
         else if (prop[0] == "EJECTOR") {break;}
     }
@@ -475,4 +295,21 @@ float World::getMultiplierByLevel(int level) {
         case 8: return 8;
         default: return 8;
     }
+}
+
+int World::pseudo_random(int seed, int x, int y) {
+    int n = seed;
+
+    // Mix in x and y
+    n ^= x * 0x9E3779B9;
+    n ^= y * 0x85EBCA6B;
+
+    // Bit mixing (hash-style scrambling)
+    n ^= (n >> 16);
+    n *= 0x7FEB352D;
+    n ^= (n >> 15);
+    n *= 0x846CA68B;
+    n ^= (n >> 16);
+
+    return n;
 }

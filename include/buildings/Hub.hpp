@@ -44,6 +44,7 @@ public:
     };
 
     Hub();
+    std::string getSaveString();
     void Init();
     void Update();
     void Delete();

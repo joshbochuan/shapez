@@ -69,6 +69,10 @@ Hub::Hub()
     for (int i=0; i<m_Acceptors.size(); i++) {this->AddChild(m_Acceptors[i]);}
 }
 
+std::string Hub::getSaveString() {
+    return "HUB";
+}
+
 void Hub::Init() {
     for (int i=-2; i<2; i++) {
         for (int j=-2; j<2; j++) {
@@ -91,8 +95,118 @@ void Hub::Delete() {
     }
 }
 
+std::string GenerateRandomLayer(int seed, int level, int layer, bool hasMissingPiece, int colorMain) {
+    bool hasUncolored = (level >= 36);
+    int randomVal = pseudo_random(seed, level, layer);
+
+    // each color main takes 6 bits
+    // int colorMain = (0b111111 & (randomVal >> 0));
+    int colorNeighborA = (0b111111 & (randomVal >> 8));
+    int colorNeighborB = (0b111111 & (randomVal >> 16));
+    // each shape takes 2 bits
+    int shapeA = (0b11 & (randomVal >> 6));
+    int shapeB = (0b11 & (randomVal >> 14));
+    int shapeC = (0b11 & (randomVal >> 22));
+
+    if (hasUncolored) {colorMain = colorMain % 8;}
+    else {colorMain = (colorMain % 7) + 1;}
+
+    std::vector<std::vector<int>> neighbors = {
+        {0b100, 0b010, 0b001}, // 0b000
+        {0b101, 0b011, 0b000}, // 0b001
+        {0b110, 0b011, 0b000}, // 0b010
+        {0b111, 0b001, 0b010}, // 0b011
+        {0b110, 0b101, 0b000}, // 0b100
+        {0b001, 0b111, 0b100}, // 0b101
+        {0b010, 0b100, 0b111}, // 0b110
+        {0b011, 0b101, 0b110} // 0b111
+    };
+
+    int colorA = neighbors[colorMain][colorNeighborA % 3];
+    if ((colorA == 0) && (!hasUncolored)) {colorA = neighbors[colorMain][colorNeighborA % 2];}
+    int colorB = neighbors[colorMain][colorNeighborB % 3];
+    if ((colorB == 0) && (!hasUncolored)) {colorB = neighbors[colorMain][colorNeighborB % 2];}
+
+    int missingQuarter = 3 & (randomVal >> 24);
+    int symmetryProp = 3 & (randomVal >> 26);
+    bool symmetryType = 1 & (randomVal >> 28);
+
+    if (((shapeA == 3) || (shapeC == 3)) && (symmetryProp < 2)) {
+        symmetryType = true;
+    }
+
+    std::string shapes = "CRSW";
+    std::string colors = "ubgcrpyw";
+    std::vector<std::string> quads = {"--", "--", "--", "--"};
+    if (symmetryType) {
+        quads[0] = shapes[shapeC];
+        quads[0] += colors[colorMain];
+        quads[1] = shapes[shapeA];
+        quads[1] += colors[colorA];
+        quads[2] = shapes[shapeC];
+        quads[2] += colors[colorMain];
+        quads[3] = shapes[shapeA];
+        quads[3] += colors[colorA];
+    }
+    else if (symmetryProp == 0) {
+        quads[0] = shapes[shapeC];
+        quads[0] += colors[colorMain];
+        quads[1] = shapes[shapeC];
+        quads[1] += colors[colorMain];
+        quads[2] = shapes[shapeA];
+        quads[2] += colors[colorA];
+        quads[3] = shapes[shapeA];
+        quads[3] += colors[colorA];
+    }
+    else if (symmetryProp == 1) {
+        quads[0] = shapes[shapeA];
+        quads[0] += colors[colorA];
+        quads[1] = shapes[shapeC];
+        quads[1] += colors[colorMain];
+        quads[2] = shapes[shapeC];
+        quads[2] += colors[colorMain];
+        quads[3] = shapes[shapeA];
+        quads[3] += colors[colorA];
+    }
+    else if (symmetryProp == 2) {
+        quads[0] = shapes[shapeC];
+        quads[0] += colors[colorMain];
+        quads[1] = shapes[shapeA];
+        quads[1] += colors[colorA];
+        quads[2] = shapes[shapeC];
+        quads[2] += colors[colorMain];
+        quads[3] = shapes[shapeB];
+        quads[3] += colors[colorB];
+    }
+    else if (symmetryProp == 3) {
+        quads[0] = shapes[shapeA];
+        quads[0] += colors[colorA];
+        quads[1] = shapes[shapeC];
+        quads[1] += colors[colorMain];
+        quads[2] = shapes[shapeB];
+        quads[2] += colors[colorB];
+        quads[3] = shapes[shapeC];
+        quads[3] += colors[colorMain];
+    }
+    if (hasMissingPiece && missingQuarter < 4) {quads[missingQuarter] = "--";}
+    return quads[0] + quads[1] + quads[2] + quads[3];
+}
+
 std::shared_ptr<Shape> GenerateRandomTarget(int seed, int level) {
-    return std::make_shared<Shape>("CuCuCuCu");
+    int layerCnt = 2;
+    if (level >= 76) {layerCnt = 4;}
+    else if (level >= 51) {layerCnt = 3;}
+
+    std::string code = "";
+    int randomVal = pseudo_random(seed, level, 0);
+    int missingQuarterLayer = randomVal % 8;
+    int colorMain = randomVal >> 3;
+    colorMain = (colorMain % 6) + 1;
+
+    for (int i=0; i<layerCnt; i++) {
+        code = GenerateRandomLayer(seed, level, i, (i==missingQuarterLayer) && (level>=76), colorMain) + ":" + code;
+    }
+    return std::make_shared<Shape>(code);
 }
 
 void Hub::LoadState() { // properly update contents after loading a save

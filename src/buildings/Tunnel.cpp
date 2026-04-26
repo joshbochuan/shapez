@@ -36,6 +36,27 @@ Tunnel::Tunnel(int x, int y, int r, TunnelType type, bool upgraded)
     this->m_Transform.rotation = M_PI * 0.5 * r;
 }
 
+std::string Tunnel::getSaveString() {
+    std::string res = "TUNNEL ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    if (type == TunnelType::OUT) {res += "OUT ";}
+    else {res += "IN ";}
+    res += std::to_string(upgraded);
+    return res;
+}
+
+std::shared_ptr<Machine> Tunnel::fromSaveString(std::vector<std::string> prop) {
+    int x = std::stoi(prop[1]);
+    int y = std::stoi(prop[2]);
+    int r = std::stoi(prop[3]);
+    TunnelType type = TunnelType::IN;
+    if (prop[4] == "OUT") {type = TunnelType::OUT;}
+    bool upgraded = std::stoi(prop[5]);
+    return std::make_shared<Tunnel>(x, y, r, type, upgraded);
+}
+
 void Tunnel::Pair() {
     int dx, dy;
     other = nullptr;

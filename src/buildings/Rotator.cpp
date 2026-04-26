@@ -88,6 +88,29 @@ std::shared_ptr<Shape> RotateCCW(std::shared_ptr<Shape> shape) {
     return std::make_shared<Shape>(code);
 }
 
+std::string Rotator::getSaveString() {
+    std::string res = "ROTATOR ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    switch (type) {
+        case RotatorType::ROTATE_180: res += "ROTATE_180"; break;
+        case RotatorType::ROTATE_CCW: res += "ROTATE_CCW"; break;
+        default: res += "ROTATE_CW"; break;
+    }
+    return res;
+}
+
+std::shared_ptr<Machine> Rotator::fromSaveString(std::vector<std::string> prop) {
+    int x = std::stoi(prop[1]);
+    int y = std::stoi(prop[2]);
+    int r = std::stoi(prop[3]);
+    RotatorType type = RotatorType::ROTATE_CW;
+    if (prop[4] == "ROTATE_180") {type = RotatorType::ROTATE_180;}
+    else if (prop[4] == "ROTATE_CCW") {type = RotatorType::ROTATE_CCW;}
+    return std::make_shared<Rotator>(x, y, r, type);
+}
+
 void Rotator::Init() {
     MapMachines[{x, y}] = shared_from_this();
     acceptor->Init();

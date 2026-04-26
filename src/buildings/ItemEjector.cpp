@@ -18,6 +18,17 @@ ItemEjector::ItemEjector(int x, int y, int r): rate(BELT_RATE){
     m_Transform.rotation = 0.5f * M_PI * r;
 }
 
+std::string ItemEjector::getSaveString() {
+    std::string res = "EJECTOR ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    if (item == nullptr) {res += "NULL ";}
+    else {res += item->getCode() + " ";}
+    res += std::to_string(progress);
+    return res;
+}
+
 void ItemEjector::Init() {
     initialized = true;
     MapEjectors[{x, y, r}] = std::dynamic_pointer_cast<ItemEjector>(shared_from_this());

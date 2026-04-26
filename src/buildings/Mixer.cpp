@@ -44,6 +44,25 @@ Mixer::Mixer(int x, int y, int r)
     acceptorB->takesShape = false;
 }
 
+std::string Mixer::getSaveString() {
+    std::string res = "MIXER ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y) + " ";
+    res += std::to_string(r) + " ";
+    res += std::to_string(cooldown);
+    return res;
+}
+
+std::shared_ptr<Machine> Mixer::fromSaveString(std::vector<std::string> prop) {
+    int x = std::stoi(prop[1]);
+    int y = std::stoi(prop[2]);
+    int r = std::stoi(prop[3]);
+    float cd = std::stof(prop[4]);
+    auto res = std::make_shared<Mixer>(x, y, r);
+    res->cooldown = cd;
+    return res;
+}
+
 void Mixer::Init() {
     MapMachines[{x, y}] = shared_from_this();
     MapMachines[{acceptorB->x, acceptorB->y}] = shared_from_this();

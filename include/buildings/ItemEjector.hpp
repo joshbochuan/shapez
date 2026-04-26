@@ -21,6 +21,7 @@ public:
     float progress;
     std::shared_ptr<ItemAcceptor> next;
     ItemEjector(int x, int y, int r);
+    std::string getSaveString();
     void Init();
     void Update();
     void Delete();

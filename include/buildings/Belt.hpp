@@ -27,6 +27,8 @@ public:
     static inline std::vector<std::shared_ptr<OptiImage>> beltInTexture; // belt in
     static inline std::vector<std::shared_ptr<OptiImage>> beltOutTexture;
     Belt(int x, int y, int r, BeltType type);
+    std::string getSaveString();
+    static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;
     BeltType type;

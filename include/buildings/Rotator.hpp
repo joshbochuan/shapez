@@ -27,6 +27,8 @@ public:
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejector;
     Rotator(int x, int y, int r, RotatorType type);
+    std::string getSaveString();
+    static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();

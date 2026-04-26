@@ -28,6 +28,8 @@ public:
     std::vector<std::shared_ptr<Miner>> prev;
     std::shared_ptr<Item> product;
     Miner(int x, int y, int r, std::shared_ptr<Item> product, bool chained);
+    std::string getSaveString();
+    static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();

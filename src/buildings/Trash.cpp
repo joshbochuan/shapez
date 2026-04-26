@@ -22,6 +22,19 @@ Trash::Trash(int x, int y)
     this->SetZIndex(46 + (x+y)%2);
 }
 
+std::string Trash::getSaveString() {
+    std::string res = "TRASH ";
+    res += std::to_string(x) + " ";
+    res += std::to_string(y);
+    return res;
+}
+
+std::shared_ptr<Machine> Trash::fromSaveString(std::vector<std::string> prop) {
+    int x = std::stoi(prop[1]);
+    int y = std::stoi(prop[2]);
+    return std::make_shared<Trash>(x, y);
+}
+
 void Trash::Init() {
     MapMachines[{x, y}] = shared_from_this();
     for (int i=0; i<4; i++) {m_Acceptors[i]->Init();}

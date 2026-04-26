@@ -35,6 +35,7 @@ public:
     virtual void Update() = 0;
     virtual void Delete() = 0; // called right before deconstruction, erase global hashmap keys
     MachineName getName();
+    virtual std::string getSaveString() = 0;
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_MACHINE_HPP
