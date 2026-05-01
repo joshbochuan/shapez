@@ -89,15 +89,27 @@ void GameScene::UserSelectMachine() {
             heldIdx = i;
         }
     }
+
+    if (Util::Input::IsKeyDown(Util::Keycode::KP_ENTER)) {
+        isMachineSelected = true;
+        heldIdx = 10;
+    }
+
     if (!isMachineSelected) {return;}
 
     beltType = BeltType::FORWARD;
     rotatorType = RotatorType::ROTATE_CW;
     tunnelType = TunnelType::IN;
     tunnelUpgraded = false;
-    minerChained = false;
+    minerChained = (LEVEL >= CHAIN_MINER_LEVEL);
+    minerCheat = (heldIdx == 10);
     previewMirrored = false;
     heldR = 0; // rotation of m_MachineHeld
+
+    if (heldIdx == 10) {
+        heldIdx = 3;
+        minerChained = true;
+    }
 
     std::vector<MachineName> previewNames = {
         MachineName::BELT,
@@ -137,6 +149,9 @@ void GameScene::UserSelectMachine() {
     };
     heldMachine = previewNames[heldIdx];
     heldPreview->SetDrawable(std::make_shared<Util::Image>(previewImagePaths[heldIdx]));
+    if ((heldMachine == MachineName::MINER) && (minerChained)) {
+        heldPreview->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/blueprints/miner-chainable.png"));
+    }
     heldPreview->SetPivot(previewPivots[heldIdx]);
     heldPreview->SetVisible(true);
 }
@@ -269,7 +284,7 @@ void GameScene::UserSelectVariant() {
         case 0: SelectBeltVariant(heldPreview, beltType); break;
         case 1: SelectBalancerVariant(heldPreview, heldMachine, previewMirrored); break;
         case 2: SelectTunnelVariant(heldPreview, tunnelType, tunnelUpgraded); break;
-        case 3: SelectMinerVariant(heldPreview, minerChained); break;
+        case 3: break;
         case 4: SelectCutterVariant(heldPreview); break;
         case 5: SelectRotatorVariant(heldPreview, rotatorType); break;
         case 6: break;
@@ -305,7 +320,9 @@ void GameScene::UserPlaceMachine(int mouseX, int mouseY) {
             break;
 
         case MachineName::MINER:
-            MachineToAdd = std::make_shared<Miner>(mouseX, mouseY, heldR,nullptr, minerChained); break;
+            if (!minerCheat) {MachineToAdd = std::make_shared<Miner>(mouseX, mouseY, heldR,nullptr, minerChained);}
+            else {MachineToAdd = std::make_shared<Miner>(mouseX, mouseY, heldR, hub->targetItem->copy(), true);}
+            break;
 
         case MachineName::CUTTER:
             MachineToAdd = std::make_shared<Cutter>(mouseX, mouseY, heldR);

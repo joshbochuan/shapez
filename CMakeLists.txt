@@ -103,6 +103,8 @@ add_executable(${PROJECT_NAME}
         src/scenes/UpgradeScene.cpp
         include/Chunk.hpp
         src/Chunk.cpp
+        include/buildings/ThroughputCounter.hpp
+        src/buildings/ThroughputCounter.cpp
 )
 
 if(MSVC)

@@ -4,16 +4,18 @@
 #include "buildings/Hub.hpp"
 
 #include <iostream>
-
+#include <sstream>
 #include "World.hpp"
 #include "Util/Image.hpp"
 #include "../../include/items/Shape.hpp"
 #include "Util/Text.hpp"
 #include "BigNumStr.hpp"
+#include "Util/Input.hpp"
 using namespace World;
 
 Hub::Hub()
-    : Machine(0, 0, 0, BELT_RATE, MachineName::HUB) {
+    : Machine(0, 0, 0, BELT_RATE, MachineName::HUB)
+    , throughputCounter(5) {
     levelUpSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/level_complete.wav");
 
     auto [a, b, c] = levelTargets[0];
@@ -66,7 +68,7 @@ Hub::Hub()
     m_Acceptors.push_back(std::make_shared<ItemAcceptor>(-2, -1, 3));
     m_Acceptors.push_back(std::make_shared<ItemAcceptor>(-2, -2, 3));
 
-    for (int i=0; i<m_Acceptors.size(); i++) {this->AddChild(m_Acceptors[i]);}
+    for (int i = 0; i < m_Acceptors.size(); i++) { this->AddChild(m_Acceptors[i]); }
 }
 
 std::string Hub::getSaveString() {
@@ -210,6 +212,7 @@ std::shared_ptr<Shape> GenerateRandomTarget(int seed, int level) {
 }
 
 void Hub::LoadState() { // properly update contents after loading a save
+    throughputCounter.Reset();
     RemoveChild(targetItem);
     if (LEVEL <= levelTargets.size()) {
         auto [a, b, c] = levelTargets[LEVEL-1];
@@ -219,24 +222,34 @@ void Hub::LoadState() { // properly update contents after loading a save
     }
     else {
         targetItem = GenerateRandomTarget(SEED, LEVEL);
-        targetAmount = 9999999;
-        toUnlockTxt->m_Text->SetText("Next Level");
+        targetAmount = -4.0f - 0.25f * static_cast<float>(LEVEL - 21);
+        if (targetAmount < -200) {targetAmount = -200;}
+        lockedItemTxt->m_Text->SetText("Next Level");
     }
     targetItem->MachineItemZIndex(51);
     AddChild(targetItem);
 
     levelNumTxt->m_Text->SetText(std::to_string(LEVEL));
-    targetTxt->m_Text->SetText("/ " + BigNumStr(targetAmount));
-    progressTxt->m_Text->SetText(BigNumStr(PROGRESS));
+    if (targetAmount >= 0) {
+        targetTxt->SetVisible(true);
+        targetTxt->m_Text->SetText("/ " + BigNumStr(static_cast<int>(targetAmount)));
+        progressTxt->m_Text->SetText(BigNumStr(PROGRESS));
+    }
+    else {
+        targetTxt->SetVisible(false);
+        progressTxt->m_Text->SetText(std::to_string(-targetAmount) + " / s");
+    }
+
 }
 
 void Hub::Update() {
+    int frameProgress = 0;
     for (int i=0; i<m_Acceptors.size(); i++) {
         m_Acceptors[i]->Update();
         if (m_Acceptors[i]->item == nullptr) {continue;}
         if (m_Acceptors[i]->progress < 1) {continue;}
 
-        if (targetItem->getCode() == m_Acceptors[i]->item->getCode()) {PROGRESS++;}
+        if (targetItem->getCode() == m_Acceptors[i]->item->getCode()) {frameProgress++;}
         warehouse[m_Acceptors[i]->item->getCode()];
         warehouse[m_Acceptors[i]->item->getCode()]++; // ik this is scuffed
 
@@ -247,38 +260,42 @@ void Hub::Update() {
     }
 
     // level up
-    if (PROGRESS >= targetAmount) {
+    PROGRESS += frameProgress;
+    throughputCounter.Push(frameProgress);
+    if ((targetAmount >= 0) && (PROGRESS >= static_cast<int>(targetAmount))
+        || (targetAmount < 0) && (throughputCounter.throughput >= -targetAmount)
+        || (Util::Input::IsKeyDown(Util::Keycode::KP_PLUS))) {
         PROGRESS = 0;
+        throughputCounter.Reset();
         LEVEL++;
-
-        RemoveChild(targetItem);
-
-        if (LEVEL <= levelTargets.size()) {
-            auto [a, b, c] = levelTargets[LEVEL-1];
-            targetItem = std::make_shared<Shape>(a);
-            targetAmount = b;
-            lockedItemTxt->m_Text->SetText(c);
-        }
-        else {
-            targetItem = GenerateRandomTarget(SEED, LEVEL);
-            targetAmount = 9999999;
-            toUnlockTxt->m_Text->SetText("Next Level");
-        }
-
-        targetItem->MachineItemZIndex(51);
-        AddChild(targetItem);
-
-        levelNumTxt->m_Text->SetText(std::to_string(LEVEL));
-        targetTxt->m_Text->SetText("/ " + BigNumStr(targetAmount));
-
+        LoadState();
         levelUpSFX->Play();
     }
-    progressTxt->m_Text->SetText(BigNumStr(PROGRESS));
 
     this->m_Transform.translation.x = std::round(((192.0f*static_cast<float>(x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0f*static_cast<float>(y)) - cam.translation.y) * cam.scale.y);
     this->m_Transform.scale.x = cam.scale.x * 1.12f;
     this->m_Transform.scale.y = cam.scale.y * 1.12f;
+
+    if (targetAmount >= 0) {
+        targetTxt->SetVisible(true);
+        targetTxt->m_Text->SetText("/ " + BigNumStr(targetAmount));
+        progressTxt->m_Text->SetText(BigNumStr(PROGRESS));
+        progressTxt->SetPivot({-progressTxt->m_Text->GetSize().x * 0.5f, 0});
+        progressTxt->m_Transform.translation.x = m_Transform.translation.x + cam.scale.x * 32;
+        progressTxt->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 88;
+        progressTxt->m_Transform.scale = cam.scale;
+    }
+    else {
+        targetTxt->SetVisible(false);
+        std::ostringstream oss;
+        oss << -targetAmount;
+        progressTxt->m_Text->SetText(oss.str() + " / s");
+        progressTxt->SetPivot({0, 0});
+        progressTxt->m_Transform.translation.x = m_Transform.translation.x + cam.scale.x * 168;
+        progressTxt->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 16;
+        progressTxt->m_Transform.scale = cam.scale * 0.5f;
+    }
 
     targetItem->m_Transform.translation.x = m_Transform.translation.x - cam.scale.x * 128;
     targetItem->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 32;
@@ -296,11 +313,6 @@ void Hub::Update() {
     deliverTxt->m_Transform.translation.x = m_Transform.translation.x + cam.scale.x * 0;
     deliverTxt->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 256;
     deliverTxt->m_Transform.scale = cam.scale;
-
-    progressTxt->m_Transform.translation.x = m_Transform.translation.x + cam.scale.x * 32;
-    progressTxt->m_Transform.translation.x += progressTxt->m_Text->GetSize().x * 0.5f * cam.scale.x;
-    progressTxt->m_Transform.translation.y = m_Transform.translation.y + cam.scale.y * 88;
-    progressTxt->m_Transform.scale = cam.scale;
 
     targetTxt->m_Transform.translation.x = m_Transform.translation.x + cam.scale.x * 32;
     targetTxt->m_Transform.translation.x += targetTxt->m_Text->GetSize().x * 0.5f * cam.scale.x;

@@ -11,16 +11,18 @@
 #include "../UIelement/Text.hpp"
 #include "Util/SFX.hpp"
 #include "Opti/OptiImage.hpp"
+#include "ThroughputCounter.hpp"
 
 class Hub: public Machine {
 public:
     std::shared_ptr<Util::SFX> levelUpSFX = nullptr;
     std::shared_ptr<Item> targetItem;
-    int targetAmount;
+    float targetAmount; // positive means amount target, negative means throughput target
     std::vector<std::shared_ptr<ItemAcceptor>> m_Acceptors;
+    ThroughputCounter throughputCounter;
 
     // og are
-    std::vector<std::tuple<std::string, int, std::string>> levelTargets = {
+    std::vector<std::tuple<std::string, float, std::string>> levelTargets = {
         {"CuCuCuCu",                            30, "Cutter and Trash"}, // og1
         {"----CuCu",                            40, "Upgrades"}, // og2
         {"RuRuRuRu",                            70, "Balancer"}, // og3

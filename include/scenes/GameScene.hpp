@@ -19,6 +19,7 @@ class GameScene: public Scene {
     TunnelType tunnelType = TunnelType::IN;
     bool tunnelUpgraded = false;
     bool minerChained = false;
+    bool minerCheat = false;
     bool previewMirrored = false;
     int heldIdx = 9;
     MachineName heldMachine = MachineName::NONE; // the machine user is currently trying to place

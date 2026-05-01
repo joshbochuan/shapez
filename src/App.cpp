@@ -117,9 +117,6 @@ void App::Update() {
     m_Root.Update(pool);
 
     auto end = std::chrono::steady_clock::now();
-    if (Util::Input::IsKeyDown(Util::Keycode::KP_PLUS)) {
-        PROGRESS = hub->targetAmount;
-    }
     if (Util::Input::IsKeyDown(Util::Keycode::K)) {
         std::cout << SaveWorld("test.txt") << std::endl;
     }
