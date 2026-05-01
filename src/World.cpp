@@ -9,6 +9,9 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <random>
+#include <ctime>
+#include <filesystem>
 
 #include "buildings/Balancer.hpp"
 #include "buildings/Belt.hpp"
@@ -152,6 +155,8 @@ void World::ClearWorld() {
     SEED = 0;
     LEVEL = 1;
     PROGRESS = 0;
+    CHEATS = false;
+    CREATION_TIME = 0;
     UPGRADE_BELT = 1;
     UPGRADE_PROCESS = 1;
     UPGRADE_MINE = 1;
@@ -166,7 +171,7 @@ void World::ClearWorld() {
 }
 
 std::string World::SaveWorld(std::string save) {
-    std::string res;
+    std::string res = "SHAPEZ_SAVE_FILE\n";
     res += "LEVEL " + std::to_string(LEVEL) + "\n";
     long long time = std::chrono::duration_cast<std::chrono::seconds>(
                       std::chrono::system_clock::now().time_since_epoch()
@@ -254,6 +259,8 @@ void World::LoadWorld(std::string save) {
         m_Root.AddChild(machine);
         machine->Init();
     }
+    std::cout << "finished machines\n";
+
     for (auto& prop : MachinesToAdd) {
         if ((prop[0] != "ACCEPTOR") && (prop[0] != "EJECTOR")) {continue;}
         int x = std::stoi(prop[1]);
@@ -280,6 +287,34 @@ void World::LoadWorld(std::string save) {
             MapEjectors[{x, y, r}]->AddChild(item);
         }
     }
+}
+
+std::string World::getUniqueFilename(const std::string& baseName, const std::string& ext) {
+    std::string filename = baseName + ext;
+    if (!std::filesystem::exists("../Saves/" + filename)) {return baseName;}
+    int counter = 2;
+    while (std::filesystem::exists("../Saves/" + filename)) {
+        filename = baseName + " (" + std::to_string(counter++) + ")" + ext;
+    }
+    return baseName + " (" + std::to_string(counter-1) + ")";
+}
+
+std::string World::CreateWorld(std::string baseName) {
+    // returns the name of this world
+    ClearWorld();
+
+    WORLD_NAME = getUniqueFilename(baseName, ".txt");
+
+    std::mt19937 rng(static_cast<unsigned int>(time(nullptr)));
+    std::uniform_int_distribution<int> dist(INT_MIN, INT_MAX);
+    SEED = dist(rng);
+    CREATION_TIME = std::chrono::duration_cast<std::chrono::seconds>(
+                      std::chrono::system_clock::now().time_since_epoch()
+                  ).count();
+
+    SaveWorld(WORLD_NAME + ".txt");
+    LoadWorld(WORLD_NAME + ".txt");
+    return WORLD_NAME;
 }
 
 float World::getMultiplierByLevel(int level) {

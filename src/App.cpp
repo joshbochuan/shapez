@@ -117,10 +117,7 @@ void App::Update() {
 
     auto end = std::chrono::steady_clock::now();
     if (Util::Input::IsKeyDown(Util::Keycode::K)) {
-        std::cout << SaveWorld("test.txt") << std::endl;
-    }
-    if (Util::Input::IsKeyDown(Util::Keycode::L)) {
-        LoadWorld("test.txt");
+        std::cout << SaveWorld(WORLD_NAME + ".txt") << std::endl;
     }
 
     auto sceneDuration = std::chrono::duration_cast<std::chrono::microseconds>(t1-start);
@@ -128,10 +125,12 @@ void App::Update() {
     auto rootDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-t2);
     auto totalDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
 
+    /*
     std::cout << sceneDuration.count() << " us\t+ ";
     std::cout << operationDuration.count() << " us\t+ ";
     std::cout << rootDuration.count() << " us\t= ";
     std::cout << static_cast<float>(totalDuration.count())/1000.0f << " ms\n";
+    */
 
     /*
      * Do not touch the code below as they serve the purpose for

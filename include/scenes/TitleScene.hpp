@@ -9,13 +9,24 @@
 #include "UIelement/Button.hpp"
 #include "../Opti/OptiObject.hpp"
 
+class SaveBlob: public OptiObject {
+public:
+    std::string name;
+    int level;
+    long long lastPlayedAt;
+    std::shared_ptr<Text> nameTxt, levelTxt, lastPlayedTxt;
+    std::shared_ptr<Button> playButton, downloadButton, deleteButton, renameButton;
+    SaveBlob(std::string name, int level, long long lastPlayed);
+    void Update();
+};
+
 class TitleScene: public Scene {
 private:
     std::shared_ptr<OptiObject> blur;
     std::shared_ptr<OptiObject> title;
     std::shared_ptr<OptiObject> titleWindow; // #E9EAEC
     std::shared_ptr<Button> playButton, importButton, newGameButton; // green and blue buttons
-    std::vector<std::shared_ptr<OptiObject>> SaveSlots;
+    std::vector<std::shared_ptr<SaveBlob>> saveBlobs;
 
 public:
     TitleScene();

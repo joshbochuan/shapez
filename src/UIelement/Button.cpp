@@ -26,8 +26,8 @@ Button::Button(std::shared_ptr<Util::Image> idleImage): OptiObject() {
 }
 
 void Button::Update() {
-    hovered = (std::abs(Util::Input::GetCursorPosition().x-m_Transform.translation.x)*2.0f < dimension.x * windowPercent
-                && std::abs(Util::Input::GetCursorPosition().y-m_Transform.translation.y)*2.0f < dimension.y * windowPercent);
+    hovered = (std::abs(Util::Input::GetCursorPosition().x-m_Transform.translation.x)*2.0f < dimension.x * windowPercent * idleScale
+                && std::abs(Util::Input::GetCursorPosition().y-m_Transform.translation.y)*2.0f < dimension.y * windowPercent * idleScale);
 
     if (locked) {
         clicked = false;
@@ -55,7 +55,7 @@ void Button::Update() {
         if (held) {scaleState += (heldScale-scaleState)/heldSpeed;}
         else if (selected) {scaleState += (selectScale-scaleState)/selectSpeed;}
         else if (hovered) {scaleState += (hoverScale-scaleState)/hoverSpeed;}
-        else {scaleState += (hoverScale-scaleState)/hoverSpeed;}
+        else {scaleState += (idleScale-scaleState)/hoverSpeed;}
 
         if (selected && (selectedBackground!=nullptr)) {SetDrawable(selectedBackground);}
         else if (held && (heldBackground != nullptr)) {SetDrawable(heldBackground);}

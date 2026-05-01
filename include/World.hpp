@@ -118,12 +118,14 @@ namespace World {
     int pseudo_random(int seed, int x, int y);
 
     float getMultiplierByLevel(int level);
+    std::string getUniqueFilename(const std::string& baseName, const std::string& ext);
 
     void UpdateWorld();
 
     void ClearWorld();
     std::string SaveWorld(std::string save);
     void LoadWorld(std::string save);
+    std::string CreateWorld(std::string baseName);
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_CAM_HPP

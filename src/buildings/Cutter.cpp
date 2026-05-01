@@ -67,22 +67,24 @@ std::shared_ptr<Machine> Cutter::fromSaveString(std::vector<std::string> prop) {
 
 std::pair<std::shared_ptr<Shape>, std::shared_ptr<Shape>> Cut(const std::shared_ptr<Shape>& shape) {
     std::shared_ptr<Shape> left, right;
-    std::string val="", codeLeft="", codeRight="", orig = shape->getCode();
+    std::string val, codeLeft, codeRight, orig = shape->getCode();
     int layer = std::count(orig.begin(), orig.end(), ':')+1;
     for (int i=0; i<layer; i++) {
         val = orig.substr(9*i+4, 4);
         if (val != "----") {
-            if (codeLeft != "") {codeLeft += ":";}
+            if (!codeLeft.empty()) {codeLeft += ":";}
             codeLeft += "----" + val;
         }
         val = orig.substr(9*i, 4);
         if (val != "----") {
-            if (codeRight != "") {codeRight += ":";}
+            if (!codeRight.empty()) {codeRight += ":";}
             codeRight += val + "----";
         }
     }
     left = std::make_shared<Shape>(codeLeft);
     right = std::make_shared<Shape>(codeRight);
+    if (left->quads.empty()) {left = nullptr;}
+    if (right->quads.empty()) {right = nullptr;}
     return std::make_pair(left, right);
 }
 
@@ -118,12 +120,16 @@ void Cutter::Update() {
         && (ejectorB->item == nullptr)) {
         auto res = Cut(std::dynamic_pointer_cast<Shape>(acceptor->item));
         cooldown -= 1;
-        ejectorA->item = res.first;
-        ejectorB->item = res.second;
-        ejectorA->AddChild(ejectorA->item);
-        ejectorB->AddChild(ejectorB->item);
-        ejectorA->progress = acceptor->progress-1;
-        ejectorB->progress = acceptor->progress-1;
+        if (res.first != nullptr) {
+            ejectorA->item = res.first;
+            ejectorA->AddChild(ejectorA->item);
+            ejectorA->progress = acceptor->progress-1;
+        }
+        if (res.second != nullptr) {
+            ejectorB->item = res.second;
+            ejectorB->AddChild(ejectorB->item);
+            ejectorB->progress = acceptor->progress-1;
+        }
         acceptor->RemoveChild(acceptor->item);
         acceptor->item = nullptr;
         acceptor->progress = 0;
