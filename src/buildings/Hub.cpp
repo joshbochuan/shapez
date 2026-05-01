@@ -264,7 +264,7 @@ void Hub::Update() {
     throughputCounter.Push(frameProgress);
     if ((targetAmount >= 0) && (PROGRESS >= static_cast<int>(targetAmount))
         || (targetAmount < 0) && (throughputCounter.throughput >= -targetAmount)
-        || (Util::Input::IsKeyDown(Util::Keycode::KP_PLUS))) {
+        || (Util::Input::IsKeyDown(Util::Keycode::KP_PLUS) && CHEATS)) {
         PROGRESS = 0;
         throughputCounter.Reset();
         LEVEL++;

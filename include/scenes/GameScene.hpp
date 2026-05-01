@@ -12,6 +12,7 @@
 #include "Util/SFX.hpp"
 #include "../Opti/OptiObject.hpp"
 #include "UIelement/Button.hpp"
+#include "UIelement/Notification.hpp"
 
 class GameScene: public Scene {
     BeltType beltType = BeltType::FORWARD;
@@ -25,6 +26,8 @@ class GameScene: public Scene {
     MachineName heldMachine = MachineName::NONE; // the machine user is currently trying to place
     int heldR = 0; // rotation of m_MachineHeld
     std::shared_ptr<OptiObject> heldPreview = nullptr;
+    int saveCooldown = 0; // auto saves every 2 minutes
+    std::shared_ptr<Notification> notification;
 
     std::shared_ptr<Util::Image> hoveredTexture;
     std::shared_ptr<Util::Image> selectedTexture;

@@ -64,6 +64,8 @@ namespace World {
     inline int LEVEL = 1;
     inline int PROGRESS = 0;
     inline long long CREATION_TIME = 0;
+    inline bool CHEATS = false;
+    inline std::string WORLD_NAME = "test";
 
     inline int UPGRADE_BELT = 1;
     inline int UPGRADE_PROCESS = 1;
@@ -117,7 +119,6 @@ namespace World {
 
     float getMultiplierByLevel(int level);
 
-    void OperateMachines();
     void UpdateWorld();
 
     void ClearWorld();

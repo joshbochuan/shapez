@@ -97,12 +97,6 @@ void UpdateTransferrers(
     wg.Wait();
 }
 
-void World::OperateMachines() {
-    hub->Update();
-    UpdateMachines(pool, LstMachines);
-    UpdateTransferrers(pool, LstEjectors); // moving items from ejectors to acceptors
-}
-
 void World::UpdateWorld() {
     int chunkStartX = static_cast<int>(std::floor((cam.translation.x - (WINDOW_WIDTH * 0.5f)/cam.scale.x)/(192.0f ))) >> 4;
     int chunkStartY = static_cast<int>(std::floor((cam.translation.y - (WINDOW_HEIGHT * 0.5f)/cam.scale.y)/(192.0f))) >> 4;
@@ -119,6 +113,9 @@ void World::UpdateWorld() {
         if (chunk == nullptr) {continue;}
         chunk->Update();
     }
+    hub->Update();
+    UpdateMachines(pool, LstMachines);
+    UpdateTransferrers(pool, LstEjectors); // moving items from ejectors to acceptors
 }
 
 std::vector<std::vector<std::string>> parse2D(const std::string& input) {
@@ -178,6 +175,7 @@ std::string World::SaveWorld(std::string save) {
     res += "CREATED_AT " + std::to_string(CREATION_TIME) + "\n";
     res += "SEED " + std::to_string(SEED) + "\n";
     res += "PROGRESS " + std::to_string(PROGRESS) + "\n";
+    res += "CHEATS " + std::to_string(CHEATS) + "\n";
     res += "UPGRADE_BELT " + std::to_string(UPGRADE_BELT) + "\n";
     res += "UPGRADE_PROCESS " + std::to_string(UPGRADE_PROCESS) + "\n";
     res += "UPGRADE_MINE " + std::to_string(UPGRADE_MINE) + "\n";
@@ -221,6 +219,7 @@ void World::LoadWorld(std::string save) {
         if (prop[0] == "CREATED_AT") {CREATION_TIME = std::stoi(prop[1]);}
         if (prop[0] == "SEED") {SEED = std::stoi(prop[1]);}
         if (prop[0] == "PROGRESS") {PROGRESS = std::stoi(prop[1]);}
+        if (prop[0] == "CHEATS") {CHEATS = std::stoi(prop[1]);}
         if (prop[0] == "UPGRADE_BELT") {UPGRADE_BELT = std::stoi(prop[1]);}
         if (prop[0] == "UPGRADE_PROCESS") {UPGRADE_PROCESS = std::stoi(prop[1]);}
         if (prop[0] == "UPGRADE_MINE") {UPGRADE_MINE = std::stoi(prop[1]);}

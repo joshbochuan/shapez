@@ -90,7 +90,7 @@ void GameScene::UserSelectMachine() {
         }
     }
 
-    if (Util::Input::IsKeyDown(Util::Keycode::KP_ENTER)) {
+    if (Util::Input::IsKeyDown(Util::Keycode::KP_ENTER) && CHEATS) {
         isMachineSelected = true;
         heldIdx = 10;
     }
@@ -448,6 +448,25 @@ GameScene::GameScene() {
 }
 
 std::shared_ptr<Scene> GameScene::Update() {
+    if (saveCooldown-- <= 0) {
+        saveCooldown = 120 * FPS_CAP;
+        SaveWorld(WORLD_NAME + ".txt");
+        if (notification != nullptr) {
+            RemoveChild(notification);
+            notification = nullptr;
+        }
+        notification = std::make_shared<Notification>(
+            "Your game has been saved.",
+            std::make_shared<Util::Image>("../Resources/ui/icons/notification_saved.png"));
+        AddChild(notification);
+    }
+
+    if (notification != nullptr) {notification->Update();}
+    if ((notification != nullptr) && (notification->frameToLive <= 0)) {
+        RemoveChild(notification);
+        notification = nullptr;
+    }
+
     if (subScene != nullptr) {
         auto next = subScene->Update();
         if (next == nullptr) {

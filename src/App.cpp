@@ -74,7 +74,7 @@ void App::Start() {
 
     scene = std::make_shared<TitleScene>();
     m_Root.AddChild(scene);
-    OperateMachines();
+    UpdateWorld();
     m_Root.Update(pool);
 
     m_CurrentState = State::UPDATE;
@@ -91,7 +91,6 @@ void App::Update() {
     }
 
     auto t1 = std::chrono::steady_clock::now();
-    OperateMachines();
     UpdateWorld();
     auto t2 = std::chrono::steady_clock::now();
 

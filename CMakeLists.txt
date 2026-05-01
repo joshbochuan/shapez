@@ -105,6 +105,8 @@ add_executable(${PROJECT_NAME}
         src/Chunk.cpp
         include/buildings/ThroughputCounter.hpp
         src/buildings/ThroughputCounter.cpp
+        include/UIelement/Notification.hpp
+        src/UIelement/Notification.cpp
 )
 
 if(MSVC)
