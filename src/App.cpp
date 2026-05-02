@@ -27,11 +27,17 @@
 #include <iostream>
 #include <cmath>
 #include <chrono>
+#include <windows.h>
+#include <filesystem>
 
 using namespace World;
 
 void App::Start() {
     LOG_TRACE("Start");
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(nullptr, exePath, MAX_PATH);
+    std::filesystem::current_path(std::filesystem::path(exePath).parent_path());
+
     AssetLoader::loadAudio();
     AssetLoader::loadTextures();
 
@@ -116,9 +122,6 @@ void App::Update() {
     m_Root.Update(pool);
 
     auto end = std::chrono::steady_clock::now();
-    if (Util::Input::IsKeyDown(Util::Keycode::K)) {
-        std::cout << SaveWorld(WORLD_NAME + ".txt") << std::endl;
-    }
 
     auto sceneDuration = std::chrono::duration_cast<std::chrono::microseconds>(t1-start);
     auto operationDuration = std::chrono::duration_cast<std::chrono::microseconds>(t2-t1);

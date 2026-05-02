@@ -200,7 +200,7 @@ std::string World::SaveWorld(std::string save) {
         res += ej->getSaveString() + "\n";
     }
 
-    std::ofstream file("../Saves/" + save);  // open file
+    std::ofstream file(save);  // open file
     if (!file) {throw std::invalid_argument("couldn't open file");}
     file << res;
     file.close(); // optional (auto-closes when out of scope)
@@ -211,7 +211,7 @@ void World::LoadWorld(std::string save) {
     ClearWorld();
 
     std::vector<std::vector<std::string>> MachinesToAdd;
-    std::ifstream file("../Saves/" + save);
+    std::ifstream file(save);
     if (file.is_open()) {
         std::ostringstream ss;
         ss << file.rdbuf(); // Read the entire file buffer into the stream
@@ -259,7 +259,6 @@ void World::LoadWorld(std::string save) {
         m_Root.AddChild(machine);
         machine->Init();
     }
-    std::cout << "finished machines\n";
 
     for (auto& prop : MachinesToAdd) {
         if ((prop[0] != "ACCEPTOR") && (prop[0] != "EJECTOR")) {continue;}
@@ -312,8 +311,8 @@ std::string World::CreateWorld(std::string baseName) {
                       std::chrono::system_clock::now().time_since_epoch()
                   ).count();
 
-    SaveWorld(WORLD_NAME + ".txt");
-    LoadWorld(WORLD_NAME + ".txt");
+    SaveWorld("../Saves/" + WORLD_NAME + ".txt");
+    LoadWorld("../Saves/" + WORLD_NAME + ".txt");
     return WORLD_NAME;
 }
 

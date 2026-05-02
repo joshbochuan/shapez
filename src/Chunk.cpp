@@ -96,7 +96,6 @@ float smoothstep(float t) {
 }
 
 void Chunk::Generate(int seed) {
-    std::cout << "generating chunk" << std::endl;
     // decides whether this chunk will generate anything
     double val = static_cast<double>(pseudo_random(seed, x, y)) / 2147483647.0;
     if (val < 0) {val = -val;}

@@ -8,6 +8,7 @@
 #include "Util/GameObject.hpp"
 #include "UIelement/Button.hpp"
 #include "../Opti/OptiObject.hpp"
+#include "UIelement/TextInput.hpp"
 
 class SaveBlob: public OptiObject {
 public:
@@ -20,6 +21,28 @@ public:
     void Update();
 };
 
+class DeleteBlob: public OptiObject {
+public:
+    std::string name;
+    int level;
+    std::shared_ptr<OptiObject> blur;
+    std::shared_ptr<Text> confirmTxt, uSureTxt, levelTxt, noReturnTxt;
+    std::shared_ptr<Button> cancelButton, deleteButton;
+    DeleteBlob(std::string name, int level);
+    bool Update();
+};
+
+class RenameBlob: public OptiObject {
+public:
+    std::string name;
+    std::shared_ptr<OptiObject> blur;
+    std::shared_ptr<Text> titleTxt, renameTxt;
+    std::shared_ptr<TextInput> inputBox;
+    std::shared_ptr<Button> cancelButton, okButton;
+    RenameBlob(std::string name);
+    bool Update();
+};
+
 class TitleScene: public Scene {
 private:
     std::shared_ptr<OptiObject> blur;
@@ -27,10 +50,13 @@ private:
     std::shared_ptr<OptiObject> titleWindow; // #E9EAEC
     std::shared_ptr<Button> playButton, importButton, newGameButton; // green and blue buttons
     std::vector<std::shared_ptr<SaveBlob>> saveBlobs;
+    std::shared_ptr<DeleteBlob> deleteBlob;
+    std::shared_ptr<RenameBlob> renameBlob;
 
 public:
     TitleScene();
     std::shared_ptr<Scene> Update();
+    void Refresh();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_TITLESCENE_HPP

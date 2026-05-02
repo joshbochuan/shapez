@@ -107,6 +107,8 @@ add_executable(${PROJECT_NAME}
         src/buildings/ThroughputCounter.cpp
         include/UIelement/Notification.hpp
         src/UIelement/Notification.cpp
+        include/UIelement/TextInput.hpp
+        src/UIelement/TextInput.cpp
 )
 
 if(MSVC)

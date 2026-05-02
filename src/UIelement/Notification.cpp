@@ -34,8 +34,7 @@ Notification::Notification(std::string text, std::shared_ptr<Util::Image> symbol
 void Notification::Update() {
     frameToLive--;
     if (static_cast<float>(frameToLive) < 0.5f * FPS_CAP) {
-        float t = static_cast<float>(frameToLive) / FPS_CAP;
-        t /= 0.5f;
+        float t = static_cast<float>(frameToLive) / (0.5f * FPS_CAP);
         t = 1-t;
         m_Transform.scale.x = -2.0f*t*t + t + 1;
         m_Transform.scale.y = m_Transform.scale.x;

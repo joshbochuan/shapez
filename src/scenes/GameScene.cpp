@@ -450,7 +450,7 @@ GameScene::GameScene() {
 std::shared_ptr<Scene> GameScene::Update() {
     if (saveCooldown-- <= 0) {
         saveCooldown = 120 * FPS_CAP;
-        SaveWorld(WORLD_NAME + ".txt");
+        SaveWorld("../Saves/" + WORLD_NAME + ".txt");
         if (notification != nullptr) {
             RemoveChild(notification);
             notification = nullptr;
