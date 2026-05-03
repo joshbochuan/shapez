@@ -306,6 +306,8 @@ UpgradeScene::UpgradeScene() {
     closeButton->m_Transform.scale = {windowPercent, windowPercent};
     closeButton->SetZIndex(93);
     closeButton->m_Transform.translation = {windowPercent*650, windowPercent*550};
+    closeButton->keys.push_back(Util::Keycode::ESCAPE);
+    closeButton->keys.push_back(Util::Keycode::F);
     AddChild(closeButton);
 
     beltBlob = std::make_shared<UpgradeBlob>(UpgradeType::BELT, "Belts, Distributor & Tunnels");
@@ -347,8 +349,6 @@ std::shared_ptr<Scene> UpgradeScene::Update() {
     mineBlob->Update();
     paintBlob->Update();
     closeButton->Update();
-    if (closeButton->released || Util::Input::IsKeyUp(Util::Keycode::F)) {
-        return nullptr;
-    }
+    if (closeButton->released) {return nullptr;}
     return shared_from_this();
 }

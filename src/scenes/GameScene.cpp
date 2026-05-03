@@ -29,6 +29,8 @@
 #include <cmath>
 #include <algorithm>
 #include <vector>
+
+#include "scenes/PauseScene.hpp"
 #include "scenes/UpgradeScene.hpp"
 using namespace World;
 
@@ -445,10 +447,52 @@ GameScene::GameScene() {
     heldPreview->SetVisible(false);
     heldPreview->SetZIndex(99);
     AddChild(heldPreview);
+
+    pauseButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/icons/main_menu_settings_idle.png"));
+    pauseButton->hoveredBackground = std::make_shared<Util::Image>("../Resources/ui/icons/main_menu_settings.png");
+    pauseButton->keys.push_back(Util::Keycode::ESCAPE);
+    pauseButton->SetZIndex(81);
+    pauseButton->m_Transform.translation = {(WINDOW_WIDTH>>1)-64.0f*windowPercent, (WINDOW_HEIGHT>>1)-64.0f*windowPercent};
+    pauseButton->idleSpeed = 3;
+    pauseButton->hoverSpeed = 3;
+    pauseButton->heldSpeed = 3;
+    pauseButton->selectSpeed = 3;
+    pauseButton->heldScale = 0.88;
+    pauseButton->imageScale = 0.6;
+    pauseButton->Update();
+    AddChild(pauseButton);
+
+    saveButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/icons/save_idle.png"));
+    saveButton->hoveredBackground = std::make_shared<Util::Image>("../Resources/ui/icons/save.png");
+    saveButton->SetZIndex(81);
+    saveButton->m_Transform.translation = {(WINDOW_WIDTH>>1)-176.0f*windowPercent, (WINDOW_HEIGHT>>1)-64.0f*windowPercent};
+    saveButton->idleSpeed = 3;
+    saveButton->hoverSpeed = 3;
+    saveButton->heldSpeed = 3;
+    saveButton->selectSpeed = 3;
+    saveButton->heldScale = 0.88;
+    saveButton->imageScale = 0.6;
+    saveButton->Update();
+    AddChild(saveButton);
+
+    upgradeButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/icons/shop_idle.png"));
+    upgradeButton->hoveredBackground = std::make_shared<Util::Image>("../Resources/ui/icons/shop.png");
+    upgradeButton->keys.push_back(Util::Keycode::F);
+    upgradeButton->SetZIndex(82);
+    upgradeButton->m_Transform.translation = {(WINDOW_WIDTH>>1)-288.0f*windowPercent, (WINDOW_HEIGHT>>1)-64.0f*windowPercent};
+    upgradeButton->idleSpeed = 3;
+    upgradeButton->hoverSpeed = 3;
+    upgradeButton->heldSpeed = 3;
+    upgradeButton->selectSpeed = 3;
+    upgradeButton->heldScale = 0.88;
+    upgradeButton->imageScale = 0.6;
+    upgradeButton->Update();
+    AddChild(upgradeButton);
 }
 
 std::shared_ptr<Scene> GameScene::Update() {
-    if (saveCooldown-- <= 0) {
+    saveCooldown--;
+    if ((saveCooldown <= 0) || (saveButton->released)) {
         saveCooldown = 120 * FPS_CAP;
         SaveWorld("../Saves/" + WORLD_NAME + ".txt");
         if (notification != nullptr) {
@@ -472,15 +516,29 @@ std::shared_ptr<Scene> GameScene::Update() {
         if (next == nullptr) {
             RemoveChild(subScene);
             subScene = nullptr;
+            return shared_from_this();
         }
-        else {return shared_from_this();}
+        if (next != subScene) {
+            return next;
+        }
+        return shared_from_this();
     }
-    else if (Util::Input::IsKeyUp(Util::Keycode::F) && (LEVEL >= UPGRADE_LEVEL)) {
+    else if (upgradeButton->released && (LEVEL >= UPGRADE_LEVEL)) {
         subScene = std::make_shared<UpgradeScene>();
+        AddChild(subScene);
+    }
+    else if (pauseButton->released) {
+        long long time = std::chrono::duration_cast<std::chrono::seconds>(
+                      std::chrono::system_clock::now().time_since_epoch()
+                  ).count();
+        subScene = std::make_shared<PauseScene>(BELT_COUNT, MACHINE_COUNT, PLAYTIME + time - LAST_PLAYED_AT);
         AddChild(subScene);
     }
 
     UserMoveCamera();
+    pauseButton->Update();
+    saveButton->Update();
+    upgradeButton->Update();
     toolbar->Update();
     buttons[0]->locked = (LEVEL < BELT_LEVEL);
     buttons[1]->locked = (LEVEL < BALANCER_LEVEL);
@@ -511,5 +569,5 @@ std::shared_ptr<Scene> GameScene::Update() {
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) && !(toolbar->hovered)) {UserPlaceMachine(mouseX, mouseY);}
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB) && !(toolbar->hovered)) {UserRemoveMachine(mouseX, mouseY);}
 
-    return nullptr;
+    return shared_from_this();
 }

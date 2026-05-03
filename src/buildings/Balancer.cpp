@@ -69,6 +69,8 @@ Balancer::Balancer(int x, int y, int r)
 
     acceptPriority = 0;
     ejectPriority = 0;
+
+    MACHINE_COUNT++;
 }
 
 std::string Balancer::getSaveString() {
@@ -284,6 +286,8 @@ Splitter::Splitter(int x, int y, int r, bool mirrored)
     acceptor->SetDrawable(Belt::beltInTexture[0]);
     ejectorA->SetDrawable(Belt::beltOutTexture[0]);
     ejectPriority = 0;
+
+    MACHINE_COUNT++;
 }
 
 std::string Splitter::getSaveString() {
@@ -392,6 +396,8 @@ Merger::Merger(int x, int y, int r, bool mirrored)
     acceptorA->SetDrawable(Belt::beltInTexture[0]);
     ejector->SetDrawable(Belt::beltOutTexture[0]);
     acceptPriority = 0;
+
+    MACHINE_COUNT++;
 }
 
 std::string Merger::getSaveString() {

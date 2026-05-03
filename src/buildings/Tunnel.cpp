@@ -34,6 +34,7 @@ Tunnel::Tunnel(int x, int y, int r, TunnelType type, bool upgraded)
     if (ejector != nullptr) {AddChild(ejector);}
     this->SetZIndex(50 + (x+y)%2);
     this->m_Transform.rotation = M_PI * 0.5 * r;
+    MACHINE_COUNT++;
 }
 
 std::string Tunnel::getSaveString() {

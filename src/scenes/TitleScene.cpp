@@ -10,6 +10,7 @@
 #include <iostream>
 #include <windows.h>
 #include <shlobj.h>
+#include "App.hpp"
 using namespace World;
 
 std::string RelativeTimeStr(long long time) {
@@ -295,6 +296,7 @@ bool RenameBlob::Update() {
 
 TitleScene::TitleScene() {
     cam.scale = glm::vec2(0.4 * windowPercent, 0.4 * windowPercent);
+    cam.translation = glm::vec2(0, 0);
     WORLD_NAME = "title";
     LoadWorld("../Resources/title.txt");
 
@@ -360,6 +362,14 @@ TitleScene::TitleScene() {
     newGameButton->m_Transform.scale = glm::vec2(windowPercent, windowPercent);
     AddChild(newGameButton);
 
+    closeButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/icons/closeButton.png"));
+    closeButton->hoveredBackground = std::make_shared<Util::Image>("../Resources/ui/icons/closeButtonHovered.png");
+    closeButton->m_Transform.translation.x = static_cast<float>(WINDOW_WIDTH >> 1) - 100.0f * windowPercent;
+    closeButton->m_Transform.translation.y = static_cast<float>(WINDOW_HEIGHT >> 1) - 100.0f * windowPercent;
+    closeButton->keys.push_back(Util::Keycode::ESCAPE);
+    closeButton->SetZIndex(93);
+    AddChild(closeButton);
+
     Refresh();
 }
 
@@ -400,7 +410,6 @@ void TitleScene::Refresh() {
 
     if (!saveBlobs.empty()) {playButton->text->m_Text->SetText("CONTINUE");}
     else {playButton->text->m_Text->SetText("P L A Y");}
-    Update();
 }
 
 std::string openImportFileDialog() {
@@ -556,25 +565,29 @@ bool exportFile(const std::string& filePath) {
 
 std::shared_ptr<Scene> TitleScene::Update() {
     if (deleteBlob != nullptr) {
-        if (!deleteBlob->Update()) {return nullptr;}
+        if (!deleteBlob->Update()) {return shared_from_this();}
         RemoveChild(deleteBlob);
         deleteBlob = nullptr;
         Refresh();
-        return nullptr;
+        Update();
+        return shared_from_this();
     }
     if (renameBlob != nullptr) {
-        if (!renameBlob->Update()) {return nullptr;}
+        if (!renameBlob->Update()) {return shared_from_this();}
         RemoveChild(renameBlob);
         renameBlob = nullptr;
         Refresh();
-        return nullptr;
+        Update();
+        return shared_from_this();
     }
     playButton->Update();
     newGameButton->Update();
     importButton->Update();
+    closeButton->Update();
     if (importButton->released) {
         import();
         Refresh();
+        Update();
     }
     for (int i=0; i<saveBlobs.size(); i++) {
         auto save = saveBlobs[i];
@@ -584,12 +597,12 @@ std::shared_ptr<Scene> TitleScene::Update() {
         if (save->deleteButton->released) {
             deleteBlob = std::make_shared<DeleteBlob>(save->name, save->level);
             AddChild(deleteBlob);
-            return nullptr;
+            return shared_from_this();
         }
         if (save->renameButton->released) {
             renameBlob = std::make_shared<RenameBlob>(save->name);
             AddChild(renameBlob);
-            return nullptr;
+            return shared_from_this();
         }
         if (!save->playButton->released) {continue;}
         WORLD_NAME = save->name;
@@ -606,5 +619,8 @@ std::shared_ptr<Scene> TitleScene::Update() {
         CreateWorld("Unnamed");
         return std::make_shared<GameScene>();
     }
-    return nullptr;
+    if (closeButton->released) {
+        return nullptr;
+    }
+    return shared_from_this();
 }

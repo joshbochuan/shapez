@@ -57,6 +57,7 @@ Painter::Painter(int x, int y, int r, bool mirrored)
     }
     acceptorA->takesColor = false;
     acceptorB->takesShape = false;
+    MACHINE_COUNT++;
 }
 
 std::string Painter::getSaveString() {

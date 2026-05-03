@@ -40,6 +40,8 @@ Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product, bool chained)
     cover->SetZIndex(40);
     this->AddChild(cover);
 
+    MACHINE_COUNT++;
+
     if (this->product == nullptr) {return;}
     if (this->product->getType() == ItemType::SHAPE) {
         cover->SetDrawable(minerCoverTextureGray);

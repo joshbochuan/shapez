@@ -29,6 +29,7 @@ Rotator::Rotator(int x, int y, int r, RotatorType type)
     }
     this->SetZIndex(44 + (x+y)%2);
     this->m_Transform.rotation = M_PI * 0.5 * r;
+    MACHINE_COUNT++;
 }
 
 std::shared_ptr<Shape> RotateCW(std::shared_ptr<Shape> shape) {

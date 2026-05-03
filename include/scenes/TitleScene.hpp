@@ -52,6 +52,7 @@ private:
     std::vector<std::shared_ptr<SaveBlob>> saveBlobs;
     std::shared_ptr<DeleteBlob> deleteBlob;
     std::shared_ptr<RenameBlob> renameBlob;
+    std::shared_ptr<Button> closeButton;
 
 public:
     TitleScene();

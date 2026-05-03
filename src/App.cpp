@@ -87,18 +87,18 @@ void App::Start() {
 }
 
 void App::Update() {
-    auto start = std::chrono::steady_clock::now();
-
     std::shared_ptr<Scene> nextScene = scene->Update();
-    if (nextScene != nullptr) {
+    if (nextScene == nullptr || Util::Input::IfExit()) {
+        m_CurrentState = State::END;
+        return;
+    }
+    if (nextScene != scene) {
         m_Root.RemoveChild(scene);
         m_Root.AddChild(nextScene);
         scene = nextScene;
     }
 
-    auto t1 = std::chrono::steady_clock::now();
-    UpdateWorld();
-    auto t2 = std::chrono::steady_clock::now();
+    if (DOES_WORLD_TICK) {UpdateWorld();}
 
     background->CalData();
     background->Draw();
@@ -121,26 +121,7 @@ void App::Update() {
     }
     m_Root.Update(pool);
 
-    auto end = std::chrono::steady_clock::now();
-
-    auto sceneDuration = std::chrono::duration_cast<std::chrono::microseconds>(t1-start);
-    auto operationDuration = std::chrono::duration_cast<std::chrono::microseconds>(t2-t1);
-    auto rootDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-t2);
-    auto totalDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-
-    /*
-    std::cout << sceneDuration.count() << " us\t+ ";
-    std::cout << operationDuration.count() << " us\t+ ";
-    std::cout << rootDuration.count() << " us\t= ";
-    std::cout << static_cast<float>(totalDuration.count())/1000.0f << " ms\n";
-    */
-
-    /*
-     * Do not touch the code below as they serve the purpose for
-     * closing the window.
-     */
-    if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) ||
-        Util::Input::IfExit()) {
+    if (Util::Input::IfExit()) {
         m_CurrentState = State::END;
     }
 }

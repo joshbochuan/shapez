@@ -42,6 +42,8 @@ Mixer::Mixer(int x, int y, int r)
     }
     acceptorA->takesShape = false;
     acceptorB->takesShape = false;
+
+    MACHINE_COUNT++;
 }
 
 std::string Mixer::getSaveString() {

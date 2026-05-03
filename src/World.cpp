@@ -157,6 +157,12 @@ void World::ClearWorld() {
     PROGRESS = 0;
     CHEATS = false;
     CREATION_TIME = 0;
+
+    LAST_PLAYED_AT = 0;
+    BELT_COUNT = 0;
+    MACHINE_COUNT = 1;
+    PLAYTIME = 0;
+
     UPGRADE_BELT = 1;
     UPGRADE_PROCESS = 1;
     UPGRADE_MINE = 1;
@@ -171,13 +177,17 @@ void World::ClearWorld() {
 }
 
 std::string World::SaveWorld(std::string save) {
-    std::string res = "SHAPEZ_SAVE_FILE\n";
-    res += "LEVEL " + std::to_string(LEVEL) + "\n";
     long long time = std::chrono::duration_cast<std::chrono::seconds>(
                       std::chrono::system_clock::now().time_since_epoch()
                   ).count();
-    res += "LAST_PLAYED_AT " + std::to_string(time) + "\n";
+    PLAYTIME += time - LAST_PLAYED_AT;
+    LAST_PLAYED_AT = time;
+
+    std::string res = "SHAPEZ_SAVE_FILE\n";
+    res += "LEVEL " + std::to_string(LEVEL) + "\n";
+    res += "LAST_PLAYED_AT " + std::to_string(LAST_PLAYED_AT) + "\n";
     res += "CREATED_AT " + std::to_string(CREATION_TIME) + "\n";
+    res += "PLAYTIME " + std::to_string(PLAYTIME) + "\n";
     res += "SEED " + std::to_string(SEED) + "\n";
     res += "PROGRESS " + std::to_string(PROGRESS) + "\n";
     res += "CHEATS " + std::to_string(CHEATS) + "\n";
@@ -221,7 +231,8 @@ void World::LoadWorld(std::string save) {
 
     for (auto& prop : MachinesToAdd) {
         if (prop[0] == "LEVEL") {LEVEL = std::stoi(prop[1]);}
-        if (prop[0] == "CREATED_AT") {CREATION_TIME = std::stoi(prop[1]);}
+        if (prop[0] == "CREATED_AT") {CREATION_TIME = std::stoll(prop[1]);}
+        if (prop[0] == "PLAYTIME") {PLAYTIME = std::stoll(prop[1]);}
         if (prop[0] == "SEED") {SEED = std::stoi(prop[1]);}
         if (prop[0] == "PROGRESS") {PROGRESS = std::stoi(prop[1]);}
         if (prop[0] == "CHEATS") {CHEATS = std::stoi(prop[1]);}
@@ -230,6 +241,11 @@ void World::LoadWorld(std::string save) {
         if (prop[0] == "UPGRADE_MINE") {UPGRADE_MINE = std::stoi(prop[1]);}
         if (prop[0] == "UPGRADE_PAINT") {UPGRADE_PAINT = std::stoi(prop[1]);}
     }
+
+    long long time = std::chrono::duration_cast<std::chrono::seconds>(
+                      std::chrono::system_clock::now().time_since_epoch()
+                  ).count();
+    LAST_PLAYED_AT = time;
 
     hub->Init();
     hub->LoadState();

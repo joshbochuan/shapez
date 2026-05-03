@@ -20,6 +20,7 @@ Trash::Trash(int x, int y)
     }
     this->SetDrawable(trashTexture);
     this->SetZIndex(46 + (x+y)%2);
+    MACHINE_COUNT++;
 }
 
 std::string Trash::getSaveString() {

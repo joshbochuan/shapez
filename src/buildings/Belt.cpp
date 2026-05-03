@@ -52,6 +52,8 @@ void Belt::Init() {
     ejector->Init();;
     this->AddChild(this->acceptor);
     this->AddChild(this->ejector);
+
+    BELT_COUNT++;
 }
 
 void Belt::Delete() {

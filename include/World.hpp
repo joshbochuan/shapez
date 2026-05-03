@@ -64,8 +64,13 @@ namespace World {
     inline int LEVEL = 1;
     inline int PROGRESS = 0;
     inline long long CREATION_TIME = 0;
+    inline long long LAST_PLAYED_AT = 0;
     inline bool CHEATS = false;
     inline std::string WORLD_NAME = "test";
+
+    inline int BELT_COUNT = 0;
+    inline int MACHINE_COUNT = 1; // including hub
+    inline long long PLAYTIME = 0; // measured in seconds
 
     inline int UPGRADE_BELT = 1;
     inline int UPGRADE_PROCESS = 1;
@@ -107,6 +112,8 @@ namespace World {
     inline float STACK_RATE = 0.25/FPS_CAP;
     inline float PAINT_RATE = 0.334/FPS_CAP;
     inline float MIX_RATE = 0.4/FPS_CAP;
+
+    inline bool DOES_WORLD_TICK = true;
 
     enum class UpgradeType {
         BELT,

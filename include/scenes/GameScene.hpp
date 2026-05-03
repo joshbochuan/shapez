@@ -42,6 +42,7 @@ public:
     static inline std::shared_ptr<Util::SFX> placeBuildingSFX, placeBeltSFX, destroyBuildingSFX;
     std::shared_ptr<Button> toolbar;
     std::vector<std::shared_ptr<Button>> buttons;
+    std::shared_ptr<Button> pauseButton, saveButton, upgradeButton;
     std::shared_ptr<Scene> subScene = nullptr;
     GameScene();
     std::shared_ptr<Scene> Update();

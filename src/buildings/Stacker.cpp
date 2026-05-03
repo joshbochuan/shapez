@@ -42,6 +42,7 @@ Stacker::Stacker(int x, int y, int r)
     }
     acceptorA->takesColor = false;
     acceptorB->takesColor = false;
+    MACHINE_COUNT++;
 }
 
 std::string Stacker::getSaveString() {
