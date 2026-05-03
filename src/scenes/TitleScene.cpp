@@ -370,6 +370,8 @@ TitleScene::TitleScene() {
     closeButton->SetZIndex(93);
     AddChild(closeButton);
 
+    titleBGM->Play();
+
     Refresh();
 }
 

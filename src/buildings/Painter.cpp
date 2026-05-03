@@ -57,7 +57,6 @@ Painter::Painter(int x, int y, int r, bool mirrored)
     }
     acceptorA->takesColor = false;
     acceptorB->takesShape = false;
-    MACHINE_COUNT++;
 }
 
 std::string Painter::getSaveString() {
@@ -90,6 +89,7 @@ void Painter::Init() {
     AddChild(acceptorA);
     AddChild(acceptorB);
     AddChild(ejector);
+    MACHINE_COUNT++;
 }
 
 void Painter::Delete() {
@@ -101,6 +101,7 @@ void Painter::Delete() {
     RemoveChild(acceptorA);
     RemoveChild(acceptorB);
     RemoveChild(ejector);
+    MACHINE_COUNT--;
 }
 
 std::shared_ptr<Shape> Paint(std::shared_ptr<Shape> shape, std::shared_ptr<Color> color) {

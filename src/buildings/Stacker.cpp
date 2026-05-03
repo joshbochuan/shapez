@@ -42,7 +42,6 @@ Stacker::Stacker(int x, int y, int r)
     }
     acceptorA->takesColor = false;
     acceptorB->takesColor = false;
-    MACHINE_COUNT++;
 }
 
 std::string Stacker::getSaveString() {
@@ -73,6 +72,7 @@ void Stacker::Init() {
     AddChild(acceptorA);
     AddChild(acceptorB);
     AddChild(ejector);
+    MACHINE_COUNT++;
 }
 
 void Stacker::Delete() {
@@ -84,6 +84,7 @@ void Stacker::Delete() {
     RemoveChild(acceptorA);
     RemoveChild(acceptorB);
     RemoveChild(ejector);
+    MACHINE_COUNT--;
 }
 
 std::shared_ptr<Shape> Stack(std::shared_ptr<Shape> bottom, std::shared_ptr<Shape> top) {

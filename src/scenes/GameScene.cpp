@@ -488,6 +488,8 @@ GameScene::GameScene() {
     upgradeButton->imageScale = 0.6;
     upgradeButton->Update();
     AddChild(upgradeButton);
+
+    shapezBGM->Play();
 }
 
 std::shared_ptr<Scene> GameScene::Update() {

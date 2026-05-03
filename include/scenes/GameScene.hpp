@@ -13,6 +13,7 @@
 #include "../Opti/OptiObject.hpp"
 #include "UIelement/Button.hpp"
 #include "UIelement/Notification.hpp"
+#include "Util/BGM.hpp"
 
 class GameScene: public Scene {
     BeltType beltType = BeltType::FORWARD;
@@ -39,6 +40,7 @@ class GameScene: public Scene {
     void UserRemoveMachine(int mouseX, int mouseY);
     glm::vec2 lastMousePos = glm::vec2();
 public:
+    static inline std::shared_ptr<Util::BGM> shapezBGM;
     static inline std::shared_ptr<Util::SFX> placeBuildingSFX, placeBeltSFX, destroyBuildingSFX;
     std::shared_ptr<Button> toolbar;
     std::vector<std::shared_ptr<Button>> buttons;

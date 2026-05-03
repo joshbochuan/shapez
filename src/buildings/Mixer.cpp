@@ -42,8 +42,6 @@ Mixer::Mixer(int x, int y, int r)
     }
     acceptorA->takesShape = false;
     acceptorB->takesShape = false;
-
-    MACHINE_COUNT++;
 }
 
 std::string Mixer::getSaveString() {
@@ -74,6 +72,7 @@ void Mixer::Init() {
     AddChild(acceptorA);
     AddChild(acceptorB);
     AddChild(ejector);
+    MACHINE_COUNT++;
 }
 
 void Mixer::Delete() {
@@ -85,6 +84,7 @@ void Mixer::Delete() {
     RemoveChild(acceptorA);
     RemoveChild(acceptorB);
     RemoveChild(ejector);
+    MACHINE_COUNT--;
 }
 
 std::shared_ptr<Color> Mix(std::shared_ptr<Color> colorA, std::shared_ptr<Color> colorB) {

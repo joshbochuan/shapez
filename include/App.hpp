@@ -30,7 +30,6 @@ public:
     std::shared_ptr<OptiObject> background;
     std::shared_ptr<OptiObject> vignette;
     std::shared_ptr<OptiObject> gridLine;
-    std::shared_ptr<Util::BGM> shapezBGM;
 
 private:
     void ValidTask();

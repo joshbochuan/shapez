@@ -69,8 +69,6 @@ Balancer::Balancer(int x, int y, int r)
 
     acceptPriority = 0;
     ejectPriority = 0;
-
-    MACHINE_COUNT++;
 }
 
 std::string Balancer::getSaveString() {
@@ -102,6 +100,7 @@ void Balancer::Init() {
     acceptorB->Init();
     ejectorA->Init();
     ejectorB->Init();
+    MACHINE_COUNT++;
 }
 
 void Balancer::Delete() {
@@ -116,6 +115,7 @@ void Balancer::Delete() {
     RemoveChild(acceptorB);
     RemoveChild(ejectorA);
     RemoveChild(ejectorB);
+    MACHINE_COUNT--;
 }
 
 void Balancer::Update() {
@@ -286,8 +286,6 @@ Splitter::Splitter(int x, int y, int r, bool mirrored)
     acceptor->SetDrawable(Belt::beltInTexture[0]);
     ejectorA->SetDrawable(Belt::beltOutTexture[0]);
     ejectPriority = 0;
-
-    MACHINE_COUNT++;
 }
 
 std::string Splitter::getSaveString() {
@@ -316,6 +314,7 @@ void Splitter::Init() {
     acceptor->Init();
     ejectorA->Init();
     ejectorB->Init();
+    MACHINE_COUNT++;
 }
 
 void Splitter::Delete() {
@@ -326,6 +325,7 @@ void Splitter::Delete() {
     RemoveChild(acceptor);
     RemoveChild(ejectorA);
     RemoveChild(ejectorB);
+    MACHINE_COUNT--;
 }
 
 void Splitter::Update() {
@@ -396,8 +396,6 @@ Merger::Merger(int x, int y, int r, bool mirrored)
     acceptorA->SetDrawable(Belt::beltInTexture[0]);
     ejector->SetDrawable(Belt::beltOutTexture[0]);
     acceptPriority = 0;
-
-    MACHINE_COUNT++;
 }
 
 std::string Merger::getSaveString() {
@@ -426,6 +424,7 @@ void Merger::Init() {
     acceptorA->Init();
     acceptorB->Init();
     ejector->Init();
+    MACHINE_COUNT++;
 }
 
 void Merger::Delete() {
@@ -436,6 +435,7 @@ void Merger::Delete() {
     RemoveChild(acceptorA);
     RemoveChild(acceptorB);
     RemoveChild(ejector);
+    MACHINE_COUNT--;
 }
 
 void Merger::Update() {

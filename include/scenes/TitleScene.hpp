@@ -9,6 +9,7 @@
 #include "UIelement/Button.hpp"
 #include "../Opti/OptiObject.hpp"
 #include "UIelement/TextInput.hpp"
+#include "Util/BGM.hpp"
 
 class SaveBlob: public OptiObject {
 public:
@@ -55,6 +56,7 @@ private:
     std::shared_ptr<Button> closeButton;
 
 public:
+    static inline std::shared_ptr<Util::BGM> titleBGM;
     TitleScene();
     std::shared_ptr<Scene> Update();
     void Refresh();

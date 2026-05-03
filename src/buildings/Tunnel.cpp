@@ -34,7 +34,6 @@ Tunnel::Tunnel(int x, int y, int r, TunnelType type, bool upgraded)
     if (ejector != nullptr) {AddChild(ejector);}
     this->SetZIndex(50 + (x+y)%2);
     this->m_Transform.rotation = M_PI * 0.5 * r;
-    MACHINE_COUNT++;
 }
 
 std::string Tunnel::getSaveString() {
@@ -102,6 +101,7 @@ void Tunnel::Pair() {
 }
 
 void Tunnel::Init() {
+    MACHINE_COUNT++;
     MapMachines[{x, y}] = shared_from_this();
     if (acceptor != nullptr) {acceptor->Init();}
     if (ejector != nullptr) {ejector->Init();}
@@ -109,6 +109,7 @@ void Tunnel::Init() {
 }
 
 void Tunnel::Delete() {
+    MACHINE_COUNT--;
     MapMachines.erase({x, y});
     if (acceptor != nullptr) {acceptor->Delete();}
     if (ejector != nullptr) {ejector->Delete();}

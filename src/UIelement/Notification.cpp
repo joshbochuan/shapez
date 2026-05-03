@@ -36,7 +36,7 @@ void Notification::Update() {
     if (static_cast<float>(frameToLive) < 0.5f * FPS_CAP) {
         float t = static_cast<float>(frameToLive) / (0.5f * FPS_CAP);
         t = 1-t;
-        m_Transform.scale.x = -2.0f*t*t + t + 1;
+        m_Transform.scale.x = (-2.0f*t*t + t + 1) * windowPercent;
         m_Transform.scale.y = m_Transform.scale.x;
     }
     this->text->m_Transform.translation.x = m_Transform.translation.x - m_Transform.scale.x * 450.0f;

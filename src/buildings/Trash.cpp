@@ -20,7 +20,6 @@ Trash::Trash(int x, int y)
     }
     this->SetDrawable(trashTexture);
     this->SetZIndex(46 + (x+y)%2);
-    MACHINE_COUNT++;
 }
 
 std::string Trash::getSaveString() {
@@ -39,11 +38,13 @@ std::shared_ptr<Machine> Trash::fromSaveString(std::vector<std::string> prop) {
 void Trash::Init() {
     MapMachines[{x, y}] = shared_from_this();
     for (int i=0; i<4; i++) {m_Acceptors[i]->Init();}
+    MACHINE_COUNT++;
 }
 
 void Trash::Delete() {
     MapMachines.erase({x, y});
     for (int i=0; i<4; i++) {m_Acceptors[i]->Delete();}
+    MACHINE_COUNT--;
 }
 
 void Trash::Update() {

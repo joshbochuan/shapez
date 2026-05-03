@@ -17,6 +17,7 @@
 #include "buildings/Trash.hpp"
 #include "buildings/Tunnel.hpp"
 #include "scenes/GameScene.hpp"
+#include "scenes/TitleScene.hpp"
 #include "scenes/UpgradeScene.hpp"
 
 void AssetLoader::loadTextures() {
@@ -99,4 +100,7 @@ void AssetLoader::loadAudio() {
     GameScene::destroyBuildingSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/destroy_building.wav");
     Button::buttonSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/ui_click.wav");
     UpgradeBlob::upgradeSFX = std::make_shared<Util::SFX>("../Resources/sounds/sfx/unlock_upgrade.wav");
+
+    TitleScene::titleBGM = std::make_shared<Util::BGM>("../Resources/sounds/music/menu.wav");
+    GameScene::shapezBGM = std::make_shared<Util::BGM>("../Resources/sounds/music/theme-full.mp3");
 }

@@ -45,10 +45,6 @@ void App::Start() {
     hub->Init();
     m_Root.AddChild(hub);
 
-    // 41 minutes of ABSOLUTE BANGER
-    shapezBGM = std::make_shared<Util::BGM>("../Resources/sounds/music/theme-full.mp3");
-    shapezBGM->Play();
-
     background = std::make_shared<OptiObject>();
     background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
     background->m_Transform.scale = glm::vec2(256, 256);

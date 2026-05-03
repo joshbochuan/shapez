@@ -44,8 +44,6 @@ Cutter::Cutter(int x, int y, int r)
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetDrawable(cutterTexture);
     this->SetZIndex(40 + (x+y)%2);
-
-    MACHINE_COUNT++;
 }
 
 std::string Cutter::getSaveString() {
@@ -96,6 +94,7 @@ void Cutter::Init() {
     acceptor->Init();
     ejectorA->Init();
     ejectorB->Init();
+    MACHINE_COUNT++;
 }
 
 void Cutter::Delete() {
@@ -104,6 +103,7 @@ void Cutter::Delete() {
     acceptor->Delete();
     ejectorA->Delete();
     ejectorB->Delete();
+    MACHINE_COUNT--;
 }
 
 void Cutter::Update() {
