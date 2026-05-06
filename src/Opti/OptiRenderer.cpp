@@ -105,7 +105,6 @@ void OptiRenderer::Update(ThreadPool& pool) {
 
                         int z = (int)curr->GetZIndex();
                         localBuckets[t][z].push_back(curr);
-
                         for (const auto& child : curr->GetChildren()) {
                             localNext[t].push_back(child.get());
                         }

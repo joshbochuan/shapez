@@ -9,6 +9,7 @@
 #include "scenes/GameScene.hpp"
 #include "Util/BGM.hpp"
 #include "UIelement/Button.hpp"
+#include "World.hpp"
 
 class App {
 public:
@@ -31,6 +32,7 @@ public:
     std::shared_ptr<OptiObject> vignette;
     std::shared_ptr<OptiObject> gridLine;
 
+    std::vector<std::shared_ptr<Machine>>& AppMachines = World::LstMachines;
 private:
     void ValidTask();
 

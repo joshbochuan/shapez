@@ -243,6 +243,8 @@ void Hub::LoadState() { // properly update contents after loading a save
 }
 
 void Hub::Update() {
+    restored = false;
+
     int frameProgress = 0;
     for (int i=0; i<m_Acceptors.size(); i++) {
         m_Acceptors[i]->Update();
@@ -328,3 +330,11 @@ void Hub::Update() {
     lockedItemTxt->m_Transform.scale = cam.scale;
 }
 
+void Hub::Restore(int arg) {
+    // ts shouldn't happen either
+    restored = true;
+}
+
+void Hub::Promote() {
+    for (auto& ac: m_Acceptors) {ac->Promote();}
+}

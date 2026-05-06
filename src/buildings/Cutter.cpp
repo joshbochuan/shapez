@@ -26,19 +26,6 @@ Cutter::Cutter(int x, int y, int r)
     }
 
     this->cooldown = 0;
-    this->acceptor = std::make_shared<ItemAcceptor>(this->x, this->y, this->r);
-    this->acceptor->takesColor = false;
-    this->ejectorA = std::make_shared<ItemEjector>(this->x, this->y, this->r);
-    switch (r) {
-        case 0: this->ejectorB = std::make_shared<ItemEjector>(this->x+1, this->y, this->r); break;
-        case 1: this->ejectorB = std::make_shared<ItemEjector>(this->x, this->y+1, this->r); break;
-        case 2: this->ejectorB = std::make_shared<ItemEjector>(this->x-1, this->y, this->r); break;
-        case 3: this->ejectorB = std::make_shared<ItemEjector>(this->x, this->y-1, this->r); break;
-    }
-
-    this->AddChild(acceptor);
-    this->AddChild(ejectorA);
-    this->AddChild(ejectorB);
 
     SetPivot({-84, 0});
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
@@ -89,6 +76,20 @@ std::pair<std::shared_ptr<Shape>, std::shared_ptr<Shape>> Cut(const std::shared_
 }
 
 void Cutter::Init() {
+    this->acceptor = std::make_shared<ItemAcceptor>(this->x, this->y, this->r);
+    this->acceptor->takesColor = false;
+    this->ejectorA = std::make_shared<ItemEjector>(this->x, this->y, this->r, shared_from_this());
+    switch (r) {
+        case 0: this->ejectorB = std::make_shared<ItemEjector>(this->x+1, this->y, this->r, shared_from_this()); break;
+        case 1: this->ejectorB = std::make_shared<ItemEjector>(this->x, this->y+1, this->r, shared_from_this()); break;
+        case 2: this->ejectorB = std::make_shared<ItemEjector>(this->x-1, this->y, this->r, shared_from_this()); break;
+        case 3: this->ejectorB = std::make_shared<ItemEjector>(this->x, this->y-1, this->r, shared_from_this()); break;
+    }
+
+    this->AddChild(acceptor);
+    this->AddChild(ejectorA);
+    this->AddChild(ejectorB);
+
     MapMachines[{x, y}] = shared_from_this();
     MapMachines[{ejectorB->x, ejectorB->y}] = shared_from_this();
     acceptor->Init();
@@ -107,6 +108,8 @@ void Cutter::Delete() {
 }
 
 void Cutter::Update() {
+    restored = false;
+
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
     this->m_Transform.scale.x = cam.scale.x * 1.1;
@@ -115,22 +118,22 @@ void Cutter::Update() {
         && (std::abs(m_Transform.translation.y)-cam.scale.y*384 < WINDOW_HEIGHT>>1));
 
     cooldown += rate * MULTIPLIER_PROCESS;
+    backupItem = nullptr;
     if ((cooldown >= 1)
         && (acceptor->item != nullptr)
-        && (acceptor->progress >= 1)
-        && (ejectorA->item == nullptr)
-        && (ejectorB->item == nullptr)) {
+        && (acceptor->progress >= 1)) {
+        backupItem = acceptor->item;
         auto res = Cut(std::dynamic_pointer_cast<Shape>(acceptor->item));
         cooldown -= 1;
         if (res.first != nullptr) {
-            ejectorA->item = res.first;
-            ejectorA->AddChild(ejectorA->item);
-            ejectorA->progress = acceptor->progress-1;
+            ejectorA->prep = res.first;
+            ejectorA->AddChild(ejectorA->prep);
+            ejectorA->prepProgress = acceptor->progress;
         }
         if (res.second != nullptr) {
-            ejectorB->item = res.second;
-            ejectorB->AddChild(ejectorB->item);
-            ejectorB->progress = acceptor->progress-1;
+            ejectorB->prep = res.second;
+            ejectorB->AddChild(ejectorB->prep);
+            ejectorB->prepProgress = acceptor->progress;
         }
         acceptor->RemoveChild(acceptor->item);
         acceptor->item = nullptr;
@@ -143,4 +146,28 @@ void Cutter::Update() {
     ejectorB->Update();
 }
 
+void Cutter::Restore(int arg) {
+    restored = true;
+    if (backupItem != nullptr) {
+        cooldown += 1;
+        acceptor->item = backupItem;
+        acceptor->progress = 1;
+        acceptor->Restore(arg);
+    }
+    if (ejectorA->prep != nullptr) {
+        ejectorA->RemoveChild(ejectorA->prep);
+        ejectorA->prep = nullptr;
+    }
+    if (ejectorB->prep != nullptr) {
+        ejectorB->RemoveChild(ejectorB->prep);
+        ejectorB->prep = nullptr;
+    }
+
+}
+
+void Cutter::Promote() {
+    acceptor->Promote();
+    ejectorA->Promote();
+    ejectorB->Promote();
+}
 

@@ -17,12 +17,15 @@ public:
     static inline std::shared_ptr<OptiImage> balancerTexture;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;
+    std::shared_ptr<Item> backupItemA, backupItemB;
     Balancer(int x, int y, int r);
     std::string getSaveString();
     static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();
+    void Restore(int arg);
+    void Promote();
 };
 
 class Splitter: public Machine {
@@ -32,12 +35,15 @@ public:
     static inline std::vector<std::shared_ptr<OptiImage>> splitterTexture;
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;
+    std::shared_ptr<Item> backupItem;
     Splitter(int x, int y, int r, bool mirrored);
     std::string getSaveString();
     static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();
+    void Restore(int arg);
+    void Promote();
 };
 
 class Merger: public Machine {
@@ -47,12 +53,15 @@ public:
     static inline std::vector<std::shared_ptr<OptiImage>> mergerTexture;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejector;
+    std::shared_ptr<Item> backupItemA, backupItemB;
     Merger(int x, int y, int r, bool mirrored);
     std::string getSaveString();
     static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();
+    void Restore(int arg);
+    void Promote();
 };
 
 

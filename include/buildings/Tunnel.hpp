@@ -29,6 +29,8 @@ public:
     void Init();
     void Update();
     void Delete();
+    void Restore(int arg);
+    void Promote();
     void Pair();
 };
 

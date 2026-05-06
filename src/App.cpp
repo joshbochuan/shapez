@@ -30,6 +30,8 @@
 #include <windows.h>
 #include <filesystem>
 
+#include "Util/Time.hpp"
+
 using namespace World;
 
 void App::Start() {
@@ -38,29 +40,35 @@ void App::Start() {
     GetModuleFileNameA(nullptr, exePath, MAX_PATH);
     std::filesystem::current_path(std::filesystem::path(exePath).parent_path());
 
+    std::cout << "a\n";
     AssetLoader::loadAudio();
     AssetLoader::loadTextures();
 
+    std::cout << "b\n";
     hub = std::make_shared<Hub>();
     hub->Init();
     m_Root.AddChild(hub);
 
+    std::cout << "c\n";
     background = std::make_shared<OptiObject>();
     background->SetDrawable(std::make_shared<Util::Image>("../Resources/background.png"));
     background->m_Transform.scale = glm::vec2(256, 256);
     background->SetZIndex(0);
 
+    std::cout << "d\n";
     vignette = std::make_shared<OptiObject>();
     vignette->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/vignette.lossless.png"));
     vignette->m_Transform.scale = glm::vec2(static_cast<float>(WINDOW_WIDTH)/192.0f, static_cast<float>(WINDOW_HEIGHT)/108);
     vignette->SetZIndex(90);
     m_Root.AddChild(vignette);
 
+    std::cout << "e\n";
     gridLine = std::make_shared<OptiObject>();
     gridLine->SetDrawable(std::make_shared<Util::Image>("../Resources/1px/E3E7EA.png"));
     gridLine->SetZIndex(1);
     gridLine->m_Visible = true;
 
+    /*
     std::vector<std::shared_ptr<Machine>> m_Machines;
     std::vector<std::shared_ptr<Machine>> vec2;
     //vec2 = AddMachineBenchmark50k();
@@ -73,16 +81,21 @@ void App::Start() {
         m_Root.AddChild(m_Machines[i]);
         LstMachines.push_back(m_Machines[i]);
     }
+    */
 
+    std::cout << "f\n";
     scene = std::make_shared<TitleScene>();
     m_Root.AddChild(scene);
     UpdateWorld();
     m_Root.Update(pool);
 
     m_CurrentState = State::UPDATE;
+    std::cout << "g\n";
 }
 
 void App::Update() {
+    auto start = std::chrono::steady_clock::now();
+    std::cout << " --- new frame starts here ---\n";
     std::shared_ptr<Scene> nextScene = scene->Update();
     if (nextScene == nullptr || Util::Input::IfExit()) {
         m_CurrentState = State::END;
@@ -116,6 +129,10 @@ void App::Update() {
         gridLine->Draw();
     }
     m_Root.Update(pool);
+
+    auto end = std::chrono::steady_clock::now();
+    auto totalDuration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+    // std::cout << static_cast<float>(totalDuration.count())/1000.0f << " ms\n";
 
     if (Util::Input::IfExit()) {
         m_CurrentState = State::END;

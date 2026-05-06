@@ -16,11 +16,7 @@ Rotator::Rotator(int x, int y, int r, RotatorType type)
     }
     this->type = type;
     this->cooldown = 0;
-    this->acceptor = std::make_shared<ItemAcceptor>(this->x, this->y, this->r);
-    this->acceptor->takesColor = false;
-    this->AddChild(this->acceptor);
-    this->ejector = std::make_shared<ItemEjector>(this->x, this->y, this->r);
-    this->AddChild(this->ejector);
+
     switch (this->type) {
         case RotatorType::ROTATE_CW: this->SetDrawable(rotatorCWTexture); break;
         case RotatorType::ROTATE_180: this->SetDrawable(rotator180Texture); break;
@@ -112,9 +108,16 @@ std::shared_ptr<Machine> Rotator::fromSaveString(std::vector<std::string> prop) 
 }
 
 void Rotator::Init() {
-    MapMachines[{x, y}] = shared_from_this();
+    this->acceptor = std::make_shared<ItemAcceptor>(this->x, this->y, this->r);
+    this->acceptor->takesColor = false;
+    this->AddChild(this->acceptor);
+    this->ejector = std::make_shared<ItemEjector>(this->x, this->y, this->r, shared_from_this());
+    this->AddChild(this->ejector);
     acceptor->Init();
     ejector->Init();
+
+    MapMachines[{x, y}] = shared_from_this();
+
     MACHINE_COUNT++;
 }
 
@@ -126,6 +129,8 @@ void Rotator::Delete() {
 }
 
 void Rotator::Update() {
+    restored = false;
+
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
     this->m_Transform.scale.x = cam.scale.x * 1.1;
@@ -134,23 +139,24 @@ void Rotator::Update() {
         && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
     cooldown += rate;
+    backupItem = nullptr;
     if ((cooldown >= 1)
         && (this->acceptor->item != nullptr)
-        && (this->ejector->item == nullptr)
         && (this->acceptor->progress >= 1)) {
         cooldown -= 1;
+        backupItem = acceptor->item;
         if (type == RotatorType::ROTATE_CW) {
-            this->ejector->item = RotateCW(std::dynamic_pointer_cast<Shape>(acceptor->item));
+            this->ejector->prep = RotateCW(std::dynamic_pointer_cast<Shape>(acceptor->item));
         }
         if (type == RotatorType::ROTATE_180) {
-            this->ejector->item = Rotate180(std::dynamic_pointer_cast<Shape>(acceptor->item));
+            this->ejector->prep = Rotate180(std::dynamic_pointer_cast<Shape>(acceptor->item));
         }
         if (type == RotatorType::ROTATE_CCW) {
-            this->ejector->item = RotateCCW(std::dynamic_pointer_cast<Shape>(acceptor->item));
+            this->ejector->prep = RotateCCW(std::dynamic_pointer_cast<Shape>(acceptor->item));
         }
         if (type == RotatorType::ROTATE_CCW) {}
         this->ejector->AddChild(this->ejector->item);
-        this->ejector->progress = this->acceptor->progress-1;
+        this->ejector->prepProgress = this->acceptor->progress;
         this->acceptor->RemoveChild(this->acceptor->item);
         this->acceptor->item = nullptr;
         this->acceptor->progress = 0;
@@ -161,3 +167,20 @@ void Rotator::Update() {
     this->ejector->Update();
 }
 
+void Rotator::Restore(int arg) {
+    restored = true;
+    if (ejector->prep != nullptr) {
+        cooldown += 1;
+        acceptor->progress = 1;
+        acceptor->item = backupItem;
+        acceptor->Restore(arg);
+
+        ejector->RemoveChild(ejector->prep);
+        ejector->prep = nullptr;
+    }
+}
+
+void Rotator::Promote() {
+    acceptor->Promote();
+    ejector->Promote();
+}

@@ -6,6 +6,7 @@
 #include "World.hpp"
 #include "Util/Image.hpp"
 #include <cmath>
+#include <complex>
 #include <iostream>
 #include "Util/Time.hpp"
 using namespace World;
@@ -34,39 +35,6 @@ Balancer::Balancer(int x, int y, int r)
     // cooking up a better X-index for 2-wide objects
     this->SetZIndex(60 + fmod((4.0f*x+y), 16.0f)/16.0f);
 
-    this->acceptorA = std::make_shared<ItemAcceptor>(x, y, r);
-    this->ejectorA = std::make_shared<ItemEjector>(x, y, r);
-
-    switch (r) {
-        case 0:
-            this->acceptorB = std::make_shared<ItemAcceptor>(x+1, y, r);
-            this->ejectorB = std::make_shared<ItemEjector>(x+1, y, r);
-            break;
-        case 1:
-            this->acceptorB = std::make_shared<ItemAcceptor>(x, y+1, r);
-            this->ejectorB = std::make_shared<ItemEjector>(x, y+1, r);
-            break;
-        case 2:
-            this->acceptorB = std::make_shared<ItemAcceptor>(x-1, y, r);
-            this->ejectorB = std::make_shared<ItemEjector>(x-1, y, r);
-            break;
-        case 3:
-            this->acceptorB = std::make_shared<ItemAcceptor>(x, y-1, r);
-            this->ejectorB = std::make_shared<ItemEjector>(x, y-1, r);
-            break;
-        default: throw std::invalid_argument("illegal balancer rotation " + std::to_string(r));
-    }
-
-    this->AddChild(this->acceptorA);
-    this->AddChild(this->acceptorB);
-    this->AddChild(this->ejectorA);
-    this->AddChild(this->ejectorB);
-
-    acceptorA->SetDrawable(Belt::beltInTexture[0]);
-    acceptorB->SetDrawable(Belt::beltInTexture[0]);
-    ejectorA->SetDrawable(Belt::beltOutTexture[0]);
-    ejectorB->SetDrawable(Belt::beltOutTexture[0]);
-
     acceptPriority = 0;
     ejectPriority = 0;
 }
@@ -94,6 +62,39 @@ std::shared_ptr<Machine> Balancer::fromSaveString(std::vector<std::string> prop)
 }
 
 void Balancer::Init() {
+    this->acceptorA = std::make_shared<ItemAcceptor>(x, y, r);
+    this->ejectorA = std::make_shared<ItemEjector>(x, y, r, shared_from_this());
+
+    switch (r) {
+        case 0:
+            this->acceptorB = std::make_shared<ItemAcceptor>(x+1, y, r);
+            this->ejectorB = std::make_shared<ItemEjector>(x+1, y, r, shared_from_this());
+            break;
+        case 1:
+            this->acceptorB = std::make_shared<ItemAcceptor>(x, y+1, r);
+            this->ejectorB = std::make_shared<ItemEjector>(x, y+1, r, shared_from_this());
+            break;
+        case 2:
+            this->acceptorB = std::make_shared<ItemAcceptor>(x-1, y, r);
+            this->ejectorB = std::make_shared<ItemEjector>(x-1, y, r, shared_from_this());
+            break;
+        case 3:
+            this->acceptorB = std::make_shared<ItemAcceptor>(x, y-1, r);
+            this->ejectorB = std::make_shared<ItemEjector>(x, y-1, r, shared_from_this());
+            break;
+        default: throw std::invalid_argument("illegal balancer rotation " + std::to_string(r));
+    }
+
+    this->AddChild(this->acceptorA);
+    this->AddChild(this->acceptorB);
+    this->AddChild(this->ejectorA);
+    this->AddChild(this->ejectorB);
+
+    acceptorA->SetDrawable(Belt::beltInTexture[0]);
+    acceptorB->SetDrawable(Belt::beltInTexture[0]);
+    ejectorA->SetDrawable(Belt::beltOutTexture[0]);
+    ejectorB->SetDrawable(Belt::beltOutTexture[0]);
+
     MapMachines[{x, y}] = shared_from_this();
     MapMachines[{ejectorB->x, ejectorB->y}] = shared_from_this();
     acceptorA->Init();
@@ -119,6 +120,8 @@ void Balancer::Delete() {
 }
 
 void Balancer::Update() {
+    restored = false;
+
     int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f*MULTIPLIER_BELT, 14.0f));
     acceptorA->SetDrawable(Belt::beltInTexture[frame]);
     acceptorB->SetDrawable(Belt::beltInTexture[frame]);
@@ -148,17 +151,19 @@ void Balancer::Update() {
     float progress;
     const bool aA = acceptorA->item != nullptr && acceptorA->progress >= 1;
     const bool aB = acceptorB->item != nullptr && acceptorB->progress >= 1;
-    const bool eA = ejectorA->item==nullptr && ejectorA->next!=nullptr;
-    const bool eB = ejectorB->item==nullptr && ejectorB->next!=nullptr;
+    const bool eA = ejectorA->next!=nullptr;
+    const bool eB = ejectorB->next!=nullptr;
+    backupItemA = acceptorA->item;
+    backupItemB = acceptorB->item;
     if ((aA && aB) && (eA && eB)) { // 2 in 2 out
-        ejectorA->item = acceptorA->item;
-        ejectorA->AddChild(ejectorA->item);
+        ejectorA->prep = acceptorA->item;
+        ejectorA->AddChild(ejectorA->prep);
         ejectorA->progress = acceptorA->progress-1;
         acceptorA->RemoveChild(acceptorA->item);
         acceptorA->item = nullptr;
         acceptorA->progress = 0;
-        ejectorB->item = acceptorB->item;
-        ejectorB->AddChild(ejectorB->item);
+        ejectorB->prep = acceptorB->item;
+        ejectorB->AddChild(ejectorB->prep);
         ejectorB->progress = acceptorB->progress-1;
         acceptorB->RemoveChild(acceptorB->item);
         acceptorB->item = nullptr;
@@ -183,13 +188,13 @@ void Balancer::Update() {
             acceptorB->progress = 0;
         }
         if (ejectPriority) { // outputs to prioritized one (B)
-            ejectorB->item = item;
+            ejectorB->prep = item;
             ejectorB->progress = progress-1;
             ejectorB->AddChild(item);
             ejectPriority = 0;
         }
         else {
-            ejectorA->item = item;
+            ejectorA->prep = item;
             ejectorA->progress = progress-1;
             ejectorA->AddChild(item);
             ejectPriority = 1;
@@ -214,13 +219,13 @@ void Balancer::Update() {
             acceptorA->progress = 0;
         }
         if (eA) {
-            ejectorA->item = item;
+            ejectorA->prep = item;
             ejectorA->progress = progress-1;
             ejectorA->AddChild(item);
             ejectPriority = 1;
         }
         else {
-            ejectorB->item = item;
+            ejectorB->prep = item;
             ejectorB->progress = progress-1;
             ejectorB->AddChild(item);
             ejectPriority = 0;
@@ -244,13 +249,13 @@ void Balancer::Update() {
             acceptorB->progress = 0;
         }
         if (eA) {
-            ejectorA->item = item;
+            ejectorA->prep = item;
             ejectorA->progress = progress-1;
             ejectorA->AddChild(item);
             ejectPriority = 1;
         }
         else {
-            ejectorB->item = item;
+            ejectorB->prep = item;
             ejectorB->progress = progress-1;
             ejectorB->AddChild(item);
             ejectPriority = 0;
@@ -260,6 +265,37 @@ void Balancer::Update() {
     acceptorB->Update();
     ejectorA->Update();
     ejectorB->Update();
+}
+
+void Balancer::Restore(int arg) {
+    restored = true;
+    if (ejectorA->prep != nullptr) {
+        ejectorA->RemoveChild(ejectorA->prep);
+        ejectorA->prep = nullptr;
+    }
+    if (ejectorB->prep != nullptr) {
+        ejectorB->RemoveChild(ejectorB->prep);
+        ejectorB->prep = nullptr;
+    }
+    if (backupItemA != nullptr) {
+        acceptorA->item = backupItemA;
+        AddChild(acceptorA);
+        acceptorA->progress = 1;
+        acceptorA->Restore(arg);
+    }
+    if (backupItemB != nullptr) {
+        acceptorB->item = backupItemB;
+        AddChild(acceptorB);
+        acceptorB->progress = 1;
+        acceptorB->Restore(arg);
+    }
+}
+
+void Balancer::Promote() {
+    acceptorA->Promote();
+    acceptorB->Promote();
+    ejectorA->Promote();
+    ejectorB->Promote();
 }
 
 Splitter::Splitter(int x, int y, int r, bool mirrored)
@@ -275,16 +311,6 @@ Splitter::Splitter(int x, int y, int r, bool mirrored)
     // cooking up a better X-index for 2-wide objects
     this->SetZIndex(62 + (x+y)%2);
 
-    this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
-    this->ejectorA = std::make_shared<ItemEjector>(x, y, r);
-    this->ejectorB = std::make_shared<ItemEjector>(x, y, (r+3 + 2*mirrored)%4);
-
-    this->AddChild(this->acceptor);
-    this->AddChild(this->ejectorA);
-    this->AddChild(this->ejectorB);
-
-    acceptor->SetDrawable(Belt::beltInTexture[0]);
-    ejectorA->SetDrawable(Belt::beltOutTexture[0]);
     ejectPriority = 0;
 }
 
@@ -310,6 +336,17 @@ std::shared_ptr<Machine> Splitter::fromSaveString(std::vector<std::string> prop)
 }
 
 void Splitter::Init() {
+    this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
+    this->ejectorA = std::make_shared<ItemEjector>(x, y, r, shared_from_this());
+    this->ejectorB = std::make_shared<ItemEjector>(x, y, (r+3 + 2*mirrored)%4, shared_from_this());
+
+    this->AddChild(this->acceptor);
+    this->AddChild(this->ejectorA);
+    this->AddChild(this->ejectorB);
+
+    acceptor->SetDrawable(Belt::beltInTexture[0]);
+    ejectorA->SetDrawable(Belt::beltOutTexture[0]);
+
     MapMachines[{x, y}] = shared_from_this();
     acceptor->Init();
     ejectorA->Init();
@@ -329,6 +366,8 @@ void Splitter::Delete() {
 }
 
 void Splitter::Update() {
+    restored = false;
+
     int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f*MULTIPLIER_BELT, 14.0f));
     acceptor->SetDrawable(Belt::beltInTexture[frame]);
     ejectorA->SetDrawable(Belt::beltOutTexture[frame]);
@@ -345,22 +384,24 @@ void Splitter::Update() {
         && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
     const bool acceptorReady = acceptor->item!=nullptr && acceptor->progress>=1;
-    const bool eA = ejectorA->item==nullptr && ejectorA->next!=nullptr;
-    const bool eB = ejectorB->item==nullptr && ejectorB->next!=nullptr;
+    const bool eA = ejectorA->next!=nullptr;
+    const bool eB = ejectorB->next!=nullptr;
+    backupItem = nullptr;
     if (acceptorReady && (eA || eB)) {
         std::shared_ptr<Item> item = acceptor->item;
+        backupItem = item;
         float progress = acceptor->progress;
         acceptor->RemoveChild(acceptor->item);
         acceptor->item = nullptr;
         acceptor->progress = 0;
         if ((ejectPriority || !eA) && eB) { // outputs to prioritized one (B)
-            ejectorB->item = item;
+            ejectorB->prep = item;
             ejectorB->progress = progress-1;
             ejectorB->AddChild(item);
             ejectPriority = 0;
         }
         else {
-            ejectorA->item = item;
+            ejectorA->prep = item;
             ejectorA->progress = progress-1;
             ejectorA->AddChild(item);
             ejectPriority = 1;
@@ -370,6 +411,29 @@ void Splitter::Update() {
     acceptor->Update();
     ejectorA->Update();
     ejectorB->Update();
+}
+
+void Splitter::Restore(int arg) {
+    restored = true;
+    if (ejectorA->prep != nullptr || ejectorB->prep != nullptr) {
+        acceptor->item = backupItem;
+        acceptor->progress = 1;
+        acceptor->Restore(arg);
+    }
+    if (ejectorA->prep != nullptr) {
+        ejectorA->RemoveChild(ejectorA->prep);
+        ejectorA->prep = nullptr;
+    }
+    if (ejectorB->prep != nullptr) {
+        ejectorB->RemoveChild(ejectorB->prep);
+        ejectorB->prep = nullptr;
+    }
+}
+
+void Splitter::Promote() {
+    acceptor->Promote();
+    ejectorA->Promote();
+    ejectorB->Promote();
 }
 
 Merger::Merger(int x, int y, int r, bool mirrored)
@@ -385,9 +449,13 @@ Merger::Merger(int x, int y, int r, bool mirrored)
     // cooking up a better X-index for 2-wide objects
     this->SetZIndex(62 + (x+y)%2);
 
+    acceptPriority = 0;
+}
+
+std::string Merger::getSaveString() {
     this->acceptorA = std::make_shared<ItemAcceptor>(x, y, r);
     this->acceptorB = std::make_shared<ItemAcceptor>(x, y, (r+1 + 2*mirrored)%4);
-    this->ejector = std::make_shared<ItemEjector>(x, y, r);
+    this->ejector = std::make_shared<ItemEjector>(x, y, r, shared_from_this());
 
     this->AddChild(this->acceptorA);
     this->AddChild(this->acceptorB);
@@ -395,10 +463,7 @@ Merger::Merger(int x, int y, int r, bool mirrored)
 
     acceptorA->SetDrawable(Belt::beltInTexture[0]);
     ejector->SetDrawable(Belt::beltOutTexture[0]);
-    acceptPriority = 0;
-}
 
-std::string Merger::getSaveString() {
     std::string res = "MERGER ";
     res += std::to_string(x) + " ";
     res += std::to_string(y) + " ";
@@ -439,6 +504,8 @@ void Merger::Delete() {
 }
 
 void Merger::Update() {
+    restored = false;
+
     int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f*MULTIPLIER_BELT, 14.0f));
     acceptorA->SetDrawable(Belt::beltInTexture[frame]);
     ejector->SetDrawable(Belt::beltOutTexture[frame]);
@@ -454,7 +521,7 @@ void Merger::Update() {
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)
         && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
-    const bool ejectorReady = ejector->next!=nullptr && ejector->item == nullptr;
+    const bool ejectorReady = ejector->next != nullptr;
     const bool aA = acceptorA->item!=nullptr && acceptorA->progress>=1;
     const bool aB = acceptorB->item!=nullptr && acceptorB->progress>=1;
     if (ejectorReady && (aA || aB)) {
@@ -476,7 +543,7 @@ void Merger::Update() {
             acceptorA->item = nullptr;
             acceptorA->progress = 0;
         }
-        ejector->item = item;
+        ejector->prep = item;
         ejector->progress = progress-1;
         ejector->AddChild(item);
         item = nullptr;
@@ -484,4 +551,30 @@ void Merger::Update() {
     acceptorA->Update();
     acceptorB->Update();
     ejector->Update();
+}
+
+void Merger::Restore(int arg) {
+    restored = true;
+    if (ejector->prep != nullptr) {
+        if (acceptPriority) { // previously taken priority 0, or A
+            acceptorA->item = ejector->prep;
+            acceptorA->progress = 1;
+            acceptorA->AddChild(ejector->prep);
+            acceptorA->Restore(arg);
+        }
+        else {
+            acceptorB->item = ejector->item;
+            acceptorB->progress = 1;
+            acceptorB->AddChild(ejector->item);
+            acceptorB->Restore(arg);
+        }
+        ejector->RemoveChild(ejector->prep);
+        ejector->prep = nullptr;
+    }
+}
+
+void Merger::Promote() {
+    acceptorA->Promote();
+    acceptorB->Promote();
+    ejector->Promote();
 }

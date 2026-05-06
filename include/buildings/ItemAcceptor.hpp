@@ -17,15 +17,23 @@ private:
 public:
     int x, y, r;
     float& rate;
-    std::shared_ptr<Item> item;
-    float progress;
+    std::shared_ptr<Item> item, prep;
+    float progress, prepProgress;
     bool takesShape, takesColor;
     std::shared_ptr<ItemEjector> prev;
+    bool restored = false;
+    std::vector<std::shared_ptr<OptiObject>> empty;
     ItemAcceptor(int x, int y, int r);
     std::string getSaveString();
     void Init();
     void Update();
     void Delete();
+    bool CheckConflict();
+    void StartRestore();
+    void Restore(int arg);
+    void Promote();
+    void SetItem(std::shared_ptr<Item> item);
+    void RemoveItem();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_ITEMACCEPTOR_HPP

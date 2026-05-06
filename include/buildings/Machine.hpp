@@ -30,10 +30,13 @@ private:
 public:
     int x, y, r; // world x, y coordinates and rotation
     float& rate; // rate the machine would run in
+    bool restored = false;
     Machine(int x, int y, int r, float& rate, MachineName name);
     virtual void Init() = 0; // called right after construction using shared_ptr, add global hashmap keys
     virtual void Update() = 0;
     virtual void Delete() = 0; // called right before deconstruction, erase global hashmap keys
+    virtual void Restore(int arg) = 0;
+    virtual void Promote() = 0; // gets rid of restore backups
     MachineName getName();
     virtual std::string getSaveString() = 0;
 };

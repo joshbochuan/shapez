@@ -19,6 +19,8 @@ public:
     void Init();
     void Update();
     void Delete();
+    void Restore(int arg);
+    void Promote();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_TRASH_HPP

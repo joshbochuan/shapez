@@ -17,10 +17,6 @@ Belt::Belt(int x, int y, int r, BeltType type)
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetZIndex(10 + (x+y)%2);
     this->type = type;
-    this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
-    if (type == BeltType::LEFT)  { r = ((r + 1) % 4); }
-    if (type == BeltType::RIGHT) { r = ((r - 1 + 4) % 4); }
-    this->ejector = std::make_shared<ItemEjector>(x, y, r);
 }
 
 std::string Belt::getSaveString() {
@@ -47,6 +43,12 @@ std::shared_ptr<Machine> Belt::fromSaveString(std::vector<std::string> prop) {
 }
 
 void Belt::Init() {
+    int rotated = r;
+    this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
+    if (type == BeltType::LEFT)  { rotated = ((r + 1) % 4); }
+    if (type == BeltType::RIGHT) { rotated = ((r + 3) % 4); }
+    this->ejector = std::make_shared<ItemEjector>(x, y, rotated, shared_from_this());
+
     MapMachines[{x, y}] = shared_from_this();
     acceptor->Init();;
     ejector->Init();;
@@ -57,14 +59,18 @@ void Belt::Init() {
 
 void Belt::Delete() {
     MapMachines.erase({x, y});
-    acceptor->Delete();
-    ejector->Delete();
     RemoveChild(acceptor);
     RemoveChild(ejector);
+    acceptor->Delete();
+    ejector->Delete();
+    acceptor = nullptr;
+    ejector = nullptr;
     BELT_COUNT--;
 }
 
 void Belt::Update() {
+    restored = false;
+
     int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f*MULTIPLIER_BELT, 14.0f));
     switch (type) {
         case BeltType::FORWARD: SetDrawable(beltForwardTexture[frame]); break;
@@ -81,59 +87,88 @@ void Belt::Update() {
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)
         && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
+    acceptor->Update();
+    ejector->Update();
+
     // if item can be transferred from input slot to output slot
     if ((type == BeltType::FORWARD)
         && (acceptor->item != nullptr)
-        && (acceptor->progress >= 1)
-        && (ejector->item == nullptr)) {
-        ejector->AddChild(acceptor->item);
-        ejector->item = acceptor->item;
-        ejector->progress = acceptor->progress-1;
-        acceptor->RemoveChild(acceptor->item);
-        acceptor->item = nullptr;
-        acceptor->progress = 0;
+        && (acceptor->progress >= 1)) {
+        ejector->prep = acceptor->item;
+        ejector->prepProgress = acceptor->progress;
+        acceptor->RemoveItem();
     }
 
     // instead of acceptor going from 0 to 0.25pi
     // it goes from 0 to 0.75 to avoid irrational number shenanigans
     if ((type != BeltType::FORWARD)
         && (acceptor->item != nullptr)
-        && (acceptor->progress >= 0.75)
-        && (ejector->item == nullptr)
-        && ((ejector->next == nullptr)
-            || (ejector->next->item == nullptr)
-            || (ejector->next->progress >= 0.25))) {
-        ejector->AddChild(acceptor->item);
-        ejector->item = acceptor->item;
-        ejector->progress = acceptor->progress - 0.5;
-        acceptor->RemoveChild(acceptor->item);
-        acceptor->item = nullptr;
-        acceptor->progress = 0;
+        && (acceptor->progress >= 0.75)) {
+        ejector->prep = acceptor->item;
+        ejector->prepProgress = acceptor->progress + 0.5f;
+        acceptor->RemoveItem();
+    }
+}
+
+void Belt::Restore(int arg) {
+    std::cout << "called belt restore\n";
+    if (type != BeltType::FORWARD) {std::cout << "wtf\n";}
+    if (restored) {return;}
+    restored = true;
+
+    if ((type == BeltType::FORWARD) && (ejector->prep == nullptr) && (ejector->item == nullptr)) {
+        return;
     }
 
-    acceptor->Update();
-    ejector->Update();
+    float targetProgress = ejector->progress;
+    if (type != BeltType::FORWARD) {targetProgress = ejector->progress-0.5f;}
 
+    bool progressCorrected = false;
+    if (acceptor->progress > targetProgress) {
+        acceptor->progress = targetProgress;
+        progressCorrected = true;
+    }
+
+    if ((ejector->prep != nullptr) || ((arg == 0) && (type != BeltType::FORWARD) && (ejector->item != nullptr) && (ejector->progress == 0.5f))) {
+        std::cout << "throw arg 1\n";
+        acceptor->progress = 1;
+        acceptor->Restore(1);
+    }
+    else if (progressCorrected) {
+        std::cout << "throw arg 0\n";
+        acceptor->Restore(0);
+    }
+    if ((ejector->prep != nullptr)) {
+        acceptor->SetItem(ejector->prep);
+        ejector->prep = nullptr;
+    }
+        /*
+    if (acceptor->progress == 0) {
+        acceptor->prep = acceptor->item;
+        acceptor->RemoveItem();
+    };
+        */
+    /*
     if ((type != BeltType::FORWARD)
         && (ejector->next != nullptr)
         && (ejector->next->item != nullptr)
-        && (acceptor->progress > ejector->next->progress + 0.5)) {
-        acceptor->progress = ejector->next->progress + 0.5;
+        && (acceptor->progress > ejector->next->progress + 0.5f)) {
+        acceptor->progress = ejector->next->progress + 0.5f;
     }
-
-    if ((type == BeltType::FORWARD)
-        && (ejector->item != nullptr)
-        && (acceptor->progress > ejector->progress)) {
-        acceptor->progress = ejector->progress;
-    }
-
+    */
+    /*
     // p + 0.5*M_PI - 1
     if ((type != BeltType::FORWARD)
         && (ejector->item != nullptr)
         && (acceptor->progress > ejector->progress + 1.5 - 2)) {
         acceptor->progress = ejector->progress + 1.5 - 2;
     }
+    */
+}
 
+void Belt::Promote() {
+    acceptor->Promote();
+    ejector->Promote();
 
     if (type == BeltType::LEFT) {
         float cx, cy, radian;
@@ -192,4 +227,3 @@ void Belt::Update() {
         ejector->item->Update();
     }
 }
-

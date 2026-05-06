@@ -34,29 +34,7 @@ Painter::Painter(int x, int y, int r, bool mirrored)
     // cooking up a better X-index for 2-wide objects
     this->SetZIndex(60 + fmod((4.0f*x+y), 16.0f)/16.0f);
 
-    acceptorA = std::make_shared<ItemAcceptor>(x, y, (r+3)%4);
 
-    switch (r) {
-        case 0:
-            acceptorB = std::make_shared<ItemAcceptor>(x+1, y, (r+2+2*mirrored)%4);
-            ejector = std::make_shared<ItemEjector>(x+1, y, (r+3)%4);
-            break;
-        case 1:
-            acceptorB = std::make_shared<ItemAcceptor>(x, y+1, (r+2+2*mirrored)%4);
-            ejector = std::make_shared<ItemEjector>(x, y+1, (r+3)%4);
-            break;
-        case 2:
-            acceptorB = std::make_shared<ItemAcceptor>(x-1, y, (r+2+2*mirrored)%4);
-            ejector = std::make_shared<ItemEjector>(x-1, y, (r+3)%4);
-            break;
-        case 3:
-            acceptorB = std::make_shared<ItemAcceptor>(x, y-1, (r+2+2*mirrored)%4);
-            ejector = std::make_shared<ItemEjector>(x, y-1, (r+3)%4);
-            break;
-        default: throw std::invalid_argument("invalid stacker rotation");
-    }
-    acceptorA->takesColor = false;
-    acceptorB->takesShape = false;
 }
 
 std::string Painter::getSaveString() {
@@ -81,14 +59,40 @@ std::shared_ptr<Machine> Painter::fromSaveString(std::vector<std::string> prop) 
 }
 
 void Painter::Init() {
-    MapMachines[{x, y}] = shared_from_this();
-    MapMachines[{ejector->x, ejector->y}] = shared_from_this();
+    acceptorA = std::make_shared<ItemAcceptor>(x, y, (r+3)%4);
+
+    switch (r) {
+        case 0:
+            acceptorB = std::make_shared<ItemAcceptor>(x+1, y, (r+2+2*mirrored)%4);
+            ejector = std::make_shared<ItemEjector>(x+1, y, (r+3)%4, shared_from_this());
+            break;
+        case 1:
+            acceptorB = std::make_shared<ItemAcceptor>(x, y+1, (r+2+2*mirrored)%4);
+            ejector = std::make_shared<ItemEjector>(x, y+1, (r+3)%4, shared_from_this());
+            break;
+        case 2:
+            acceptorB = std::make_shared<ItemAcceptor>(x-1, y, (r+2+2*mirrored)%4);
+            ejector = std::make_shared<ItemEjector>(x-1, y, (r+3)%4, shared_from_this());
+            break;
+        case 3:
+            acceptorB = std::make_shared<ItemAcceptor>(x, y-1, (r+2+2*mirrored)%4);
+            ejector = std::make_shared<ItemEjector>(x, y-1, (r+3)%4, shared_from_this());
+            break;
+        default: throw std::invalid_argument("invalid stacker rotation");
+    }
+    acceptorA->takesColor = false;
+    acceptorB->takesShape = false;
+
     acceptorA->Init();
     acceptorB->Init();
     ejector->Init();
     AddChild(acceptorA);
     AddChild(acceptorB);
     AddChild(ejector);
+
+    MapMachines[{x, y}] = shared_from_this();
+    MapMachines[{ejector->x, ejector->y}] = shared_from_this();
+
     MACHINE_COUNT++;
 }
 
@@ -117,6 +121,8 @@ std::shared_ptr<Shape> Paint(std::shared_ptr<Shape> shape, std::shared_ptr<Color
 }
 
 void Painter::Update() {
+    restored = false;
+
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
 
@@ -127,16 +133,19 @@ void Painter::Update() {
         && (std::abs(m_Transform.translation.y)-cam.scale.y*384 < WINDOW_HEIGHT>>1));
 
     cooldown += rate * MULTIPLIER_PAINT;
+    backupItemA = nullptr;
+    backupItemB = nullptr;
     if ((cooldown >= 1)
         && (acceptorA->item != nullptr)
         && (acceptorA->progress >= 1)
         && (acceptorB->item != nullptr)
-        && (acceptorB->progress >= 1)
-        && (ejector->item == nullptr)) {
-        ejector->item = Paint(
+        && (acceptorB->progress >= 1)) {
+        backupItemA = acceptorA->item;
+        backupItemB = acceptorB->item;
+        ejector->prep = Paint(
             std::dynamic_pointer_cast<Shape>(acceptorA->item),
             std::dynamic_pointer_cast<Color>(acceptorB->item));
-        ejector->progress = 0;
+        ejector->prepProgress = 1;
         acceptorA->progress = 0;
         acceptorA->RemoveChild(acceptorA->item);
         acceptorA->item = nullptr;
@@ -150,4 +159,30 @@ void Painter::Update() {
     acceptorA->Update();
     acceptorB->Update();
     ejector->Update();
+}
+
+void Painter::Restore(int arg) {
+    restored = true;
+    if (ejector->prep != nullptr) {
+        cooldown += 1;
+
+        acceptorA->item = backupItemA;
+        acceptorA->progress = 1;
+        acceptorA->AddChild(backupItemA);
+        acceptorA->Restore(arg);
+
+        acceptorB->item = backupItemB;
+        acceptorB->progress = 1;
+        acceptorB->AddChild(backupItemB);
+        acceptorB->Restore(arg);
+
+        ejector->RemoveChild(ejector->prep);
+        ejector->prep = nullptr;
+    }
+}
+
+void Painter::Promote() {
+    acceptorA->Promote();
+    acceptorB->Promote();
+    ejector->Promote();
 }

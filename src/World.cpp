@@ -117,8 +117,28 @@ void World::UpdateWorld() {
         chunk->Update();
     }
     hub->Update();
-    UpdateMachines(pool, LstMachines);
-    UpdateTransferrers(pool, LstEjectors); // moving items from ejectors to acceptors
+    // UpdateMachines(pool, LstMachines);
+    for (auto& machine: LstMachines) {
+        machine->Update();
+    }
+
+    std::vector<std::shared_ptr<ItemAcceptor>> acceptorConflicts;
+    std::vector<std::shared_ptr<ItemEjector>> ejectorConflicts;
+
+    for (auto& [pos, ac]: MapAcceptors) {
+        if (ac->CheckConflict()) {acceptorConflicts.push_back(ac);}
+    }
+    for (auto& [pos, ej]: MapEjectors) {
+        if (ej->CheckConflict()) {ejectorConflicts.push_back(ej);}
+    }
+
+    for (auto& ac: acceptorConflicts) {ac->StartRestore();}
+    for (auto& ej: ejectorConflicts) {ej->StartRestore();
+    }
+
+    hub->Promote();
+    for (auto& machine: LstMachines) {machine->Promote();}
+    // UpdateTransferrers(pool, LstEjectors); // moving items from ejectors to acceptors
 }
 
 std::vector<std::vector<std::string>> parse2D(const std::string& input) {

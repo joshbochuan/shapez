@@ -30,18 +30,6 @@ Mixer::Mixer(int x, int y, int r)
 
     // cooking up a better X-index for 2-wide objects
     this->SetZIndex(60 + fmod((4.0f*x+y), 16.0f)/16.0f);
-
-    acceptorA = std::make_shared<ItemAcceptor>(x, y, r);
-    ejector = std::make_shared<ItemEjector>(x, y, r);
-    switch (r) {
-        case 0: acceptorB = std::make_shared<ItemAcceptor>(x+1, y, r); break;
-        case 1: acceptorB = std::make_shared<ItemAcceptor>(x, y+1, r); break;
-        case 2: acceptorB = std::make_shared<ItemAcceptor>(x-1, y, r); break;
-        case 3: acceptorB = std::make_shared<ItemAcceptor>(x, y-1, r); break;
-        default: throw std::invalid_argument("invalid mixer rotation");
-    }
-    acceptorA->takesShape = false;
-    acceptorB->takesShape = false;
 }
 
 std::string Mixer::getSaveString() {
@@ -64,14 +52,28 @@ std::shared_ptr<Machine> Mixer::fromSaveString(std::vector<std::string> prop) {
 }
 
 void Mixer::Init() {
-    MapMachines[{x, y}] = shared_from_this();
-    MapMachines[{acceptorB->x, acceptorB->y}] = shared_from_this();
+    acceptorA = std::make_shared<ItemAcceptor>(x, y, r);
+    ejector = std::make_shared<ItemEjector>(x, y, r, shared_from_this());
+    switch (r) {
+        case 0: acceptorB = std::make_shared<ItemAcceptor>(x+1, y, r); break;
+        case 1: acceptorB = std::make_shared<ItemAcceptor>(x, y+1, r); break;
+        case 2: acceptorB = std::make_shared<ItemAcceptor>(x-1, y, r); break;
+        case 3: acceptorB = std::make_shared<ItemAcceptor>(x, y-1, r); break;
+        default: throw std::invalid_argument("invalid mixer rotation");
+    }
+    acceptorA->takesShape = false;
+    acceptorB->takesShape = false;
+
     acceptorA->Init();
     acceptorB->Init();
     ejector->Init();
     AddChild(acceptorA);
     AddChild(acceptorB);
     AddChild(ejector);
+
+    MapMachines[{x, y}] = shared_from_this();
+    MapMachines[{acceptorB->x, acceptorB->y}] = shared_from_this();
+
     MACHINE_COUNT++;
 }
 
@@ -92,6 +94,8 @@ std::shared_ptr<Color> Mix(std::shared_ptr<Color> colorA, std::shared_ptr<Color>
 }
 
 void Mixer::Update() {
+    restored = false;
+
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
 
@@ -102,16 +106,19 @@ void Mixer::Update() {
         && (std::abs(m_Transform.translation.y)-cam.scale.y*384 < WINDOW_HEIGHT>>1));
 
     cooldown += rate * MULTIPLIER_PAINT;
+    backupItemA = nullptr;
+    backupItemB = nullptr;
     if ((cooldown >= 1)
         && (acceptorA->item != nullptr)
         && (acceptorA->progress >= 1)
         && (acceptorB->item != nullptr)
-        && (acceptorB->progress >= 1)
-        && (ejector->item == nullptr)) {
-        ejector->item = Mix(
+        && (acceptorB->progress >= 1)) {
+        backupItemA = acceptorA->item;
+        backupItemB = acceptorB->item;
+        ejector->prep = Mix(
             std::dynamic_pointer_cast<Color>(acceptorA->item),
             std::dynamic_pointer_cast<Color>(acceptorB->item));
-        ejector->progress = 0;
+        ejector->prepProgress = 1;
         acceptorA->progress = 0;
         acceptorA->RemoveChild(acceptorA->item);
         acceptorA->item = nullptr;
@@ -125,4 +132,30 @@ void Mixer::Update() {
     acceptorA->Update();
     acceptorB->Update();
     ejector->Update();
+}
+
+void Mixer::Restore(int arg) {
+    restored = true;
+    if (ejector->prep != nullptr) {
+        cooldown += 1;
+
+        acceptorA->item = backupItemA;
+        acceptorA->AddChild(backupItemA);
+        acceptorA->progress = 1;
+        acceptorA->Restore(arg);
+
+        acceptorB->item = backupItemB;
+        acceptorB->AddChild(backupItemB);
+        acceptorB->progress = 1;
+        acceptorB->Restore(arg);
+
+        ejector->RemoveChild(ejector->prep);
+        ejector->prep = nullptr;
+    }
+}
+
+void Mixer::Promote() {
+    acceptorA->Promote();
+    acceptorB->Promote();
+    ejector->Promote();
 }

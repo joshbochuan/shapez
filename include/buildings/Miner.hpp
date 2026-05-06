@@ -33,6 +33,8 @@ public:
     void Init();
     void Update();
     void Delete();
+    void Restore(int arg);
+    void Promote();
     bool isChained();
 
     std::shared_ptr<Miner> FindRoot();

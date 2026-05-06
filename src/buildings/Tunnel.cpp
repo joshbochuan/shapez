@@ -18,18 +18,6 @@ Tunnel::Tunnel(int x, int y, int r, TunnelType type, bool upgraded)
     this->distance = 0;
     this->upgraded = upgraded;
 
-    switch (type) {
-        case TunnelType::IN:
-            this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
-            SetDrawable(tunnelInTextures[upgraded]);
-            break;
-        case TunnelType::OUT:
-            this->ejector = std::make_shared<ItemEjector>(x, y, r);
-            SetDrawable(tunnelOutTextures[upgraded]);
-            break;
-        default: throw std::invalid_argument("unknown tunnel type");
-    }
-
     if (acceptor != nullptr) {AddChild(acceptor);}
     if (ejector != nullptr) {AddChild(ejector);}
     this->SetZIndex(50 + (x+y)%2);
@@ -102,9 +90,22 @@ void Tunnel::Pair() {
 
 void Tunnel::Init() {
     MACHINE_COUNT++;
+
+    switch (type) {
+        case TunnelType::IN:
+            this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
+            this->acceptor->Init();
+            SetDrawable(tunnelInTextures[upgraded]);
+            break;
+        case TunnelType::OUT:
+            this->ejector = std::make_shared<ItemEjector>(x, y, r, shared_from_this());
+            this->ejector->Init();
+            SetDrawable(tunnelOutTextures[upgraded]);
+            break;
+        default: throw std::invalid_argument("unknown tunnel type");
+    }
+
     MapMachines[{x, y}] = shared_from_this();
-    if (acceptor != nullptr) {acceptor->Init();}
-    if (ejector != nullptr) {ejector->Init();}
     Pair();
 }
 
@@ -118,6 +119,8 @@ void Tunnel::Delete() {
 }
 
 void Tunnel::Update() {
+    restored = false;
+
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
     this->m_Transform.scale.x = cam.scale.x * 1.125;
@@ -137,9 +140,29 @@ void Tunnel::Update() {
     if (other->ejector == nullptr) {throw std::invalid_argument("WHAT");}
     if (other->ejector->item != nullptr) {return;}
     other->ejector->AddChild(acceptor->item);
-    other->ejector->item = acceptor->item;
-    other->ejector->progress = acceptor->progress-1;
+    other->ejector->prep = acceptor->item;
+    other->ejector->prepProgress = acceptor->progress-1;
     acceptor->RemoveChild(acceptor->item);
     acceptor->item = nullptr;
     acceptor->progress = 0;
+}
+
+void Tunnel::Restore(int arg) {
+    restored = true;
+    if (type == TunnelType::IN) {return;}
+    if (other == nullptr) {return;}
+    if (ejector->prep != nullptr) {
+        other->acceptor->item = ejector->prep;
+        other->acceptor->progress = 1;
+        other->acceptor->AddChild(ejector->prep);
+        other->acceptor->Restore(arg);
+
+        ejector->RemoveChild(ejector->prep);
+        ejector->prep = nullptr;
+    }
+}
+
+void Tunnel::Promote() {
+    if (acceptor != nullptr) {acceptor->Promote();}
+    if (ejector != nullptr) {ejector->Promote();}
 }

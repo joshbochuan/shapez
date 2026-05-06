@@ -50,6 +50,8 @@ public:
     void Init();
     void Update();
     void Delete();
+    void Restore(int arg);
+    void Promote();
     void LoadState();
     std::shared_ptr<Text> levelTxt;
     std::shared_ptr<Text> levelNumTxt;

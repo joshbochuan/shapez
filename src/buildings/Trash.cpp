@@ -48,6 +48,8 @@ void Trash::Delete() {
 }
 
 void Trash::Update() {
+    restored = false;
+
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
     this->m_Transform.scale.x = cam.scale.x * 1.125;
@@ -55,14 +57,19 @@ void Trash::Update() {
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)
         && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
-    for (int i=0; i<4; i++) {
-        m_Acceptors[i]->Update();
-        if ((m_Acceptors[i]->item != nullptr) && (m_Acceptors[i]->progress >= 1)) {
-            m_Acceptors[i]->item->Update();
-            m_Acceptors[i]->RemoveChild(this->m_Acceptors[i]->item);
-            std::weak_ptr<Item> tmp = m_Acceptors[i]->item;
-            m_Acceptors[i]->item = nullptr;
-            m_Acceptors[i]->progress = 0;
+    for (auto& ac: m_Acceptors) {
+        ac->Update();
+        if ((ac->item != nullptr) && (ac->progress >= 1)) {
+            ac->RemoveItem();
         }
     }
+}
+
+void Trash::Restore(int arg) {
+    // ts shouldn't happen
+    restored = true;
+}
+
+void Trash::Promote() {
+    for (auto& ac: m_Acceptors) {ac->Promote();}
 }

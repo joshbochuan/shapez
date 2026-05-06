@@ -18,12 +18,15 @@ public:
     std::shared_ptr<ItemAcceptor> acceptor;
     std::shared_ptr<ItemEjector> ejectorA;
     std::shared_ptr<ItemEjector> ejectorB;
+    std::shared_ptr<Item> backupItem;
     Cutter(int x, int y, int r);
     std::string getSaveString();
     static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();
+    void Restore(int arg);
+    void Promote();
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_CUTTER_HPP

@@ -6,14 +6,14 @@
 #include <iostream>
 using namespace World;
 
-ItemEjector::ItemEjector(int x, int y, int r): rate(BELT_RATE){
+ItemEjector::ItemEjector(int x, int y, int r, std::shared_ptr<Machine> master): rate(BELT_RATE){
     this->x = x;
     this->y = y;
     this->r = r;
     this->item = nullptr;
     this->progress = 0;
     this->next = nullptr;
-    // SetVisible(false);
+    this->master = master;
     SetZIndex(10+(x+y)%2);
     m_Transform.rotation = 0.5f * M_PI * r;
 }
@@ -47,8 +47,7 @@ void ItemEjector::Init() {
         MapAcceptors.erase(key);
         return;
     }
-    if (next->item != nullptr) {next->RemoveChild(next->item);}
-    next->item = nullptr;
+    next->RemoveItem();
     next->progress = 0;
     next->prev = std::dynamic_pointer_cast<ItemEjector>(shared_from_this());
     // SetVisible(true);
@@ -58,16 +57,17 @@ void ItemEjector::Init() {
 void ItemEjector::Delete() {
     MapEjectors.erase({x, y, r});
     LstEjectors.erase(std::remove(LstEjectors.begin(), LstEjectors.end(), shared_from_this()), LstEjectors.end());
+    master = nullptr;
     if (next == nullptr) {return;}
-    if (next->item != nullptr) {next->RemoveChild(next->item);}
-    next->item = nullptr;
+    m_Children.clear();
+    next->RemoveItem();
     next->progress = 0;
     next->prev = nullptr;
-    // next->SetVisible(false);
 }
 
 void ItemEjector::Update() {
     if (!initialized) {throw std::invalid_argument("ejector not initialized");}
+    restored = false;
 
     this->m_Transform.translation.x = (((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = (((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
@@ -75,6 +75,73 @@ void ItemEjector::Update() {
 
     if (item == nullptr) {return;}
     if (progress < 1) {progress += rate * MULTIPLIER_BELT;}
+
+    Transfer();
+
+    if (progress > 1) {progress = 1;}
+
+    /*
+    // logic for clogged belt
+    if (next == nullptr) {return;}
+    if (next->item == nullptr) {return;}
+    if (item == nullptr) {return;}
+    if (progress > next->progress) {progress = next->progress;}
+    */
+}
+
+bool ItemEjector::CheckConflict() {
+    if (item == nullptr) {return false;}
+    if (prep != nullptr) {return true;}
+    if ((progress >= 1) && (next == nullptr)) {return true;}
+    return false;
+}
+
+void ItemEjector::StartRestore() {
+    std::cout << "start ejector restore\n";
+    // if ((item == nullptr) && (prep == nullptr)) {return;}
+    if (restored) {return;}
+    restored = true;
+
+    master->Restore(1);
+}
+
+void ItemEjector::Restore(int arg) {
+    std::cout << "called ejector restore\n";
+    // if ((item == nullptr) && (prep == nullptr)) {return;}
+    if (restored) {return;}
+    restored = true;
+
+    if ((!arg) && (item == nullptr)) {return;}
+
+    float targetProgress = progress;
+    bool progressCorrected = false;
+    if (next != nullptr) {
+        targetProgress = next->progress;
+    }
+    if (progress > targetProgress) {
+        progress = targetProgress;
+        progressCorrected = true;
+    }
+    master->Restore(arg);
+    return;
+    if (progressCorrected || ((next != nullptr) && (next->prep != nullptr))) {
+        master->Restore(arg);
+    }
+    /*
+    if ((next != nullptr) && (next->prep != nullptr)) {
+        SetItem(next->prep);
+        next->prep = nullptr;
+    }
+    */
+}
+
+void ItemEjector::Promote() {
+    if ((item != nullptr) && (prep != nullptr)) {throw std::invalid_argument("ItemEjector cannot promote: " + prep->getCode() + ", " + item->getCode());}
+    if (prep != nullptr) {
+        SetItem(prep);
+        prep = nullptr;
+        progress = prepProgress-1;
+    }
 
     int dx, dy;
     glm::vec2 p1, p2;
@@ -87,37 +154,46 @@ void ItemEjector::Update() {
     }
 
     if (item != nullptr) {
-        item->m_Transform.translation.x = this->m_Transform.translation.x;
         p1 = m_Transform.translation;
         p2.x = p1.x + cam.scale.x * 96.0 * dx;
         p2.y = p1.y + cam.scale.y * 96.0 * dy;
-        item->m_Transform.translation.x = std::round(p1.x * (1-progress) + p2.x * progress);
-        item->m_Transform.translation.y = std::round(p1.y * (1-progress) + p2.y * progress);
+        item->m_Transform.translation.x = (p1.x * (1-progress) + p2.x * progress);
+        item->m_Transform.translation.y = (p1.y * (1-progress) + p2.y * progress);
         item->SetItemSize(cam.scale);
         item->Update();
     }
-
-    // logic for clogged belt
-    if (next == nullptr) {return;}
-    if (next->item == nullptr) {return;}
-    if (item == nullptr) {return;}
-    if (progress > next->progress) {progress = next->progress;}
 }
 
 void ItemEjector::Transfer() {
     if (item == nullptr) {return;}
     if (progress < 1) {return;}
 
-    if (next == nullptr) {return;};
-    if (next->item != nullptr) {return;};
-    if ((item->getType() == ItemType::COLOR) && (!next->takesColor)) {return;};
-    if ((item->getType() == ItemType::SHAPE) && (!next->takesShape)) {return;};
+    if (next == nullptr) {
+        progress = 1;
+        return;
+    };
+    if ((item->getType() == ItemType::COLOR) && (!next->takesColor)) {
+        progress = 1;
+        return;
+    };
+    if ((item->getType() == ItemType::SHAPE) && (!next->takesShape)) {
+        progress = 1;
+        return;
+    };
 
-    next->item = item;
-    next->progress = progress - 1;
-    next->AddChild(item);
+    next->prep = item;
+    next->prepProgress = progress;
+    RemoveItem();
+}
 
-    RemoveChild(item);
-    item = nullptr;
-    progress = 0;
+void ItemEjector::SetItem(std::shared_ptr<Item> item) {
+    if (item == nullptr) {throw std::invalid_argument("item cannot be set to a nullptr");}
+    if (this->item != nullptr) {throw std::invalid_argument("ItemEjector::SetItem called when there's already an item");}
+    this->item = item;
+    AddChild(item);
+}
+
+void ItemEjector::RemoveItem() {
+    this->item = nullptr;
+    m_Children.clear();
 }

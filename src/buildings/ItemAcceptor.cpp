@@ -16,7 +16,6 @@ ItemAcceptor::ItemAcceptor(int x, int y, int r) : rate(BELT_RATE) {
     this->takesColor = true;
     this->takesShape = true;
     this->prev = nullptr;
-    // SetVisible(false);
     SetZIndex(10+(x+y)%2);
     m_Transform.rotation = 0.5f * M_PI * r;
 }
@@ -49,8 +48,7 @@ void ItemAcceptor::Init() {
         MapEjectors.erase(key);
         return;
     }
-    if (prev->item != nullptr) {prev->RemoveChild(prev->item);}
-    prev->item = nullptr;
+    prev->RemoveItem();
     prev->progress = 0;
     prev->next = std::dynamic_pointer_cast<ItemAcceptor>(shared_from_this());
     // SetVisible(true);
@@ -60,8 +58,8 @@ void ItemAcceptor::Init() {
 void ItemAcceptor::Delete() {
     MapAcceptors.erase({x, y, r});
     if (prev == nullptr) {return;}
-    if (prev->item != nullptr) {prev->RemoveChild(prev->item);}
-    prev->item = nullptr;
+    if (prev->item != nullptr) {prev->RemoveItem();}
+    m_Children.clear();
     prev->progress = 0;
     prev->next = nullptr;
     // prev->SetVisible(false);
@@ -69,6 +67,7 @@ void ItemAcceptor::Delete() {
 
 void ItemAcceptor::Update() {
     if (!initialized) {throw std::invalid_argument("acceptor not initialized");}
+    restored = false;
 
     this->m_Transform.translation.x = (((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = (((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
@@ -76,6 +75,36 @@ void ItemAcceptor::Update() {
 
     if (item == nullptr) {return;}
     if (progress < 1) {progress += rate * MULTIPLIER_BELT;}
+}
+
+bool ItemAcceptor::CheckConflict() {
+    return ((item != nullptr) && (prep != nullptr));
+}
+
+void ItemAcceptor::StartRestore() {
+    Restore(1);
+}
+
+void ItemAcceptor::Restore(int arg) {
+    std::cout << "called acceptor restore\n";
+    if ((item == nullptr) && (prep == nullptr)) {return;}
+    if (restored) {return;}
+    restored = true;
+    if (prev == nullptr) {return;}
+    prev->Restore(arg);
+    if (arg && (prep != nullptr)) {
+        prev->SetItem(prep);
+        prep = nullptr;
+    }
+}
+
+void ItemAcceptor::Promote() {
+    if ((item != nullptr) && (prep != nullptr)) {throw std::invalid_argument("ItemAcceptor cannot promote because its not properly restored");}
+    if (prep != nullptr) {
+        SetItem(prep);
+        prep = nullptr;
+        progress = prepProgress-1;
+    }
 
     int dx, dy;
     glm::vec2 p1, p2;
@@ -88,13 +117,23 @@ void ItemAcceptor::Update() {
     }
 
     if (item != nullptr) {
-        item->m_Transform.translation.x = this->m_Transform.translation.x;
         p2 = m_Transform.translation;
         p1.x = p2.x - cam.scale.x * 96.0 * dx;
         p1.y = p2.y - cam.scale.y * 96.0 * dy;
-        item->m_Transform.translation.x = std::round(p1.x * (1-progress) + p2.x * progress);
-        item->m_Transform.translation.y = std::round(p1.y * (1-progress) + p2.y * progress);
+        item->m_Transform.translation.x = (p1.x * (1-progress) + p2.x * progress);
+        item->m_Transform.translation.y = (p1.y * (1-progress) + p2.y * progress);
         item->SetItemSize(cam.scale);
         item->Update();
     }
+}
+
+void ItemAcceptor::SetItem(std::shared_ptr<Item> item) {
+    if (item == nullptr) {throw std::invalid_argument("item cannot be set to a nullptr");}
+    this->item = item;
+    AddChild(item);
+}
+
+void ItemAcceptor::RemoveItem() {
+    this->item = nullptr;
+    m_Children.clear();
 }

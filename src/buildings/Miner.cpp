@@ -30,8 +30,6 @@ Miner::Miner(int x, int y, int r, std::shared_ptr<Item> product, bool chained)
         this->product->MachineItemZIndex(44);
         this->AddChild(this->product);
     }
-    this->ejector = std::make_shared<ItemEjector>(x, y, r);
-    this->AddChild(this->ejector);
     if (chained) {SetDrawable(chainedMinerTexture);}
     else {this->SetDrawable(minerTexture);}
     this->m_Transform.rotation = M_PI * 0.5 * r;
@@ -80,6 +78,9 @@ std::shared_ptr<Machine> Miner::fromSaveString(std::vector<std::string> prop) {
 }
 
 void Miner::Init() {
+    this->ejector = std::make_shared<ItemEjector>(x, y, r, shared_from_this());
+    this->AddChild(this->ejector);
+
     MACHINE_COUNT++;
     MapMachines[{x, y}] = shared_from_this();
     ejector->Init();
@@ -151,6 +152,8 @@ void Miner::Delete() {
 }
 
 void Miner::Update() {
+    restored = false;
+
     this->m_Transform.translation.x = std::round(((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
     this->m_Transform.translation.y = std::round(((192.0*(0.5+y)) - cam.translation.y) * cam.scale.y);
     this->m_Transform.scale.x = cam.scale.x * 1.1f;
@@ -171,11 +174,13 @@ void Miner::Update() {
     cooldown += rate * static_cast<float>(chainLen) * MULTIPLIER_MINE;
     if ((cooldown >= 1)
         && (product != nullptr)
-        && (ejector->item == nullptr)) {
+        && (next == nullptr)) {
         cooldown -= 1;
-        ejector->item = product->copy();
-        ejector->AddChild(ejector->item);
-        ejector->progress = 0;
+        ejector->prep = product->copy();
+        ejector->prepProgress = 1;
+        ejector->prep->m_Transform.translation = m_Transform.translation;
+        ejector->prep->SetItemSize(cam.scale);
+        ejector->prep->Update();
     }
     if (cooldown > 1) {cooldown = 1;}
 
@@ -216,4 +221,17 @@ int Miner::UpdateChainLen() {
         chainLen += prev[i]->UpdateChainLen();
     }
     return chainLen;
+}
+
+void Miner::Restore(int arg) {
+    std::cout << "called miner restore\n";
+    restored = true;
+    if (ejector->prep != nullptr) {
+        cooldown += 1;
+        ejector->prep = nullptr;
+    }
+}
+
+void Miner::Promote() {
+    ejector->Promote();
 }
