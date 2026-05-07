@@ -224,7 +224,6 @@ int Miner::UpdateChainLen() {
 }
 
 void Miner::Restore(int arg) {
-    std::cout << "called miner restore\n";
     restored = true;
     if (ejector->prep != nullptr) {
         cooldown += 1;

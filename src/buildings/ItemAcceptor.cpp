@@ -58,11 +58,10 @@ void ItemAcceptor::Init() {
 void ItemAcceptor::Delete() {
     MapAcceptors.erase({x, y, r});
     if (prev == nullptr) {return;}
-    if (prev->item != nullptr) {prev->RemoveItem();}
     m_Children.clear();
+    prev->RemoveItem();
     prev->progress = 0;
     prev->next = nullptr;
-    // prev->SetVisible(false);
 }
 
 void ItemAcceptor::Update() {
@@ -74,7 +73,7 @@ void ItemAcceptor::Update() {
     this->m_Transform.scale = cam.scale * 1.01f;
 
     if (item == nullptr) {return;}
-    if (progress < 1) {progress += rate * MULTIPLIER_BELT;}
+    if (progress <= 1) {progress += rate * MULTIPLIER_BELT;}
 }
 
 bool ItemAcceptor::CheckConflict() {
@@ -86,7 +85,7 @@ void ItemAcceptor::StartRestore() {
 }
 
 void ItemAcceptor::Restore(int arg) {
-    std::cout << "called acceptor restore\n";
+    std::cout << "called acceptor restore of arg " << arg << std::endl;
     if ((item == nullptr) && (prep == nullptr)) {return;}
     if (restored) {return;}
     restored = true;

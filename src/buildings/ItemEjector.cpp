@@ -74,7 +74,7 @@ void ItemEjector::Update() {
     this->m_Transform.scale = cam.scale * 1.01f;
 
     if (item == nullptr) {return;}
-    if (progress < 1) {progress += rate * MULTIPLIER_BELT;}
+    if (progress <= 1) {progress += rate * MULTIPLIER_BELT;}
 
     Transfer();
 
@@ -106,12 +106,10 @@ void ItemEjector::StartRestore() {
 }
 
 void ItemEjector::Restore(int arg) {
-    std::cout << "called ejector restore\n";
+    std::cout << "called ejector restore of arg " << arg << std::endl;
     // if ((item == nullptr) && (prep == nullptr)) {return;}
     if (restored) {return;}
     restored = true;
-
-    if ((!arg) && (item == nullptr)) {return;}
 
     float targetProgress = progress;
     bool progressCorrected = false;
@@ -166,7 +164,7 @@ void ItemEjector::Promote() {
 
 void ItemEjector::Transfer() {
     if (item == nullptr) {return;}
-    if (progress < 1) {return;}
+    if (progress <= 1) {return;}
 
     if (next == nullptr) {
         progress = 1;
