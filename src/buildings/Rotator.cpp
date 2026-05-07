@@ -167,10 +167,12 @@ void Rotator::Restore(int arg) {
     std::cout << "called rotator restore\n";
     if (restored) {return;}
     restored = true;
-    cooldown += 1;
-    acceptor->progress = 1;
-    acceptor->Restore(1);
-    if (backupItem != nullptr) {acceptor->SetItem(backupItem);}
+    if (backupItem != nullptr) {
+        cooldown += 1;
+        acceptor->progress = 1;
+        acceptor->Restore(1);
+        acceptor->SetItem(backupItem);
+    }
     ejector->prep = nullptr;
 }
 

@@ -152,10 +152,11 @@ void Tunnel::Restore(int arg) {
 
     if (restored) {return;}
     restored = true;
-    restored = true;
-    other->acceptor->progress = 1;
-    other->acceptor->Restore(1);
-    if (ejector->prep != nullptr) {other->acceptor->SetItem(ejector->prep);}
+    if (ejector->prep != nullptr) {
+        other->acceptor->progress = 1;
+        other->acceptor->Restore(1);
+        other->acceptor->SetItem(ejector->prep);
+    }
     ejector->prep = nullptr;
 }
 

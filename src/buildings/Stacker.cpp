@@ -155,22 +155,24 @@ void Stacker::Update() {
         && (std::abs(m_Transform.translation.y)-cam.scale.y*384 < WINDOW_HEIGHT>>1));
 
     cooldown += rate * MULTIPLIER_PROCESS;
+    backupItemA = nullptr;
+    backupItemB = nullptr;
     if ((cooldown >= 1)
         && (acceptorA->item != nullptr)
         && (acceptorA->progress >= 1)
         && (acceptorB->item != nullptr)
         && (acceptorB->progress >= 1)) {
+        backupItemA = acceptorA->item;
+        backupItemB = acceptorB->item;
         ejector->prep = Stack(
             std::dynamic_pointer_cast<Shape>(acceptorA->item),
             std::dynamic_pointer_cast<Shape>(acceptorB->item));
         ejector->prepProgress = 1;
         acceptorA->progress = 0;
-        acceptorA->RemoveChild(acceptorA->item);
-        acceptorA->item = nullptr;
+        acceptorA->RemoveItem();
         acceptorB->progress = 0;
-        acceptorB->RemoveChild(acceptorB->item);
-        acceptorB->item = nullptr;
-        cooldown = 0;
+        acceptorB->RemoveItem();
+        cooldown -= 1;
     }
     if (cooldown > 1) {cooldown = 1;}
 
@@ -180,23 +182,20 @@ void Stacker::Update() {
 }
 
 void Stacker::Restore(int arg) {
+    if (restored) {return;}
     restored = true;
     if (ejector->prep != nullptr) {
         cooldown += 1;
 
-        acceptorA->item = backupItemA;
         acceptorA->progress = 1;
-        acceptorA->AddChild(backupItemA);
-        acceptorA->Restore(arg);
+        acceptorA->Restore(1);
+        acceptorA->SetItem(backupItemA);
 
-        acceptorB->item = backupItemB;
         acceptorB->progress = 1;
-        acceptorB->AddChild(backupItemB);
-        acceptorB->Restore(arg);
-
-        ejector->RemoveChild(ejector->prep);
-        ejector->prep = nullptr;
+        acceptorB->Restore(1);
+        acceptorB->SetItem(backupItemB);
     }
+    ejector->prep = nullptr;
 }
 
 void Stacker::Promote() {

@@ -111,14 +111,6 @@ void Belt::Update() {
 }
 
 void Belt::Restore(int arg) {
-    std::cout << "called belt of type ";
-    switch (type) {
-        case BeltType::FORWARD: std::cout << "FORWARD"; break;
-        case BeltType::LEFT: std::cout << "LEFT"; break;
-        case BeltType::RIGHT: std::cout << "RIGHT"; break;
-        default: break;
-    }
-    std::cout << " restore of arg " << arg << std::endl;
     if (restored) {return;}
     restored = true;
 
@@ -141,14 +133,6 @@ void Belt::Restore(int arg) {
         progressCorrected = true;
     }
 
-    /*
-    // this shouldn't happen, but it does
-    if ((acceptor->prep == nullptr) && (acceptor->item != nullptr) && (acceptor->progress == 0)) {
-        acceptor->prep = acceptor->item;
-        acceptor->RemoveItem();
-    }
-    */
-
     if ((arg == 1) && (type == BeltType::FORWARD)) {
         acceptor->progress = 1;
         acceptor->Restore(1);
@@ -162,28 +146,6 @@ void Belt::Restore(int arg) {
     else if (progressCorrected) {
         acceptor->Restore(0);
     }
-        /*
-    if (acceptor->progress == 0) {
-        acceptor->prep = acceptor->item;
-        acceptor->RemoveItem();
-    };
-        */
-    /*
-    if ((type != BeltType::FORWARD)
-        && (ejector->next != nullptr)
-        && (ejector->next->item != nullptr)
-        && (acceptor->progress > ejector->next->progress + 0.5f)) {
-        acceptor->progress = ejector->next->progress + 0.5f;
-    }
-    */
-    /*
-    // p + 0.5*M_PI - 1
-    if ((type != BeltType::FORWARD)
-        && (ejector->item != nullptr)
-        && (acceptor->progress > ejector->progress + 1.5 - 2)) {
-        acceptor->progress = ejector->progress + 1.5 - 2;
-    }
-    */
 }
 
 void Belt::Promote() {

@@ -67,7 +67,6 @@ void ItemEjector::Delete() {
 
 void ItemEjector::Update() {
     if (!initialized) {throw std::invalid_argument("ejector not initialized");}
-    std::cout << "ejector updated\n";
     restored = false;
 
     this->m_Transform.translation.x = (((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
@@ -80,14 +79,6 @@ void ItemEjector::Update() {
     Transfer();
 
     if (progress > 1) {progress = 1;}
-
-    /*
-    // logic for clogged belt
-    if (next == nullptr) {return;}
-    if (next->item == nullptr) {return;}
-    if (item == nullptr) {return;}
-    if (progress > next->progress) {progress = next->progress;}
-    */
 }
 
 bool ItemEjector::CheckConflict() {
@@ -98,16 +89,11 @@ bool ItemEjector::CheckConflict() {
 }
 
 void ItemEjector::StartRestore() {
-    std::cout << "start ejector restore\n";
     Restore(1);
 }
 
 void ItemEjector::Restore(int arg) {
-    std::cout << "called ejector restore of arg " << arg << std::endl;
-    if (restored) {
-        std::cout << "ejector already restored\n";
-        return;
-    }
+    if (restored) {return;}
     restored = true;
 
     float targetProgress = progress;

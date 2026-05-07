@@ -120,12 +120,10 @@ void Mixer::Update() {
             std::dynamic_pointer_cast<Color>(acceptorB->item));
         ejector->prepProgress = 1;
         acceptorA->progress = 0;
-        acceptorA->RemoveChild(acceptorA->item);
-        acceptorA->item = nullptr;
+        acceptorA->RemoveItem();
         acceptorB->progress = 0;
-        acceptorB->RemoveChild(acceptorB->item);
-        acceptorB->item = nullptr;
-        cooldown = 0;
+        acceptorB->RemoveItem();
+        cooldown -= 1;
         }
     if (cooldown > 1) {cooldown = 1;}
 
@@ -135,23 +133,20 @@ void Mixer::Update() {
 }
 
 void Mixer::Restore(int arg) {
+    if (restored) {return;}
     restored = true;
     if (ejector->prep != nullptr) {
         cooldown += 1;
 
-        acceptorA->item = backupItemA;
-        acceptorA->AddChild(backupItemA);
         acceptorA->progress = 1;
-        acceptorA->Restore(arg);
+        acceptorA->Restore(1);
+        acceptorA->SetItem(backupItemA);
 
-        acceptorB->item = backupItemB;
-        acceptorB->AddChild(backupItemB);
         acceptorB->progress = 1;
-        acceptorB->Restore(arg);
-
-        ejector->RemoveChild(ejector->prep);
-        ejector->prep = nullptr;
+        acceptorB->Restore(1);
+        acceptorB->SetItem(backupItemB);
     }
+    ejector->prep = nullptr;
 }
 
 void Mixer::Promote() {

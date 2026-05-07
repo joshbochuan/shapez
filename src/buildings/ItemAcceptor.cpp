@@ -85,7 +85,6 @@ void ItemAcceptor::StartRestore() {
 }
 
 void ItemAcceptor::Restore(int arg) {
-    std::cout << "called acceptor restore of arg " << arg << std::endl;
     if ((item == nullptr) && (prep == nullptr)) {return;}
     if (restored) {return;}
     restored = true;

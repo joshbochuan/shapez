@@ -220,7 +220,6 @@ int Miner::UpdateChainLen() {
 }
 
 void Miner::Restore(int arg) {
-    std::cout << "called miner restore of arg " << arg << std::endl;
     restored = true;
     cooldown += 1;
     ejector->prep = nullptr;
