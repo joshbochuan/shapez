@@ -67,6 +67,7 @@ void ItemEjector::Delete() {
 
 void ItemEjector::Update() {
     if (!initialized) {throw std::invalid_argument("ejector not initialized");}
+    std::cout << "ejector updated\n";
     restored = false;
 
     this->m_Transform.translation.x = (((192.0*(0.5+x)) - cam.translation.x) * cam.scale.x);
@@ -98,39 +99,22 @@ bool ItemEjector::CheckConflict() {
 
 void ItemEjector::StartRestore() {
     std::cout << "start ejector restore\n";
-    // if ((item == nullptr) && (prep == nullptr)) {return;}
-    if (restored) {return;}
-    restored = true;
-
-    master->Restore(1);
+    Restore(1);
 }
 
 void ItemEjector::Restore(int arg) {
     std::cout << "called ejector restore of arg " << arg << std::endl;
-    // if ((item == nullptr) && (prep == nullptr)) {return;}
-    if (restored) {return;}
+    if (restored) {
+        std::cout << "ejector already restored\n";
+        return;
+    }
     restored = true;
 
     float targetProgress = progress;
-    bool progressCorrected = false;
-    if (next != nullptr) {
-        targetProgress = next->progress;
-    }
-    if (progress > targetProgress) {
-        progress = targetProgress;
-        progressCorrected = true;
-    }
+
+    if ((next != nullptr) && (next->item != nullptr)) {targetProgress = next->progress;}
+    if (progress > targetProgress) {progress = targetProgress;}
     master->Restore(arg);
-    return;
-    if (progressCorrected || ((next != nullptr) && (next->prep != nullptr))) {
-        master->Restore(arg);
-    }
-    /*
-    if ((next != nullptr) && (next->prep != nullptr)) {
-        SetItem(next->prep);
-        next->prep = nullptr;
-    }
-    */
 }
 
 void ItemEjector::Promote() {

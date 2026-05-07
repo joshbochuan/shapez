@@ -117,6 +117,9 @@ void Cutter::Update() {
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*384 < WINDOW_WIDTH>>1)
         && (std::abs(m_Transform.translation.y)-cam.scale.y*384 < WINDOW_HEIGHT>>1));
 
+    acceptor->Update();
+    ejectorA->Update();
+    ejectorB->Update();
     cooldown += rate * MULTIPLIER_PROCESS;
     backupItem = nullptr;
     if ((cooldown >= 1)
@@ -127,42 +130,28 @@ void Cutter::Update() {
         cooldown -= 1;
         if (res.first != nullptr) {
             ejectorA->prep = res.first;
-            ejectorA->AddChild(ejectorA->prep);
             ejectorA->prepProgress = acceptor->progress;
         }
         if (res.second != nullptr) {
             ejectorB->prep = res.second;
-            ejectorB->AddChild(ejectorB->prep);
             ejectorB->prepProgress = acceptor->progress;
         }
-        acceptor->RemoveChild(acceptor->item);
-        acceptor->item = nullptr;
+        acceptor->RemoveItem();
         acceptor->progress = 0;
     }
     if (cooldown > 1) {cooldown = 1;}
-
-    acceptor->Update();
-    ejectorA->Update();
-    ejectorB->Update();
 }
 
 void Cutter::Restore(int arg) {
+    std::cout << "called rotator restore\n";
+    if (restored) {return;}
     restored = true;
-    if (backupItem != nullptr) {
-        cooldown += 1;
-        acceptor->item = backupItem;
-        acceptor->progress = 1;
-        acceptor->Restore(arg);
-    }
-    if (ejectorA->prep != nullptr) {
-        ejectorA->RemoveChild(ejectorA->prep);
-        ejectorA->prep = nullptr;
-    }
-    if (ejectorB->prep != nullptr) {
-        ejectorB->RemoveChild(ejectorB->prep);
-        ejectorB->prep = nullptr;
-    }
-
+    cooldown += 1;
+    acceptor->progress = 1;
+    acceptor->Restore(1);
+    if (backupItem != nullptr) {acceptor->SetItem(backupItem);}
+    ejectorA->prep = nullptr;
+    ejectorB->prep = nullptr;
 }
 
 void Cutter::Promote() {

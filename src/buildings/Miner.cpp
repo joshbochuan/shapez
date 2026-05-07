@@ -171,6 +171,7 @@ void Miner::Update() {
         this->product->Update();
     }
 
+    ejector->Update();
     cooldown += rate * static_cast<float>(chainLen) * MULTIPLIER_MINE;
     if ((cooldown >= 1)
         && (product != nullptr)
@@ -178,13 +179,8 @@ void Miner::Update() {
         cooldown -= 1;
         ejector->prep = product->copy();
         ejector->prepProgress = 1;
-        ejector->prep->m_Transform.translation = m_Transform.translation;
-        ejector->prep->SetItemSize(cam.scale);
-        ejector->prep->Update();
     }
     if (cooldown > 1) {cooldown = 1;}
-
-    ejector->Update();
 }
 
 bool Miner::isChained() {
@@ -224,11 +220,10 @@ int Miner::UpdateChainLen() {
 }
 
 void Miner::Restore(int arg) {
+    std::cout << "called miner restore of arg " << arg << std::endl;
     restored = true;
-    if (ejector->prep != nullptr) {
-        cooldown += 1;
-        ejector->prep = nullptr;
-    }
+    cooldown += 1;
+    ejector->prep = nullptr;
 }
 
 void Miner::Promote() {

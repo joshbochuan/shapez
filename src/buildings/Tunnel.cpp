@@ -95,11 +95,13 @@ void Tunnel::Init() {
         case TunnelType::IN:
             this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
             this->acceptor->Init();
+            AddChild(acceptor);
             SetDrawable(tunnelInTextures[upgraded]);
             break;
         case TunnelType::OUT:
             this->ejector = std::make_shared<ItemEjector>(x, y, r, shared_from_this());
             this->ejector->Init();
+            AddChild(ejector);
             SetDrawable(tunnelOutTextures[upgraded]);
             break;
         default: throw std::invalid_argument("unknown tunnel type");
@@ -135,31 +137,26 @@ void Tunnel::Update() {
 
     acceptor->Update();
     if (acceptor->item == nullptr) {return;}
-    if (acceptor->progress < 1) {return;}
+    if (acceptor->progress <= 1.0f) {return;}
     if (other == nullptr) {return;}
-    if (other->ejector == nullptr) {throw std::invalid_argument("WHAT");}
-    if (other->ejector->item != nullptr) {return;}
-    other->ejector->AddChild(acceptor->item);
+    if (other->ejector == nullptr) {throw std::invalid_argument("intunnel's other has no ejector");}
     other->ejector->prep = acceptor->item;
-    other->ejector->prepProgress = acceptor->progress-1;
-    acceptor->RemoveChild(acceptor->item);
-    acceptor->item = nullptr;
+    other->ejector->prepProgress = acceptor->progress;
+    acceptor->RemoveItem();
     acceptor->progress = 0;
 }
 
 void Tunnel::Restore(int arg) {
-    restored = true;
     if (type == TunnelType::IN) {return;}
     if (other == nullptr) {return;}
-    if (ejector->prep != nullptr) {
-        other->acceptor->item = ejector->prep;
-        other->acceptor->progress = 1;
-        other->acceptor->AddChild(ejector->prep);
-        other->acceptor->Restore(arg);
 
-        ejector->RemoveChild(ejector->prep);
-        ejector->prep = nullptr;
-    }
+    if (restored) {return;}
+    restored = true;
+    restored = true;
+    other->acceptor->progress = 1;
+    other->acceptor->Restore(1);
+    if (ejector->prep != nullptr) {other->acceptor->SetItem(ejector->prep);}
+    ejector->prep = nullptr;
 }
 
 void Tunnel::Promote() {

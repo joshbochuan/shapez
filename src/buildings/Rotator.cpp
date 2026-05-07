@@ -138,11 +138,13 @@ void Rotator::Update() {
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)
         && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
+    this->acceptor->Update();
+    this->ejector->Update();
     cooldown += rate;
     backupItem = nullptr;
     if ((cooldown >= 1)
         && (this->acceptor->item != nullptr)
-        && (this->acceptor->progress >= 1)) {
+        && (this->acceptor->progress > 1)) {
         cooldown -= 1;
         backupItem = acceptor->item;
         if (type == RotatorType::ROTATE_CW) {
@@ -154,30 +156,22 @@ void Rotator::Update() {
         if (type == RotatorType::ROTATE_CCW) {
             this->ejector->prep = RotateCCW(std::dynamic_pointer_cast<Shape>(acceptor->item));
         }
-        if (type == RotatorType::ROTATE_CCW) {}
-        this->ejector->AddChild(this->ejector->item);
         this->ejector->prepProgress = this->acceptor->progress;
-        this->acceptor->RemoveChild(this->acceptor->item);
-        this->acceptor->item = nullptr;
+        acceptor->RemoveItem();
         this->acceptor->progress = 0;
     }
     if (cooldown > 1) {cooldown = 1;}
-
-    this->acceptor->Update();
-    this->ejector->Update();
 }
 
 void Rotator::Restore(int arg) {
+    std::cout << "called rotator restore\n";
+    if (restored) {return;}
     restored = true;
-    if (ejector->prep != nullptr) {
-        cooldown += 1;
-        acceptor->progress = 1;
-        acceptor->item = backupItem;
-        acceptor->Restore(arg);
-
-        ejector->RemoveChild(ejector->prep);
-        ejector->prep = nullptr;
-    }
+    cooldown += 1;
+    acceptor->progress = 1;
+    acceptor->Restore(1);
+    if (backupItem != nullptr) {acceptor->SetItem(backupItem);}
+    ejector->prep = nullptr;
 }
 
 void Rotator::Promote() {
