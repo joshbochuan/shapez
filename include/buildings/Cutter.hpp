@@ -19,13 +19,14 @@ public:
     std::shared_ptr<ItemEjector> ejectorA;
     std::shared_ptr<ItemEjector> ejectorB;
     std::shared_ptr<Item> backupItem;
+    bool pushA = false, pushB = false;
     Cutter(int x, int y, int r);
     std::string getSaveString();
     static std::shared_ptr<Machine> fromSaveString(std::vector<std::string> prop);
     void Init();
     void Update();
     void Delete();
-    void Restore(int arg);
+    void Restore(int arg, std::shared_ptr<ItemEjector> from);
     void Promote();
 };
 

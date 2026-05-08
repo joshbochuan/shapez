@@ -330,7 +330,7 @@ void Hub::Update() {
     lockedItemTxt->m_Transform.scale = cam.scale;
 }
 
-void Hub::Restore(int arg) {
+void Hub::Restore(int arg, std::shared_ptr<ItemEjector> from) {
     // ts shouldn't happen either
     restored = true;
 }

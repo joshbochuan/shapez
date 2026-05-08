@@ -50,7 +50,7 @@ public:
     void Init();
     void Update();
     void Delete();
-    void Restore(int arg);
+    void Restore(int arg, std::shared_ptr<ItemEjector> from);
     void Promote();
     void LoadState();
     std::shared_ptr<Text> levelTxt;

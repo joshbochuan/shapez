@@ -131,22 +131,24 @@ void Tunnel::Update() {
         && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
     if (type == TunnelType::OUT) {
-        ejector->Update();
+        if (other == nullptr) {ejector->Update();}
         return;
     }
 
     acceptor->Update();
-    if (acceptor->item == nullptr) {return;}
-    if (acceptor->progress <= 1.0f) {return;}
     if (other == nullptr) {return;}
     if (other->ejector == nullptr) {throw std::invalid_argument("intunnel's other has no ejector");}
+    other->ejector->Update();
+    if (acceptor->item == nullptr) {return;}
+    if (acceptor->progress <= 1.0f) {return;}
+    if (other->ejector->item != nullptr) {return;}
     other->ejector->prep = acceptor->item;
     other->ejector->prepProgress = acceptor->progress;
     acceptor->RemoveItem();
     acceptor->progress = 0;
 }
 
-void Tunnel::Restore(int arg) {
+void Tunnel::Restore(int arg, std::shared_ptr<ItemEjector> from) {
     if (type == TunnelType::IN) {return;}
     if (other == nullptr) {return;}
 

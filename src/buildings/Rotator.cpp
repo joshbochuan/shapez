@@ -144,7 +144,8 @@ void Rotator::Update() {
     backupItem = nullptr;
     if ((cooldown >= 1)
         && (this->acceptor->item != nullptr)
-        && (this->acceptor->progress > 1)) {
+        && (this->acceptor->progress > 1)
+        && (ejector->item == nullptr)) {
         cooldown -= 1;
         backupItem = acceptor->item;
         if (type == RotatorType::ROTATE_CW) {
@@ -163,7 +164,7 @@ void Rotator::Update() {
     if (cooldown > 1) {cooldown = 1;}
 }
 
-void Rotator::Restore(int arg) {
+void Rotator::Restore(int arg, std::shared_ptr<ItemEjector> from) {
     std::cout << "called rotator restore\n";
     if (restored) {return;}
     restored = true;

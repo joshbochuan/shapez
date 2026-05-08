@@ -100,11 +100,11 @@ void ItemEjector::Restore(int arg) {
 
     if ((next != nullptr) && (next->item != nullptr)) {targetProgress = next->progress;}
     if (progress > targetProgress) {progress = targetProgress;}
-    master->Restore(arg);
+    master->Restore(arg, shared_from_this());
 }
 
 void ItemEjector::Promote() {
-    if ((item != nullptr) && (prep != nullptr)) {throw std::invalid_argument("ItemEjector cannot promote: " + prep->getCode() + ", " + item->getCode());}
+    if ((item != nullptr) && (prep != nullptr)) {throw std::invalid_argument("ItemEjector cannot promote: " + prep->getCode() + ", " + item->getCode() + ", " + std::to_string(prepProgress) + ", " + std::to_string(progress));}
     if (prep != nullptr) {
         SetItem(prep);
         prep = nullptr;

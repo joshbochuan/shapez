@@ -110,7 +110,7 @@ void Belt::Update() {
     }
 }
 
-void Belt::Restore(int arg) {
+void Belt::Restore(int arg, std::shared_ptr<ItemEjector> from) {
     if (restored) {return;}
     restored = true;
 

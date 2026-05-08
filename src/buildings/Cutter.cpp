@@ -122,29 +122,38 @@ void Cutter::Update() {
     ejectorB->Update();
     cooldown += rate * MULTIPLIER_PROCESS;
     backupItem = nullptr;
+    pushA = false;
+    pushB = false;
     if ((cooldown >= 1)
         && (acceptor->item != nullptr)
-        && (acceptor->progress >= 1)) {
-        backupItem = acceptor->item;
+        && (acceptor->progress > 1)) {
+
         auto res = Cut(std::dynamic_pointer_cast<Shape>(acceptor->item));
-        cooldown -= 1;
-        if (res.first != nullptr) {
-            ejectorA->prep = res.first;
-            ejectorA->prepProgress = acceptor->progress;
+        if (((res.first == nullptr) || (ejectorA->item == nullptr)) && ((res.second == nullptr) || (ejectorB->item == nullptr))) {
+            backupItem = acceptor->item;
+            cooldown -= 1;
+
+            if (res.first != nullptr) {
+                ejectorA->prep = res.first;
+                ejectorA->prepProgress = acceptor->progress;
+                pushA = true;
+            }
+            if (res.second != nullptr) {
+                ejectorB->prep = res.second;
+                ejectorB->prepProgress = acceptor->progress;
+                pushB = true;
+            }
+            acceptor->RemoveItem();
+            acceptor->progress = 0;
         }
-        if (res.second != nullptr) {
-            ejectorB->prep = res.second;
-            ejectorB->prepProgress = acceptor->progress;
-        }
-        acceptor->RemoveItem();
-        acceptor->progress = 0;
     }
     if (cooldown > 1) {cooldown = 1;}
 }
 
-void Cutter::Restore(int arg) {
-    std::cout << "called rotator restore\n";
+void Cutter::Restore(int arg, std::shared_ptr<ItemEjector> from) {
     if (restored) {return;}
+    if ((from == ejectorA) && (!pushA)) {return;}
+    if ((from == ejectorB) && (!pushB)) {return;}
     restored = true;
     if (backupItem != nullptr) {
         cooldown += 1;

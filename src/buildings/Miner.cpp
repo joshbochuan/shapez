@@ -175,7 +175,8 @@ void Miner::Update() {
     cooldown += rate * static_cast<float>(chainLen) * MULTIPLIER_MINE;
     if ((cooldown >= 1)
         && (product != nullptr)
-        && (next == nullptr)) {
+        && (next == nullptr)
+        && (ejector->item == nullptr)) {
         cooldown -= 1;
         ejector->prep = product->copy();
         ejector->prepProgress = 1;
@@ -219,7 +220,7 @@ int Miner::UpdateChainLen() {
     return chainLen;
 }
 
-void Miner::Restore(int arg) {
+void Miner::Restore(int arg, std::shared_ptr<ItemEjector> from) {
     restored = true;
     cooldown += 1;
     ejector->prep = nullptr;

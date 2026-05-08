@@ -65,7 +65,7 @@ void Trash::Update() {
     }
 }
 
-void Trash::Restore(int arg) {
+void Trash::Restore(int arg, std::shared_ptr<ItemEjector> from) {
     // ts shouldn't happen
     restored = true;
 }

@@ -147,26 +147,29 @@ void Balancer::Update() {
     // 2 in 1 out: takes input from prioritized input
     // 2 in 2 out: same side input goes to same side output
 
+    acceptorA->Update();
+    acceptorB->Update();
+    ejectorA->Update();
+    ejectorB->Update();
     std::shared_ptr<Item> item;
     float progress;
     const bool aA = acceptorA->item != nullptr && acceptorA->progress >= 1;
     const bool aB = acceptorB->item != nullptr && acceptorB->progress >= 1;
-    const bool eA = ejectorA->next!=nullptr;
-    const bool eB = ejectorB->next!=nullptr;
-    backupItemA = acceptorA->item;
-    backupItemB = acceptorB->item;
+    const bool eA = (ejectorA->next!=nullptr) && (ejectorA->item == nullptr);
+    const bool eB = (ejectorB->next!=nullptr) && (ejectorB->item == nullptr);
+    transferStates = (aA<<3) | (aB<<2) | (eA<<1) | (eB);
+
+    if ((!aA) && (!aB)) {return;}
+    if ((!eA) && (!eB)) {return;}
+
     if ((aA && aB) && (eA && eB)) { // 2 in 2 out
         ejectorA->prep = acceptorA->item;
-        ejectorA->AddChild(ejectorA->prep);
-        ejectorA->progress = acceptorA->progress-1;
-        acceptorA->RemoveChild(acceptorA->item);
-        acceptorA->item = nullptr;
-        acceptorA->progress = 0;
+        ejectorA->prepProgress = acceptorA->progress;
+        acceptorA->RemoveItem();
+        ejectorA->progress = 0;
         ejectorB->prep = acceptorB->item;
-        ejectorB->AddChild(ejectorB->prep);
-        ejectorB->progress = acceptorB->progress-1;
-        acceptorB->RemoveChild(acceptorB->item);
-        acceptorB->item = nullptr;
+        ejectorB->prepProgress = acceptorB->progress;
+        acceptorB->RemoveItem();
         acceptorB->progress = 0;
     }
     else if ((aA ^ aB) && (eA && eB)) {
@@ -261,13 +264,26 @@ void Balancer::Update() {
             ejectPriority = 0;
         }
     }
-    acceptorA->Update();
-    acceptorB->Update();
-    ejectorA->Update();
-    ejectorB->Update();
+
 }
 
-void Balancer::Restore(int arg) {
+void Balancer::Restore(int arg, std::shared_ptr<ItemEjector> from) {
+    if (!arg) {return;}
+    if (transferStates == 0b0000) {return;}
+    if (arg && (transferStates == 0b1111)) {
+        if (acceptPriority) {transferStates = 0b0111;}
+        else {transferStates = 0b1011;}
+    }
+    switch (transferStates) {
+        case 0b0111: break;
+        case 0b1011: break;
+        case 0b0101: break;
+        case 0b0110: break;
+        case 0b1001: break;
+        case 0b1010: break;
+        default: transferStates = 0b0000; break;
+    }
+
     restored = true;
     if (ejectorA->prep != nullptr) {
         ejectorA->RemoveChild(ejectorA->prep);
@@ -308,7 +324,6 @@ Splitter::Splitter(int x, int y, int r, bool mirrored)
     this->m_Transform.rotation = M_PI * 0.5 * static_cast<float>(r);
     this->SetDrawable(splitterTexture[mirrored]);
 
-    // cooking up a better X-index for 2-wide objects
     this->SetZIndex(62 + (x+y)%2);
 
     ejectPriority = 0;
@@ -332,6 +347,7 @@ std::shared_ptr<Machine> Splitter::fromSaveString(std::vector<std::string> prop)
     int ejectPriority = std::stoi(prop[5]);
     std::shared_ptr<Splitter> res = std::make_shared<Splitter>(x, y, r, mirrored);
     res->ejectPriority = ejectPriority;
+    res->lastEjectPriority = ejectPriority;
     return res;
 }
 
@@ -339,6 +355,10 @@ void Splitter::Init() {
     this->acceptor = std::make_shared<ItemAcceptor>(x, y, r);
     this->ejectorA = std::make_shared<ItemEjector>(x, y, r, shared_from_this());
     this->ejectorB = std::make_shared<ItemEjector>(x, y, (r+3 + 2*mirrored)%4, shared_from_this());
+
+    acceptor->Init();
+    ejectorA->Init();
+    ejectorB->Init();
 
     this->AddChild(this->acceptor);
     this->AddChild(this->ejectorA);
@@ -348,9 +368,6 @@ void Splitter::Init() {
     ejectorA->SetDrawable(Belt::beltOutTexture[0]);
 
     MapMachines[{x, y}] = shared_from_this();
-    acceptor->Init();
-    ejectorA->Init();
-    ejectorB->Init();
     MACHINE_COUNT++;
 }
 
@@ -383,51 +400,40 @@ void Splitter::Update() {
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)
         && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
-    const bool acceptorReady = acceptor->item!=nullptr && acceptor->progress>=1;
-    const bool eA = ejectorA->next!=nullptr;
-    const bool eB = ejectorB->next!=nullptr;
-    backupItem = nullptr;
+    acceptor->Update();
+    ejectorA->Update();
+    ejectorB->Update();
+    lastEjectPriority = ejectPriority;
+    const bool acceptorReady = acceptor->item!=nullptr && acceptor->progress>1;
+    const bool eA = (ejectorA->next!=nullptr) && (ejectorA->item == nullptr);
+    const bool eB = (ejectorB->next!=nullptr) && (ejectorB->item == nullptr);
     if (acceptorReady && (eA || eB)) {
         std::shared_ptr<Item> item = acceptor->item;
-        backupItem = item;
         float progress = acceptor->progress;
-        acceptor->RemoveChild(acceptor->item);
-        acceptor->item = nullptr;
+        acceptor->RemoveItem();
         acceptor->progress = 0;
         if ((ejectPriority || !eA) && eB) { // outputs to prioritized one (B)
             ejectorB->prep = item;
-            ejectorB->progress = progress-1;
-            ejectorB->AddChild(item);
+            ejectorB->prepProgress = progress;
             ejectPriority = 0;
         }
         else {
             ejectorA->prep = item;
-            ejectorA->progress = progress-1;
-            ejectorA->AddChild(item);
+            ejectorA->prepProgress = progress;
             ejectPriority = 1;
         }
         item = nullptr;
     }
-    acceptor->Update();
-    ejectorA->Update();
-    ejectorB->Update();
 }
 
-void Splitter::Restore(int arg) {
+void Splitter::Restore(int arg, std::shared_ptr<ItemEjector> from) {
+    if (restored) {return;}
+    if (from->prep == nullptr) {return;}
     restored = true;
-    if (ejectorA->prep != nullptr || ejectorB->prep != nullptr) {
-        acceptor->item = backupItem;
-        acceptor->progress = 1;
-        acceptor->Restore(arg);
-    }
-    if (ejectorA->prep != nullptr) {
-        ejectorA->RemoveChild(ejectorA->prep);
-        ejectorA->prep = nullptr;
-    }
-    if (ejectorB->prep != nullptr) {
-        ejectorB->RemoveChild(ejectorB->prep);
-        ejectorB->prep = nullptr;
-    }
+    acceptor->progress = 1;
+    acceptor->Restore(1);
+    acceptor->SetItem(from->prep);
+    from->prep = nullptr;
 }
 
 void Splitter::Promote() {
@@ -450,20 +456,10 @@ Merger::Merger(int x, int y, int r, bool mirrored)
     this->SetZIndex(62 + (x+y)%2);
 
     acceptPriority = 0;
+    lastAcceptPriority = 0;
 }
 
 std::string Merger::getSaveString() {
-    this->acceptorA = std::make_shared<ItemAcceptor>(x, y, r);
-    this->acceptorB = std::make_shared<ItemAcceptor>(x, y, (r+1 + 2*mirrored)%4);
-    this->ejector = std::make_shared<ItemEjector>(x, y, r, shared_from_this());
-
-    this->AddChild(this->acceptorA);
-    this->AddChild(this->acceptorB);
-    this->AddChild(this->ejector);
-
-    acceptorA->SetDrawable(Belt::beltInTexture[0]);
-    ejector->SetDrawable(Belt::beltOutTexture[0]);
-
     std::string res = "MERGER ";
     res += std::to_string(x) + " ";
     res += std::to_string(y) + " ";
@@ -481,14 +477,28 @@ std::shared_ptr<Machine> Merger::fromSaveString(std::vector<std::string> prop) {
     int acceptPriority = std::stoi(prop[5]);
     std::shared_ptr<Merger> res = std::make_shared<Merger>(x, y, r, mirrored);
     res->acceptPriority = acceptPriority;
+    res->lastAcceptPriority = acceptPriority;
     return res;
 }
 
 void Merger::Init() {
     MapMachines[{x, y}] = shared_from_this();
+
+    this->acceptorA = std::make_shared<ItemAcceptor>(x, y, r);
+    this->acceptorB = std::make_shared<ItemAcceptor>(x, y, (r+1 + 2*mirrored)%4);
+    this->ejector = std::make_shared<ItemEjector>(x, y, r, shared_from_this());
+
     acceptorA->Init();
     acceptorB->Init();
     ejector->Init();
+
+    acceptorA->SetDrawable(Belt::beltInTexture[0]);
+    ejector->SetDrawable(Belt::beltOutTexture[0]);
+
+    this->AddChild(this->acceptorA);
+    this->AddChild(this->acceptorB);
+    this->AddChild(this->ejector);
+
     MACHINE_COUNT++;
 }
 
@@ -521,9 +531,13 @@ void Merger::Update() {
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*192 < WINDOW_WIDTH>>1)
         && (std::abs(m_Transform.translation.y)-cam.scale.y*192 < WINDOW_HEIGHT>>1));
 
-    const bool ejectorReady = ejector->next != nullptr;
-    const bool aA = acceptorA->item!=nullptr && acceptorA->progress>=1;
-    const bool aB = acceptorB->item!=nullptr && acceptorB->progress>=1;
+    acceptorA->Update();
+    acceptorB->Update();
+    ejector->Update();
+    const bool ejectorReady = (ejector->next != nullptr) && (ejector->item == nullptr);
+    const bool aA = acceptorA->item!=nullptr && acceptorA->progress>1;
+    const bool aB = acceptorB->item!=nullptr && acceptorB->progress>1;
+    lastAcceptPriority = acceptPriority;
     if (ejectorReady && (aA || aB)) {
         std::shared_ptr<Item> item = nullptr;
         float progress = 0;
@@ -531,45 +545,38 @@ void Merger::Update() {
             item = acceptorB->item;
             progress = acceptorB->progress;
             acceptPriority = false;
-            acceptorB->RemoveChild(acceptorB->item);
-            acceptorB->item = nullptr;
+            acceptorB->RemoveItem();
             acceptorB->progress = 0;
         }
         else {
             item = acceptorA->item;
             progress = acceptorA->progress;
             acceptPriority = true;
-            acceptorA->RemoveChild(acceptorA->item);
-            acceptorA->item = nullptr;
+            acceptorA->RemoveItem();
             acceptorA->progress = 0;
         }
         ejector->prep = item;
-        ejector->progress = progress-1;
-        ejector->AddChild(item);
+        ejector->prepProgress = progress;
         item = nullptr;
     }
-    acceptorA->Update();
-    acceptorB->Update();
-    ejector->Update();
 }
 
-void Merger::Restore(int arg) {
+void Merger::Restore(int arg, std::shared_ptr<ItemEjector> from) {
+    if (restored) {return;}
     restored = true;
     if (ejector->prep != nullptr) {
         if (acceptPriority) { // previously taken priority 0, or A
-            acceptorA->item = ejector->prep;
             acceptorA->progress = 1;
-            acceptorA->AddChild(ejector->prep);
-            acceptorA->Restore(arg);
+            acceptorA->Restore(1);
+            acceptorA->SetItem(ejector->prep);
         }
         else {
-            acceptorB->item = ejector->item;
             acceptorB->progress = 1;
-            acceptorB->AddChild(ejector->item);
-            acceptorB->Restore(arg);
+            acceptorB->Restore(1);
+            acceptorB->SetItem(ejector->prep);
         }
-        ejector->RemoveChild(ejector->prep);
         ejector->prep = nullptr;
+        acceptPriority = lastAcceptPriority;
     }
 }
 

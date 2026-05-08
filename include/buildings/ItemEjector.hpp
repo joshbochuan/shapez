@@ -9,8 +9,10 @@
 #include "ItemAcceptor.hpp"
 #include "Machine.hpp"
 #include "../Opti/OptiObject.hpp"
+#include "Machine.hpp"
 
 class ItemAcceptor;
+class Machine;
 
 class ItemEjector: public OptiObject, public std::enable_shared_from_this<ItemEjector> {
 private:

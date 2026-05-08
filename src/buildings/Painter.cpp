@@ -132,6 +132,9 @@ void Painter::Update() {
     m_Visible = ((std::abs(m_Transform.translation.x)-cam.scale.x*384 < WINDOW_WIDTH>>1)
         && (std::abs(m_Transform.translation.y)-cam.scale.y*384 < WINDOW_HEIGHT>>1));
 
+    acceptorA->Update();
+    acceptorB->Update();
+    ejector->Update();
     cooldown += rate * MULTIPLIER_PAINT;
     backupItemA = nullptr;
     backupItemB = nullptr;
@@ -139,7 +142,8 @@ void Painter::Update() {
         && (acceptorA->item != nullptr)
         && (acceptorA->progress >= 1)
         && (acceptorB->item != nullptr)
-        && (acceptorB->progress >= 1)) {
+        && (acceptorB->progress >= 1)
+        && (ejector->item == nullptr)) {
         backupItemA = acceptorA->item;
         backupItemB = acceptorB->item;
         ejector->prep = Paint(
@@ -153,13 +157,9 @@ void Painter::Update() {
         cooldown -= 1;
         }
     if (cooldown > 1) {cooldown = 1;}
-
-    acceptorA->Update();
-    acceptorB->Update();
-    ejector->Update();
 }
 
-void Painter::Restore(int arg) {
+void Painter::Restore(int arg, std::shared_ptr<ItemEjector> from) {
     if (restored) {return;}
     restored = true;
     if (ejector->prep != nullptr) {
