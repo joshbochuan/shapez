@@ -177,9 +177,9 @@ void Miner::Update() {
         && (product != nullptr)
         && (next == nullptr)
         && (ejector->item == nullptr)) {
-        cooldown -= 1;
         ejector->prep = product->copy();
-        ejector->prepProgress = 1;
+        ejector->prepProgress = cooldown;
+        cooldown -= 1;
     }
     if (cooldown > 1) {cooldown = 1;}
 }

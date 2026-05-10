@@ -205,8 +205,9 @@ std::shared_ptr<Shape> GenerateRandomTarget(int seed, int level) {
     int colorMain = randomVal >> 3;
     colorMain = (colorMain % 6) + 1;
 
-    for (int i=0; i<layerCnt; i++) {
-        code = GenerateRandomLayer(seed, level, i, (i==missingQuarterLayer) && (level>=76), colorMain) + ":" + code;
+    code = GenerateRandomLayer(seed, level, 0, (0==missingQuarterLayer) && (level>=76), colorMain);
+    for (int i=1; i<layerCnt; i++) {
+        code += ":" + GenerateRandomLayer(seed, level, i, (i==missingQuarterLayer) && (level>=76), colorMain);
     }
     return std::make_shared<Shape>(code);
 }

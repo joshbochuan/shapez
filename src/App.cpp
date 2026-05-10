@@ -95,7 +95,6 @@ void App::Start() {
 
 void App::Update() {
     auto start = std::chrono::steady_clock::now();
-    std::cout << " --- new frame starts here ---\n";
     std::shared_ptr<Scene> nextScene = scene->Update();
     if (nextScene == nullptr || Util::Input::IfExit()) {
         m_CurrentState = State::END;

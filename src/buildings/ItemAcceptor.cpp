@@ -97,8 +97,21 @@ void ItemAcceptor::Restore(int arg) {
 }
 
 void ItemAcceptor::Promote() {
-    if ((item != nullptr) && (prep != nullptr)) {throw std::invalid_argument("ItemAcceptor cannot promote because its not properly restored");}
+    /*
+    if ((item != nullptr) && (prep != nullptr)) {
+        throw std::invalid_argument(
+        "ItemEjector at "
+            + std::to_string(x)
+            + " " + std::to_string(y)
+            + " cannot promote: "
+            + prep->getCode()
+            + ", " + item->getCode()
+            + ", " + std::to_string(prepProgress)
+            + ", " + std::to_string(progress));
+    }*/
+
     if (prep != nullptr) {
+        if (item != nullptr) {RemoveItem();}
         SetItem(prep);
         prep = nullptr;
         progress = prepProgress-1;

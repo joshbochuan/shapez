@@ -93,7 +93,8 @@ void Belt::Update() {
     // if item can be transferred from input slot to output slot
     if ((type == BeltType::FORWARD)
         && (acceptor->item != nullptr)
-        && (acceptor->progress > 1)) {
+        && (acceptor->progress > 1)
+        && (ejector->item == nullptr)) {
         ejector->prep = acceptor->item;
         ejector->prepProgress = acceptor->progress;
         acceptor->RemoveItem();
@@ -103,7 +104,8 @@ void Belt::Update() {
     // it goes from 0 to 0.75 to avoid irrational number shenanigans
     if ((type != BeltType::FORWARD)
         && (acceptor->item != nullptr)
-        && (acceptor->progress > 0.75)) {
+        && (acceptor->progress > 0.75)
+        && (ejector->item == nullptr)) {
         ejector->prep = acceptor->item;
         ejector->prepProgress = acceptor->progress + 0.5f;
         acceptor->RemoveItem();
@@ -122,7 +124,13 @@ void Belt::Restore(int arg, std::shared_ptr<ItemEjector> from) {
     }
 
     if ((arg == 0) && (type != BeltType::FORWARD) && (ejector->item == nullptr)) {return;}
-    if ((arg == 1) && (type == BeltType::FORWARD) && (ejector->prep == nullptr)) {return;}
+
+    if ((arg == 1) && (type == BeltType::FORWARD) && (ejector->prep == nullptr)) {
+        acceptor->progress = 1;
+        return;
+    }
+
+    if ((arg == 1) && (type == BeltType::FORWARD) && (ejector->prep == nullptr) && (acceptor->item == nullptr)) {return;}
 
     float targetProgress = ejector->progress;
     if (type != BeltType::FORWARD) {targetProgress = ejector->progress-0.5f;}

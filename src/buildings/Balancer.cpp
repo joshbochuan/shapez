@@ -9,6 +9,7 @@
 #include <complex>
 #include <iostream>
 #include "Util/Time.hpp"
+#include <bitset>
 using namespace World;
 
 Balancer::Balancer(int x, int y, int r)
@@ -37,6 +38,10 @@ Balancer::Balancer(int x, int y, int r)
 
     acceptPriority = 0;
     ejectPriority = 0;
+    lastAcceptPriority = 0;
+    lastEjectPriority = 0;
+    seenRestoreA = false;
+    seenRestoreB = false;
 }
 
 std::string Balancer::getSaveString() {
@@ -58,6 +63,8 @@ std::shared_ptr<Machine> Balancer::fromSaveString(std::vector<std::string> prop)
     std::shared_ptr<Balancer> res = std::make_shared<Balancer>(x, y, r);
     res->acceptPriority = acceptPriority;
     res->ejectPriority = ejectPriority;
+    res->lastAcceptPriority = acceptPriority;
+    res->lastEjectPriority = ejectPriority;
     return res;
 }
 
@@ -121,6 +128,8 @@ void Balancer::Delete() {
 
 void Balancer::Update() {
     restored = false;
+    seenRestoreA = false;
+    seenRestoreB = false;
 
     int frame = static_cast<int>(std::fmod(Util::Time::GetElapsedTimeMs()*0.042f*MULTIPLIER_BELT, 14.0f));
     acceptorA->SetDrawable(Belt::beltInTexture[frame]);
@@ -151,10 +160,12 @@ void Balancer::Update() {
     acceptorB->Update();
     ejectorA->Update();
     ejectorB->Update();
+    lastAcceptPriority = acceptPriority;
+    lastEjectPriority = ejectPriority;
     std::shared_ptr<Item> item;
     float progress;
-    const bool aA = acceptorA->item != nullptr && acceptorA->progress >= 1;
-    const bool aB = acceptorB->item != nullptr && acceptorB->progress >= 1;
+    const bool aA = (acceptorA->item != nullptr) && (acceptorA->progress > 1);
+    const bool aB = (acceptorB->item != nullptr) && (acceptorB->progress > 1);
     const bool eA = (ejectorA->next!=nullptr) && (ejectorA->item == nullptr);
     const bool eB = (ejectorB->next!=nullptr) && (ejectorB->item == nullptr);
     transferStates = (aA<<3) | (aB<<2) | (eA<<1) | (eB);
@@ -178,28 +189,24 @@ void Balancer::Update() {
             item = acceptorA->item;
             progress = acceptorA->progress;
             acceptPriority = 1;
-            acceptorA->RemoveChild(acceptorA->item);
-            acceptorA->item = nullptr;
+            acceptorA->RemoveItem();
             acceptorA->progress = 0;
         }
         else {
             item = acceptorB->item;
             progress = acceptorB->progress;
             acceptPriority = 0;
-            acceptorB->RemoveChild(acceptorB->item);
-            acceptorB->item = nullptr;
+            acceptorB->RemoveItem();
             acceptorB->progress = 0;
         }
         if (ejectPriority) { // outputs to prioritized one (B)
             ejectorB->prep = item;
-            ejectorB->progress = progress-1;
-            ejectorB->AddChild(item);
+            ejectorB->prepProgress = progress;
             ejectPriority = 0;
         }
         else {
             ejectorA->prep = item;
-            ejectorA->progress = progress-1;
-            ejectorA->AddChild(item);
+            ejectorA->prepProgress = progress;
             ejectPriority = 1;
         }
     }
@@ -209,28 +216,24 @@ void Balancer::Update() {
             item = acceptorB->item;
             progress = acceptorB->progress;
             acceptPriority = 0;
-            acceptorB->RemoveChild(acceptorB->item);
-            acceptorB->item = nullptr;
+            acceptorB->RemoveItem();
             acceptorB->progress = 0;
         }
         else {
             item = acceptorA->item;
             progress = acceptorA->progress;
             acceptPriority = 1;
-            acceptorA->RemoveChild(acceptorA->item);
-            acceptorA->item = nullptr;
+            acceptorA->RemoveItem();
             acceptorA->progress = 0;
         }
         if (eA) {
             ejectorA->prep = item;
-            ejectorA->progress = progress-1;
-            ejectorA->AddChild(item);
+            ejectorA->prepProgress = progress;
             ejectPriority = 1;
         }
         else {
             ejectorB->prep = item;
-            ejectorB->progress = progress-1;
-            ejectorB->AddChild(item);
+            ejectorB->prepProgress = progress;
             ejectPriority = 0;
         }
     }
@@ -239,28 +242,24 @@ void Balancer::Update() {
             item = acceptorA->item;
             progress = acceptorA->progress;
             acceptPriority = 1;
-            acceptorA->RemoveChild(acceptorA->item);
-            acceptorA->item = nullptr;
+            acceptorA->RemoveItem();
             acceptorA->progress = 0;
         }
         else {
             item = acceptorB->item;
             progress = acceptorB->progress;
             acceptPriority = 0;
-            acceptorB->RemoveChild(acceptorB->item);
-            acceptorB->item = nullptr;
+            acceptorB->RemoveItem();
             acceptorB->progress = 0;
         }
         if (eA) {
             ejectorA->prep = item;
-            ejectorA->progress = progress-1;
-            ejectorA->AddChild(item);
+            ejectorA->prepProgress = progress;
             ejectPriority = 1;
         }
         else {
             ejectorB->prep = item;
-            ejectorB->progress = progress-1;
-            ejectorB->AddChild(item);
+            ejectorB->prepProgress = progress;
             ejectPriority = 0;
         }
     }
@@ -268,43 +267,249 @@ void Balancer::Update() {
 }
 
 void Balancer::Restore(int arg, std::shared_ptr<ItemEjector> from) {
+    // ts is complicated af
     if (!arg) {return;}
-    if (transferStates == 0b0000) {return;}
-    if (arg && (transferStates == 0b1111)) {
-        if (acceptPriority) {transferStates = 0b0111;}
-        else {transferStates = 0b1011;}
-    }
-    switch (transferStates) {
-        case 0b0111: break;
-        case 0b1011: break;
-        case 0b0101: break;
-        case 0b0110: break;
-        case 0b1001: break;
-        case 0b1010: break;
-        default: transferStates = 0b0000; break;
-    }
+    if ((transferStates & 0b0011) == 0b0000) {return;} // no eject, no update
+    if ((transferStates & 0b1100) == 0b0000) {return;} // no accept, no update
+    if (restored) {return;}
 
-    restored = true;
-    if (ejectorA->prep != nullptr) {
-        ejectorA->RemoveChild(ejectorA->prep);
+    if (from == ejectorA) {seenRestoreA = true;}
+    if (from == ejectorB) {seenRestoreB = true;}
+    // std::cout << std::bitset<4>(transferStates) << std::endl;
+
+    if ((transferStates == 0b1111)
+        && (from == ejectorA)
+        && (ejectorA->prep != nullptr)
+        && (acceptPriority)
+        && (!ejectorB->restored)) {
+        transferStates = 0b0101; // change to B -> B, A gets put back
+        // std::cout << "goes to 0101\n";
+        acceptPriority = 0;
+        ejectPriority = 0;
+        acceptorA->progress = 1;
+        acceptorA->Restore(1);
+        acceptorA->SetItem(ejectorA->prep);
         ejectorA->prep = nullptr;
     }
-    if (ejectorB->prep != nullptr) {
-        ejectorB->RemoveChild(ejectorB->prep);
+    else if ((transferStates == 0b1111)
+        && (from == ejectorA)
+        && (ejectorA->prep != nullptr)
+        && (!acceptPriority)
+        && (!ejectorB->restored)) {
+        // std::cout << "goes to 1001\n";
+        transferStates = 0b1001;
+        acceptPriority = 1;
+        ejectPriority = 0;
+        acceptorB->progress = 1;
+        acceptorB->Restore(1);
+        acceptorB->SetItem(ejectorB->prep);
+        ejectorB->prep = ejectorA->prep;
+        ejectorB->prepProgress = ejectorA->prepProgress;
+        ejectorA->prep = nullptr;
+    }
+    else if ((transferStates == 0b1111)
+        && (from == ejectorB)
+        && (ejectorB->prep != nullptr)
+        && (acceptPriority)
+        && (!ejectorA->restored)) {
+        // std::cout << "goes to 0110\n";
+        transferStates = 0b0110;
+        acceptPriority = 0;
+        ejectPriority = 1;
+        acceptorA->progress = 1;
+        acceptorA->Restore(1);
+        acceptorA->SetItem(ejectorA->prep);
+        ejectorA->prep = ejectorB->prep;
+        ejectorA->prepProgress = ejectorB->prepProgress;
         ejectorB->prep = nullptr;
     }
-    if (backupItemA != nullptr) {
-        acceptorA->item = backupItemA;
-        AddChild(acceptorA);
-        acceptorA->progress = 1;
-        acceptorA->Restore(arg);
-    }
-    if (backupItemB != nullptr) {
-        acceptorB->item = backupItemB;
-        AddChild(acceptorB);
+    else if ((transferStates == 0b1111)
+        && (from == ejectorB)
+        && (ejectorB->prep != nullptr)
+        && (!acceptPriority)
+        && (!ejectorA->restored)) {
+        // std::cout << "goes to 1010\n";
+        transferStates = 0b1010;
+        acceptPriority = 1;
+        ejectPriority = 1;
         acceptorB->progress = 1;
-        acceptorB->Restore(arg);
+        acceptorB->Restore(1);
+        acceptorB->SetItem(ejectorB->prep);
+        ejectorB->prep = nullptr;
     }
+    else if ((from == ejectorA) && (transferStates == 0b1010) && (ejectorA->prep != nullptr)) {
+        transferStates = 0b0000;
+        restored = true;
+        acceptPriority = lastAcceptPriority;
+        ejectPriority = lastEjectPriority;
+        acceptorA->progress = 1;
+        acceptorA->Restore(1);
+        acceptorA->SetItem(ejectorA->prep);
+        ejectorA->prep = nullptr;
+    }
+    else if ((from == ejectorB) && (transferStates == 0b1001) && (ejectorB->prep != nullptr)) {
+        transferStates = 0b0000;
+        restored = true;
+        acceptPriority = lastAcceptPriority;
+        ejectPriority = lastEjectPriority;
+        acceptorA->progress = 1;
+        acceptorA->Restore(1);
+        acceptorA->SetItem(ejectorB->prep);
+        ejectorB->prep = nullptr;
+    }
+    else if ((from == ejectorA) && (transferStates == 0b0110) && (ejectorA->prep != nullptr)) {
+        transferStates = 0b0000;
+        restored = true;
+        acceptPriority = lastAcceptPriority;
+        ejectPriority = lastEjectPriority;
+        acceptorB->progress = 1;
+        acceptorB->Restore(1);
+        acceptorB->SetItem(ejectorA->prep);
+        ejectorA->prep = nullptr;
+    }
+    else if ((from == ejectorB) && (transferStates == 0b0101) && (ejectorB->prep != nullptr)) {
+        transferStates = 0b0000;
+        restored = true;
+        acceptPriority = lastAcceptPriority;
+        ejectPriority = lastEjectPriority;
+        acceptorB->progress = 1;
+        acceptorB->Restore(1);
+        acceptorB->SetItem(ejectorB->prep);
+        ejectorB->prep = nullptr;
+    }
+    else if ((from == ejectorB) && (transferStates == 0b1101) && (acceptPriority)) {
+        transferStates = 0b0000;
+        restored = true;
+        acceptPriority = lastAcceptPriority;
+        ejectPriority = lastEjectPriority;
+        acceptorA->progress = 1;
+        acceptorA->Restore(1);
+        acceptorA->SetItem(ejectorB->prep);
+        ejectorB->prep = nullptr;
+    }
+    else if ((from == ejectorB) && (transferStates == 0b1101) && (!acceptPriority)) {
+        transferStates = 0b0000;
+        restored = true;
+        acceptPriority = lastAcceptPriority;
+        ejectPriority = lastEjectPriority;
+        acceptorB->progress = 1;
+        acceptorB->Restore(1);
+        acceptorB->SetItem(ejectorB->prep);
+        ejectorB->prep = nullptr;
+    }
+    else if ((from == ejectorA) && (transferStates == 0b1110) && (acceptPriority)) {
+        transferStates = 0b0000;
+        restored = true;
+        acceptPriority = lastAcceptPriority;
+        ejectPriority = lastEjectPriority;
+        acceptorA->progress = 1;
+        acceptorA->Restore(1);
+        acceptorA->SetItem(ejectorA->prep);
+        ejectorA->prep = nullptr;
+    }
+    else if ((from == ejectorA) && (transferStates == 0b1110) && (!acceptPriority)) {
+        transferStates = 0b0000;
+        restored = true;
+        acceptPriority = lastAcceptPriority;
+        ejectPriority = lastEjectPriority;
+        acceptorB->progress = 1;
+        acceptorB->Restore(1);
+        acceptorB->SetItem(ejectorA->prep);
+        ejectorA->prep = nullptr;
+    }
+    else if ((transferStates == 0b0111) && (from == ejectorA) && (ejectorA->prep != nullptr) && (ejectPriority)) {
+        if (!ejectorB->restored) {
+            transferStates = 0b0101;
+            ejectPriority = 0;
+            ejectorB->prep = ejectorA->prep;
+            ejectorB->prepProgress = ejectorA->prepProgress;
+            ejectorA->prep = nullptr;
+            if (ejectorB->CheckConflict() || seenRestoreB) {
+                ejectorB->restored = false;
+                ejectorB->StartRestore();
+            }
+        }
+        else {
+            transferStates = 0b0000;
+            restored = true;
+            acceptPriority = lastAcceptPriority;
+            ejectPriority = lastEjectPriority;
+            acceptorB->progress = 1;
+            acceptorB->Restore(1);
+            acceptorB->SetItem(ejectorA->prep);
+            ejectorA->prep = nullptr;
+        }
+    }
+    else if ((transferStates == 0b0111) && (from == ejectorB) && (ejectorB->prep != nullptr) && (!ejectPriority)) {
+        if (!ejectorA->restored) {
+            transferStates = 0b0110;
+            ejectPriority = 1;
+            ejectorA->prep = ejectorB->prep;
+            ejectorA->prepProgress = ejectorB->prepProgress;
+            ejectorB->prep = nullptr;
+            if (ejectorA->CheckConflict() || seenRestoreA) {
+                ejectorA->restored = false;
+                ejectorA->StartRestore();
+            }
+        }
+        else {
+            transferStates = 0b0000;
+            restored = true;
+            acceptPriority = lastAcceptPriority;
+            ejectPriority = lastEjectPriority;
+            acceptorB->progress = 1;
+            acceptorB->Restore(1);
+            acceptorB->SetItem(ejectorB->prep);
+            ejectorB->prep = nullptr;
+        }
+    }
+    else if ((transferStates == 0b1011) && (from == ejectorA) && (ejectorA->prep != nullptr) && (ejectPriority)) {
+        if (!ejectorB->restored) {
+            transferStates = 0b1001;
+            ejectPriority = 0;
+            ejectorB->prep = ejectorA->prep;
+            ejectorB->prepProgress = ejectorA->prepProgress;
+            ejectorA->prep = nullptr;
+            if (ejectorB->CheckConflict()) {
+                ejectorB->restored = false;
+                ejectorB->StartRestore();
+            }
+        }
+        else {
+            transferStates = 0b0000;
+            restored = true;
+            acceptPriority = lastAcceptPriority;
+            ejectPriority = lastEjectPriority;
+            acceptorA->progress = 1;
+            acceptorA->Restore(1);
+            acceptorA->SetItem(ejectorA->prep);
+            ejectorA->prep = nullptr;
+        }
+    }
+    else if ((transferStates == 0b1011) && (from == ejectorB) && (ejectorB->prep != nullptr) && (!ejectPriority)) {
+        if (!ejectorA->restored) {
+            transferStates = 0b1010;
+            ejectPriority = 1;
+            ejectorA->prep = ejectorB->prep;
+            ejectorA->prepProgress = ejectorB->prepProgress;
+            ejectorB->prep = nullptr;
+            if (ejectorA->CheckConflict()) {
+                ejectorA->restored = false;
+                ejectorA->StartRestore();
+            }
+        }
+        else {
+            transferStates = 0b0000;
+            restored = true;
+            acceptPriority = lastAcceptPriority;
+            ejectPriority = lastEjectPriority;
+            acceptorA->progress = 1;
+            acceptorA->Restore(1);
+            acceptorA->SetItem(ejectorB->prep);
+            ejectorB->prep = nullptr;
+        }
+    }
+    else {restored = true;}
 }
 
 void Balancer::Promote() {

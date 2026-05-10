@@ -66,6 +66,41 @@ void UpdateMachines(
     wg.Wait();
 }
 
+void PromoteMachines(
+    ThreadPool& pool,
+    std::vector<std::shared_ptr<Machine>>& LstMachines)
+{
+    int total = (int)LstMachines.size();
+    int numThreads = pool.size();
+    int chunkSize = (total + numThreads - 1) / numThreads;
+
+    WaitGroup wg;
+
+    for (int t = 0; t < numThreads; ++t) {
+        int start = t * chunkSize;
+        int end = std::min(start + chunkSize, total);
+        if (start >= total) break;
+
+        wg.Add(1);
+
+        pool.Enqueue([start, end, &LstMachines, &wg]() {
+            try {
+                for (int i = start; i < end; ++i) {
+                    if (LstMachines[i]) {
+                        LstMachines[i]->Promote();
+                    }
+                }
+            } catch (...) {
+                // log if needed
+            }
+
+            wg.Done();
+        });
+    }
+
+    wg.Wait();
+}
+
 void UpdateTransferrers(
     ThreadPool& pool,
     std::vector<std::shared_ptr<ItemEjector>>& LstEjectors)
@@ -117,10 +152,11 @@ void World::UpdateWorld() {
         chunk->Update();
     }
     hub->Update();
-    // UpdateMachines(pool, LstMachines);
+    UpdateMachines(pool, LstMachines);
+    /*
     for (auto& machine: LstMachines) {
         machine->Update();
-    }
+    }*/
 
     std::vector<std::shared_ptr<ItemAcceptor>> acceptorConflicts;
     std::vector<std::shared_ptr<ItemEjector>> ejectorConflicts;
@@ -137,7 +173,8 @@ void World::UpdateWorld() {
     }
 
     hub->Promote();
-    for (auto& machine: LstMachines) {machine->Promote();}
+    PromoteMachines(pool, LstMachines);
+    // for (auto& machine: LstMachines) {machine->Promote();}
     // UpdateTransferrers(pool, LstEjectors); // moving items from ejectors to acceptors
 }
 

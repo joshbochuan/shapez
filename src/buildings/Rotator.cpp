@@ -165,7 +165,6 @@ void Rotator::Update() {
 }
 
 void Rotator::Restore(int arg, std::shared_ptr<ItemEjector> from) {
-    std::cout << "called rotator restore\n";
     if (restored) {return;}
     restored = true;
     if (backupItem != nullptr) {

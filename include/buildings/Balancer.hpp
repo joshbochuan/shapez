@@ -13,6 +13,8 @@
 class Balancer: public Machine {
 public:
     int acceptPriority, ejectPriority;
+    int lastAcceptPriority, lastEjectPriority;
+    bool seenRestoreA, seenRestoreB;
     static inline std::shared_ptr<OptiImage> balancerTexture;
     std::shared_ptr<ItemAcceptor> acceptorA, acceptorB;
     std::shared_ptr<ItemEjector> ejectorA, ejectorB;

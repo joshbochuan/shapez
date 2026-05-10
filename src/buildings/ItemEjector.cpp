@@ -89,6 +89,7 @@ bool ItemEjector::CheckConflict() {
 }
 
 void ItemEjector::StartRestore() {
+    // std::cout << "start ejector restore at " << x << " " << y << std::endl;
     Restore(1);
 }
 
@@ -104,8 +105,21 @@ void ItemEjector::Restore(int arg) {
 }
 
 void ItemEjector::Promote() {
-    if ((item != nullptr) && (prep != nullptr)) {throw std::invalid_argument("ItemEjector cannot promote: " + prep->getCode() + ", " + item->getCode() + ", " + std::to_string(prepProgress) + ", " + std::to_string(progress));}
+    /*
+    if ((item != nullptr) && (prep != nullptr)) {
+        throw std::invalid_argument(
+        "ItemEjector at "
+            + std::to_string(x)
+            + " " + std::to_string(y)
+            + " cannot promote: "
+            + prep->getCode()
+            + ", " + item->getCode()
+            + ", " + std::to_string(prepProgress)
+            + ", " + std::to_string(progress));
+    }
+    */
     if (prep != nullptr) {
+        if (item != nullptr) {RemoveItem();}
         SetItem(prep);
         prep = nullptr;
         progress = prepProgress-1;
