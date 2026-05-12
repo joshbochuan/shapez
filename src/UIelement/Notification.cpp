@@ -12,7 +12,7 @@ Notification::Notification(std::string text, std::shared_ptr<Util::Image> symbol
     SetZIndex(98);
     m_Transform.scale = {windowPercent, windowPercent};
     m_Transform.translation.x = -25.0f * windowPercent + (WINDOW_WIDTH >> 1);
-    m_Transform.translation.y = 100.0f * windowPercent - (WINDOW_HEIGHT >> 1);
+    m_Transform.translation.y = 200.0f * windowPercent - (WINDOW_HEIGHT >> 1);
     this->text = std::make_shared<Text>(text, 32, Util::Color::FromRGB(255, 255, 255));
     this->text->SetPivot({-0.5f * this->text->m_Text->GetSize().x, -0.05f * this->text->m_Text->GetSize().y});
     this->text->m_Transform.translation.x = m_Transform.translation.x - m_Transform.scale.x * 450.0f;

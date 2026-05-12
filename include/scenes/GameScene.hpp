@@ -46,6 +46,8 @@ public:
     std::vector<std::shared_ptr<Button>> buttons;
     std::shared_ptr<Button> pauseButton, saveButton, upgradeButton;
     std::shared_ptr<Scene> subScene = nullptr;
+    std::shared_ptr<Text> tickRateText, TickTimeText, fpsText, versionText;
+    bool toggleDebug = false; // shows fps
     GameScene();
     std::shared_ptr<Scene> Update();
 };

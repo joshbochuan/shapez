@@ -113,6 +113,8 @@ namespace World {
     inline float PAINT_RATE = 0.334/FPS_CAP;
     inline float MIX_RATE = 0.4/FPS_CAP;
 
+    inline float MSPT = 16.666;
+
     inline bool DOES_WORLD_TICK = true;
 
     enum class UpgradeType {

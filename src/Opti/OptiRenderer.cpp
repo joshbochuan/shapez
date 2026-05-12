@@ -33,7 +33,6 @@ void OptiRenderer::AddChildren(
 
 void OptiRenderer::Update(ThreadPool& pool) {
     unsigned int numThreads = pool.size();
-    if (numThreads > 12) {numThreads = 12;}
 
     size_t total = m_Children.size();
     size_t chunkSize = (total + numThreads - 1) / numThreads;

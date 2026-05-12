@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(shapez)
 
+set(APP_VERSION "v0.2")
+set(APP_ENV "debug")
+
 # let claude cook
 # Suppress the policy version check for subdirectories
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
@@ -34,6 +37,17 @@ list(TRANSFORM INCLUDE_FILES PREPEND ${INCLUDE_DIR}/)
 
 # file(GLOB_RECURSE SRC_FILES src/*)
 # file(GLOB_RECURSE HEADER_FILES include/*)
+
+# CMakeLists.txt
+execute_process(
+        COMMAND git rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_COMMIT_HASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+configure_file(src/version.h.in ${CMAKE_BINARY_DIR}/generated/version.h)
+include_directories(${CMAKE_BINARY_DIR}/generated)
 
 add_executable(${PROJECT_NAME}
     ${SRC_DIR}/main.cpp

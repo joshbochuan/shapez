@@ -28,10 +28,14 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <iomanip>
+#include <sstream>
 #include <vector>
+#include "version.h"
 
 #include "scenes/PauseScene.hpp"
 #include "scenes/UpgradeScene.hpp"
+#include "Util/Time.hpp"
 using namespace World;
 
 void GameScene::UserMoveCamera() {
@@ -489,6 +493,42 @@ GameScene::GameScene() {
     upgradeButton->Update();
     AddChild(upgradeButton);
 
+    tickRateText = std::make_shared<Text>("Tickrate: " + std::to_string(FPS_CAP), 28, Util::Color::FromRGB(255, 255, 255));
+    tickRateText->SetPivot({0.5 * tickRateText->m_Text->GetSize().x, 0});
+    tickRateText->m_Transform.scale = {windowPercent, windowPercent};
+    tickRateText->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 10.0f * windowPercent;
+    tickRateText->m_Transform.translation.y = 120.0f * windowPercent - (WINDOW_HEIGHT >> 1);
+    tickRateText->SetVisible(false);
+    tickRateText->SetZIndex(91);
+    AddChild(tickRateText);
+
+    TickTimeText = std::make_shared<Text>("Tick: 0ms", 28, Util::Color::FromRGB(255, 255, 255));
+    TickTimeText->SetPivot({0.5 * TickTimeText->m_Text->GetSize().x, 0});
+    TickTimeText->m_Transform.scale = {windowPercent, windowPercent};
+    TickTimeText->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 10.0f * windowPercent;
+    TickTimeText->m_Transform.translation.y = 90.0f * windowPercent - (WINDOW_HEIGHT >> 1);
+    TickTimeText->SetVisible(false);
+    TickTimeText->SetZIndex(91);
+    AddChild(TickTimeText);
+
+    fpsText = std::make_shared<Text>("FPS: 0 (0 ms)", 28, Util::Color::FromRGB(255, 255, 255));
+    fpsText->SetPivot({0.5 * fpsText->m_Text->GetSize().x, 0});
+    fpsText->m_Transform.scale = {windowPercent, windowPercent};
+    fpsText->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 10.0f * windowPercent;
+    fpsText->m_Transform.translation.y = 60.0f * windowPercent - (WINDOW_HEIGHT >> 1);
+    fpsText->SetVisible(false);
+    fpsText->SetZIndex(91);
+    AddChild(fpsText);
+
+    versionText = std::make_shared<Text>(APP_VERSION " @ " APP_ENV " @ " GIT_HASH, 28, Util::Color::FromRGB(255, 255, 255));
+    versionText->SetPivot({0.5 * versionText->m_Text->GetSize().x, 0});
+    versionText->m_Transform.scale = {windowPercent, windowPercent};
+    versionText->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 10.0f * windowPercent;
+    versionText->m_Transform.translation.y = 30.0f * windowPercent - (WINDOW_HEIGHT >> 1);
+    versionText->SetVisible(false);
+    versionText->SetZIndex(91);
+    AddChild(versionText);
+
     shapezBGM->Play();
 }
 
@@ -512,6 +552,26 @@ std::shared_ptr<Scene> GameScene::Update() {
         RemoveChild(notification);
         notification = nullptr;
     }
+
+    // update debug info
+    // im too lazy to put a dedicated timer to update debug info so im using this
+    if (!(saveCooldown % 120)) {
+        std::ostringstream fps_ss;
+        fps_ss << "FPS: " << static_cast<int>(1000.0f / Util::Time::GetDeltaTimeMs())
+               << " (" << std::fixed << std::setprecision(2) << Util::Time::GetDeltaTimeMs() << " ms)";
+        fpsText->m_Text->SetText(fps_ss.str());
+        fpsText->SetPivot({0.5 * fpsText->m_Text->GetSize().x, 0});
+
+        std::ostringstream tick_ss;
+        tick_ss << "Tick: " << std::fixed << std::setprecision(3) << MSPT << "ms";
+        TickTimeText->m_Text->SetText(tick_ss.str());
+        TickTimeText->SetPivot({0.5f * TickTimeText->m_Text->GetSize().x, 0});
+    }
+    if (Util::Input::IsKeyUp(Util::Keycode::F4)) {toggleDebug = !toggleDebug;}
+    tickRateText->SetVisible(toggleDebug);
+    fpsText->SetVisible(toggleDebug);
+    TickTimeText->SetVisible(toggleDebug);
+    versionText->SetVisible(toggleDebug);
 
     if (subScene != nullptr) {
         auto next = subScene->Update();
