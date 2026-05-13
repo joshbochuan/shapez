@@ -97,117 +97,86 @@ void Hub::Delete() {
     }
 }
 
-std::string GenerateRandomLayer(int seed, int level, int layer, bool hasMissingPiece, int colorMain) {
-    bool hasUncolored = (level >= 36);
-    int randomVal = pseudo_random(seed, level, layer);
+std::string GenerateRandomLayer(
+    int seed,
+    int level,
+    int layer,
+    std::vector<std::vector<int>> symmetry,
+    std::vector<std::string> shapeSet,
+    std::vector<std::string> colorSet,
+    bool hasMissingCorner) {
 
-    // each color main takes 6 bits
-    // int colorMain = (0b111111 & (randomVal >> 0));
-    int colorNeighborA = (0b111111 & (randomVal >> 8));
-    int colorNeighborB = (0b111111 & (randomVal >> 16));
-    // each shape takes 2 bits
-    int shapeA = (0b11 & (randomVal >> 6));
-    int shapeB = (0b11 & (randomVal >> 14));
-    int shapeC = (0b11 & (randomVal >> 22));
+    int rng = pseudo_random(seed, level, layer);
 
-    if (hasUncolored) {colorMain = colorMain % 8;}
-    else {colorMain = (colorMain % 7) + 1;}
+    std::vector<std::string> colors;
+    colors.push_back(colorSet[rng % colorSet.size()]);
+    colors.push_back(colorSet[(rng>>2) % colorSet.size()]);
+    colors.push_back(colorSet[(rng>>4) % colorSet.size()]);
 
-    std::vector<std::vector<int>> neighbors = {
-        {0b100, 0b010, 0b001}, // 0b000
-        {0b101, 0b011, 0b000}, // 0b001
-        {0b110, 0b011, 0b000}, // 0b010
-        {0b111, 0b001, 0b010}, // 0b011
-        {0b110, 0b101, 0b000}, // 0b100
-        {0b001, 0b111, 0b100}, // 0b101
-        {0b010, 0b100, 0b111}, // 0b110
-        {0b011, 0b101, 0b110} // 0b111
-    };
+    std::vector<std::string> shapes;
+    shapes.push_back(shapeSet[(rng>>6) % shapeSet.size()]);
+    shapes.push_back(shapeSet[(rng>>8) % shapeSet.size()]);
+    shapes.push_back(shapeSet[(rng>>10) % shapeSet.size()]);
 
-    int colorA = neighbors[colorMain][colorNeighborA % 3];
-    if ((colorA == 0) && (!hasUncolored)) {colorA = neighbors[colorMain][colorNeighborA % 2];}
-    int colorB = neighbors[colorMain][colorNeighborB % 3];
-    if ((colorB == 0) && (!hasUncolored)) {colorB = neighbors[colorMain][colorNeighborB % 2];}
-
-    int missingQuarter = 3 & (randomVal >> 24);
-    int symmetryProp = 3 & (randomVal >> 26);
-    bool symmetryType = 1 & (randomVal >> 28);
-
-    if (((shapeA == 3) || (shapeC == 3)) && (symmetryProp < 2)) {
-        symmetryType = true;
-    }
-
-    std::string shapes = "CRSW";
-    std::string colors = "ubgcrpyw";
     std::vector<std::string> quads = {"--", "--", "--", "--"};
-    if (symmetryType) {
-        quads[0] = shapes[shapeC];
-        quads[0] += colors[colorMain];
-        quads[1] = shapes[shapeA];
-        quads[1] += colors[colorA];
-        quads[2] = shapes[shapeC];
-        quads[2] += colors[colorMain];
-        quads[3] = shapes[shapeA];
-        quads[3] += colors[colorA];
+
+    for (int i=0; i<symmetry.size(); i++) {
+        for (int j=0; j<symmetry[i].size(); j++) {
+            quads[symmetry[i][j]] = shapes[i] + colors[i];
+        }
     }
-    else if (symmetryProp == 0) {
-        quads[0] = shapes[shapeC];
-        quads[0] += colors[colorMain];
-        quads[1] = shapes[shapeC];
-        quads[1] += colors[colorMain];
-        quads[2] = shapes[shapeA];
-        quads[2] += colors[colorA];
-        quads[3] = shapes[shapeA];
-        quads[3] += colors[colorA];
-    }
-    else if (symmetryProp == 1) {
-        quads[0] = shapes[shapeA];
-        quads[0] += colors[colorA];
-        quads[1] = shapes[shapeC];
-        quads[1] += colors[colorMain];
-        quads[2] = shapes[shapeC];
-        quads[2] += colors[colorMain];
-        quads[3] = shapes[shapeA];
-        quads[3] += colors[colorA];
-    }
-    else if (symmetryProp == 2) {
-        quads[0] = shapes[shapeC];
-        quads[0] += colors[colorMain];
-        quads[1] = shapes[shapeA];
-        quads[1] += colors[colorA];
-        quads[2] = shapes[shapeC];
-        quads[2] += colors[colorMain];
-        quads[3] = shapes[shapeB];
-        quads[3] += colors[colorB];
-    }
-    else if (symmetryProp == 3) {
-        quads[0] = shapes[shapeA];
-        quads[0] += colors[colorA];
-        quads[1] = shapes[shapeC];
-        quads[1] += colors[colorMain];
-        quads[2] = shapes[shapeB];
-        quads[2] += colors[colorB];
-        quads[3] = shapes[shapeC];
-        quads[3] += colors[colorMain];
-    }
-    if (hasMissingPiece && missingQuarter < 4) {quads[missingQuarter] = "--";}
-    return quads[0] + quads[1] + quads[2] + quads[3];
+
+    if (hasMissingCorner) {quads[((rng>>12)%4)] = "--";}
+
+    std::string res = quads[0] + quads[1] + quads[2] + quads[3];
+    return res;
 }
 
 std::shared_ptr<Shape> GenerateRandomTarget(int seed, int level) {
-    int layerCnt = 2;
-    if (level >= 76) {layerCnt = 4;}
-    else if (level >= 51) {layerCnt = 3;}
+    int symmetryRNG = pseudo_random(seed, level, 0);
+    int missingQRNG = pseudo_random(seed, level, -1);
+    int colorSetRNG = pseudo_random(seed, level, -2);
+    int layerCnt = std::clamp(level / 25, 2, 4);
+    int missingQuarterLayer = -1;
+    if ((level > 75) && (static_cast<double>(missingQRNG) / 2147483647.0 > 0.95)) {missingQuarterLayer = missingQRNG % 4;}
 
-    std::string code = "";
-    int randomVal = pseudo_random(seed, level, 0);
-    int missingQuarterLayer = randomVal % 8;
-    int colorMain = randomVal >> 3;
-    colorMain = (colorMain % 6) + 1;
+    std::vector<std::vector<int>> symmetry;
+    double doubleSymmetryRNG = static_cast<double>(symmetryRNG) / 2147483647.0;
+    if (doubleSymmetryRNG < 0.5) {symmetry = {{0, 2}, {1, 3}};}
+    else if (doubleSymmetryRNG < 0.375) {symmetry = {{0, 1}, {2, 3}};}
+    else if (doubleSymmetryRNG < 0.25) {symmetry = {{0, 3}, {1, 2}};}
+    else if (doubleSymmetryRNG < 0.125) {symmetry = {{0}, {2}, {1, 3}};}
+    else {symmetry = {{1}, {3}, {0, 2}};}
 
-    code = GenerateRandomLayer(seed, level, 0, (0==missingQuarterLayer) && (level>=76), colorMain);
+    std::vector<std::string> universalColorSet = {"r", "y", "g", "c", "b", "p"};
+    std::vector<std::string> colorSet;
+    int colorSetIdx = colorSetRNG % 6;
+    colorSet.push_back(universalColorSet[colorSetIdx]);
+    colorSet.push_back(universalColorSet[(colorSetIdx+1)%6]);
+    colorSet.push_back(universalColorSet[(colorSetIdx+2)%6]);
+    if ((level > 35) && (static_cast<double>(colorSetRNG) / 2147483647.0 > 0.5)) {colorSet.emplace_back("u");}
+    else {colorSet.emplace_back("w");}
+
+    std::vector<std::string> shapeSet = {"C", "R", "S"};
+    if (static_cast<double>(symmetryRNG) / 2147483647.0 < 0.5) {shapeSet.emplace_back("W");}
+
+    std::string code = GenerateRandomLayer(
+        seed,
+        level,
+        0,
+        symmetry,
+        shapeSet,
+        colorSet,
+        (missingQuarterLayer == 0));
     for (int i=1; i<layerCnt; i++) {
-        code += ":" + GenerateRandomLayer(seed, level, i, (i==missingQuarterLayer) && (level>=76), colorMain);
+        code += ":" + GenerateRandomLayer(
+            seed,
+            level,
+            i,
+            symmetry,
+            shapeSet,
+            colorSet,
+            (missingQuarterLayer == i));
     }
     return std::make_shared<Shape>(code);
 }
