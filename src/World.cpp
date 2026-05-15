@@ -383,7 +383,7 @@ std::string World::CreateWorld(std::string baseName) {
     CREATION_TIME = std::chrono::duration_cast<std::chrono::seconds>(
                       std::chrono::system_clock::now().time_since_epoch()
                   ).count();
-
+    LAST_PLAYED_AT = CREATION_TIME;
     SaveWorld("../Saves/" + WORLD_NAME + ".txt");
     LoadWorld("../Saves/" + WORLD_NAME + ".txt");
     return WORLD_NAME;
