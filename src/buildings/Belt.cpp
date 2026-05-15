@@ -125,7 +125,10 @@ void Belt::Restore(int arg, std::shared_ptr<ItemEjector> from) {
 
     if ((arg == 0) && (type != BeltType::FORWARD) && (ejector->item == nullptr)) {return;}
 
-    if ((arg == 1) && (type == BeltType::FORWARD) && (ejector->prep == nullptr)) {
+    if ((arg == 1)
+        && (type == BeltType::FORWARD)
+        && (ejector->prep == nullptr)
+        && (acceptor->progress > 1)) {
         acceptor->progress = 1;
         return;
     }
@@ -142,7 +145,7 @@ void Belt::Restore(int arg, std::shared_ptr<ItemEjector> from) {
     }
 
     if ((arg == 1) && (type == BeltType::FORWARD)) {
-        acceptor->progress = 1;
+        if (acceptor->progress > 1) {acceptor->progress = 1;}
         acceptor->Restore(1);
         if (ejector->prep != nullptr) {acceptor->SetItem(ejector->prep);}
         ejector->prep = nullptr;
