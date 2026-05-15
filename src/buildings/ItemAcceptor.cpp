@@ -89,11 +89,13 @@ void ItemAcceptor::Restore(int arg) {
     if (restored) {return;}
     restored = true;
     if (prev == nullptr) {return;}
-    prev->Restore(arg);
     if (arg && (prep != nullptr)) {
         prev->SetItem(prep);
+        prev->progress = prepProgress;
         prep = nullptr;
     }
+    prev->Restore(arg);
+
 }
 
 void ItemAcceptor::Promote() {
