@@ -40,6 +40,8 @@ void App::Start() {
     GetModuleFileNameA(nullptr, exePath, MAX_PATH);
     std::filesystem::current_path(std::filesystem::path(exePath).parent_path());
 
+    SDL_StopTextInput();
+
     AssetLoader::loadAudio();
     AssetLoader::loadTextures();
 
