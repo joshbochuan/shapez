@@ -299,7 +299,7 @@ TitleScene::TitleScene() {
     cam.translation = glm::vec2(0, 0);
     ClearWorld();
     WORLD_NAME = "title";
-    // LoadWorld("../Resources/title.txt");
+    LoadWorld("../Resources/title.txt");
 
     blur = std::make_shared<OptiObject>();
     blur->SetDrawable(std::make_shared<Util::Image>("../Resources/1px/blur.png"));
