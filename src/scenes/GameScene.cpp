@@ -395,6 +395,39 @@ void GameScene::UserRemoveMachine(int mouseX, int mouseY) {
     MachineToRemove = nullptr;
 }
 
+BeltPlannerPreview::BeltPlannerPreview(int x, int y, int r, BeltType type) {
+    this->x = x;
+    this->y = y;
+    this->r = r;
+    this->type = type;
+
+    SetDrawable(lineTexture);
+    SetZIndex(81);
+    m_Transform.translation.x = (((192.0f*(0.5f+x)) - cam.translation.x) * cam.scale.x);
+    m_Transform.translation.y = (((192.0f*(0.5f+y)) - cam.translation.y) * cam.scale.y);
+    m_Transform.scale.x = cam.scale.x * 60.0f;
+    m_Transform.scale.y = cam.scale.y * 192.0f;
+    m_Transform.rotation = M_PI * 0.5f * static_cast<float>(r);
+    SetPivot({0, 0.34375});
+
+    arrow = std::make_shared<OptiObject>();
+    arrow->SetDrawable(arrowTexture);
+    arrow->m_Transform.scale = cam.scale;
+    arrow->m_Transform.rotation = m_Transform.rotation;
+    arrow->m_Transform.translation = m_Transform.translation;
+    arrow->SetZIndex(82);
+    AddChild(arrow);
+
+    const float arrowDelta = 192.0f * (std::fmod(Util::Time::GetElapsedTimeMs() * 0.002f, 1)-1.0f);
+    switch (r) {
+        case 0: arrow->m_Transform.translation.y += cam.scale.y * arrowDelta; break;
+        case 1: arrow->m_Transform.translation.x -= cam.scale.x * arrowDelta; break;
+        case 2: arrow->m_Transform.translation.y -= cam.scale.y * arrowDelta; break;
+        case 3: arrow->m_Transform.translation.x += cam.scale.x * arrowDelta; break;
+        default: break;
+    }
+}
+
 GameScene::GameScene() {
     lastMousePos = Util::Input::GetCursorPosition();
     glm::vec2 windowPercentVec = {1, 1}; // the window size compared to 1440p
@@ -542,6 +575,16 @@ GameScene::GameScene() {
     versionText->SetZIndex(91);
     AddChild(versionText);
 
+    beltPlannerStart = std::make_shared<OptiObject>();
+    beltPlannerStart->SetDrawable(std::make_shared<OptiImage>("../Resources/sprites/blueprints/belt_planner_96px.png"));
+    beltPlannerStart->SetZIndex(84);
+    AddChild(beltPlannerStart);
+
+    beltPlannerEnd = std::make_shared<OptiObject>();
+    beltPlannerEnd->SetDrawable(std::make_shared<OptiImage>("../Resources/sprites/blueprints/belt_planner_60px.png"));
+    beltPlannerEnd->SetZIndex(83);
+    AddChild(beltPlannerEnd);
+
     shapezBGM->Play();
 }
 
@@ -599,10 +642,20 @@ std::shared_ptr<Scene> GameScene::Update() {
         return shared_from_this();
     }
     else if (upgradeButton->released && (LEVEL >= UPGRADE_LEVEL)) {
+        for (auto& btn : buttons) {btn->selected = false;}
+        heldMachine = MachineName::NONE;
+        heldR = 0;
+        heldPreview->SetVisible(false);
+
         subScene = std::make_shared<UpgradeScene>();
         AddChild(subScene);
     }
     else if (pauseButton->released) {
+        for (auto& btn : buttons) {btn->selected = false;}
+        heldMachine = MachineName::NONE;
+        heldR = 0;
+        heldPreview->SetVisible(false);
+
         long long time = std::chrono::duration_cast<std::chrono::seconds>(
                       std::chrono::system_clock::now().time_since_epoch()
                   ).count();
@@ -637,8 +690,40 @@ std::shared_ptr<Scene> GameScene::Update() {
     int mouseX = std::floor((((Util::Input::GetCursorPosition().x / cam.scale.x) + cam.translation.x))/192.0f);
     int mouseY = std::floor((((Util::Input::GetCursorPosition().y / cam.scale.y) + cam.translation.y))/192.0f);
 
+    if (Util::Input::IsKeyPressed(Util::Keycode::LSHIFT)
+        && (heldMachine == MachineName::BELT)
+        && (!beltPlannerOn)) {
+        beltPlannerOn = true;
+        heldPreview->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/blueprints/belt_planner_50px.png"));
+        }
+    if (beltStartX == mouseX && beltStartY == mouseY) {beltPreferenceSet = false;}
+    if (beltPlannerOn && (!beltPreferenceSet)) {
+        if (beltStartX != mouseX) {
+            beltPrefersXAxis = true;
+            beltPreferenceSet = true;
+        }
+        else if (beltStartY != mouseY) {
+            beltPrefersXAxis = false;
+            beltPreferenceSet = true;
+        }
+    }
     if (beltPlannerOn && (heldMachine != MachineName::BELT)) {
         beltPlannerOn = false;
+    }
+    if (beltPlannerOn && (!Util::Input::IsKeyPressed(Util::Keycode::LSHIFT))) {
+        beltPlannerOn = false;
+        if (beltType == BeltType::LEFT) {
+            heldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/belt_left.png"));
+        }
+        else if (beltType == BeltType::RIGHT) {
+            heldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/belt_right.png"));
+        }
+        else if (beltType == BeltType::FORWARD) {
+            heldPreview->SetDrawable(std::make_shared<Util::Image>(
+            "../Resources/sprites/blueprints/belt_top.png"));
+        }
     }
     if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB) && beltPlannerOn) {
         beltStartX = mouseX;
@@ -647,128 +732,148 @@ std::shared_ptr<Scene> GameScene::Update() {
     if (beltPlannerOn && Util::Input::IsKeyDown(Util::Keycode::R)) {beltPrefersXAxis = !beltPrefersXAxis;}
     std::shared_ptr<Machine> MachineToAdd = nullptr;
 
-    if (beltPlannerOn && Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {
+    if ((!beltPlannerOn)
+        || (beltPlannerOn && !Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB))) {
+        for (auto& bp: beltPlannerPreviews) {RemoveChild(bp);}
         beltPlannerPreviews.clear();
+    }
+
+    beltPlannerStart->SetVisible(false);
+    beltPlannerEnd->SetVisible(false);
+
+    if (beltPlannerOn && Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {
         if (beltStartX == mouseX && beltStartY == mouseY) {
-            beltPlannerPreviews.emplace_back(beltStartX, beltStartY, 3, BeltType::FORWARD);
+            beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, beltStartY, 3, BeltType::FORWARD));
         }
         else if (beltStartX == mouseX && beltStartY < mouseY) {
             // belt goes up
             for (int y = beltStartY; y <= mouseY; y++) {
-                beltPlannerPreviews.emplace_back(beltStartX, y, 0, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, y, 0, BeltType::FORWARD));
             }
         }
         else if (beltStartX == mouseX && beltStartY > mouseY) {
             // belt goes down
             for (int y = beltStartY; y >= mouseY; y--) {
-                beltPlannerPreviews.emplace_back(beltStartX, y, 2, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, y, 2, BeltType::FORWARD));
             }
         }
         else if (beltStartX < mouseX && beltStartY == mouseY) {
             // belt goes right
             for (int x = beltStartX; x <= mouseX; x++) {
-                beltPlannerPreviews.emplace_back(x, beltStartY, 3, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(x, beltStartY, 3, BeltType::FORWARD));
             }
         }
         else if (beltStartX > mouseX && beltStartY == mouseY) {
             // belt goes left
             for (int x = beltStartX; x >= mouseX; x--) {
-                beltPlannerPreviews.emplace_back(x, beltStartY, 1, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(x, beltStartY, 1, BeltType::FORWARD));
             }
         }
         else if (beltPrefersXAxis && (beltStartX < mouseX && (beltStartY < mouseY))) {
             for (int x = beltStartX; x < mouseX; x++) {
-                beltPlannerPreviews.emplace_back(x, beltStartY, 3, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(x, beltStartY, 3, BeltType::FORWARD));
             }
-            beltPlannerPreviews.emplace_back(mouseX, beltStartY, 3, BeltType::LEFT);
+            beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(mouseX, beltStartY, 3, BeltType::LEFT));
             for (int y = beltStartY+1; y <= mouseY; y++) {
-                beltPlannerPreviews.emplace_back(mouseX, y, 0, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(mouseX, y, 0, BeltType::FORWARD));
             }
         }
         else if (beltPrefersXAxis && (beltStartX < mouseX && (beltStartY > mouseY))) {
             for (int x = beltStartX; x < mouseX; x++) {
-                beltPlannerPreviews.emplace_back(x, beltStartY, 3, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(x, beltStartY, 3, BeltType::FORWARD));
             }
-            beltPlannerPreviews.emplace_back(mouseX, beltStartY, 3, BeltType::RIGHT);
+            beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(mouseX, beltStartY, 3, BeltType::RIGHT));
             for (int y = beltStartY-1; y >= mouseY; y--) {
-                beltPlannerPreviews.emplace_back(mouseX, y, 2, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(mouseX, y, 2, BeltType::FORWARD));
             }
         }
         else if (beltPrefersXAxis && (beltStartX > mouseX && (beltStartY < mouseY))) {
             for (int x = beltStartX; x > mouseX; x--) {
-                beltPlannerPreviews.emplace_back(x, beltStartY, 1, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(x, beltStartY, 1, BeltType::FORWARD));
             }
-            beltPlannerPreviews.emplace_back(mouseX, beltStartY, 1, BeltType::RIGHT);
+            beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(mouseX, beltStartY, 1, BeltType::RIGHT));
             for (int y = beltStartY+1; y <= mouseY; y++) {
-                beltPlannerPreviews.emplace_back(mouseX, y, 0, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(mouseX, y, 0, BeltType::FORWARD));
             }
         }
         else if (beltPrefersXAxis && (beltStartX > mouseX && (beltStartY > mouseY))) {
             for (int x = beltStartX; x > mouseX; x--) {
-                beltPlannerPreviews.emplace_back(x, beltStartY, 1, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(x, beltStartY, 1, BeltType::FORWARD));
             }
-            beltPlannerPreviews.emplace_back(mouseX, beltStartY, 1, BeltType::LEFT);
+            beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(mouseX, beltStartY, 1, BeltType::LEFT));
             for (int y = beltStartY-1; y >= mouseY; y--) {
-                beltPlannerPreviews.emplace_back(mouseX, y, 2, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(mouseX, y, 2, BeltType::FORWARD));
             }
         }
         else if (!beltPrefersXAxis && (beltStartX < mouseX && (beltStartY < mouseY))) {
             for (int y = beltStartY; y < mouseY; y++) {
-                beltPlannerPreviews.emplace_back(beltStartX, y, 0, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, y, 0, BeltType::FORWARD));
             }
-            beltPlannerPreviews.emplace_back(beltStartX, mouseY, 0, BeltType::RIGHT);
+            beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, mouseY, 0, BeltType::RIGHT));
             for (int x = beltStartX+1; x <= mouseX; x++) {
-                beltPlannerPreviews.emplace_back(x, mouseY, 3, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(x, mouseY, 3, BeltType::FORWARD));
             }
         }
         else if (!beltPrefersXAxis && (beltStartX < mouseX && (beltStartY > mouseY))) {
             for (int y = beltStartY; y > mouseY; y--) {
-                beltPlannerPreviews.emplace_back(beltStartX, y, 2, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, y, 2, BeltType::FORWARD));
             }
-            beltPlannerPreviews.emplace_back(beltStartX, mouseY, 2, BeltType::LEFT);
+            beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, mouseY, 2, BeltType::LEFT));
             for (int x = beltStartX+1; x <= mouseX; x++) {
-                beltPlannerPreviews.emplace_back(x, mouseY, 3, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(x, mouseY, 3, BeltType::FORWARD));
             }
         }
         else if (!beltPrefersXAxis && (beltStartX > mouseX && (beltStartY < mouseY))) {
             for (int y = beltStartY; y < mouseY; y++) {
-                beltPlannerPreviews.emplace_back(beltStartX, y, 0, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, y, 0, BeltType::FORWARD));
             }
-            beltPlannerPreviews.emplace_back(beltStartX, mouseY, 0, BeltType::LEFT);
+            beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, mouseY, 0, BeltType::LEFT));
             for (int x = beltStartX-1; x >= mouseX; x--) {
-                beltPlannerPreviews.emplace_back(x, mouseY, 1, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(x, mouseY, 1, BeltType::FORWARD));
             }
         }
         else if (!beltPrefersXAxis && (beltStartX > mouseX && (beltStartY > mouseY))) {
             for (int y = beltStartY; y > mouseY; y--) {
-                beltPlannerPreviews.emplace_back(beltStartX, y, 2, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, y, 2, BeltType::FORWARD));
             }
-            beltPlannerPreviews.emplace_back(beltStartX, mouseY, 2, BeltType::RIGHT);
+            beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(beltStartX, mouseY, 2, BeltType::RIGHT));
             for (int x = beltStartX-1; x >= mouseX; x--) {
-                beltPlannerPreviews.emplace_back(x, mouseY, 1, BeltType::FORWARD);
+                beltPlannerPreviews.push_back(std::make_shared<BeltPlannerPreview>(x, mouseY, 1, BeltType::FORWARD));
             }
         }
+        for (auto& bp: beltPlannerPreviews) {AddChild(bp);}
+        if (!beltPlannerPreviews.empty()) {beltPlannerPreviews[0]->SetVisible(false);}
+
+        beltPlannerStart->SetVisible(true);
+        beltPlannerStart->m_Transform.scale = cam.scale;
+        beltPlannerStart->m_Transform.translation.x = (((192.0f*(0.5f+beltStartX)) - cam.translation.x) * cam.scale.x);
+        beltPlannerStart->m_Transform.translation.y = (((192.0f*(0.5f+beltStartY)) - cam.translation.y) * cam.scale.y);
+
+        beltPlannerEnd->SetVisible(true);
+        beltPlannerEnd->m_Transform.scale = cam.scale;
+        beltPlannerEnd->m_Transform.translation.x = (((192.0f*(0.5f+mouseX)) - cam.translation.x) * cam.scale.x);
+        beltPlannerEnd->m_Transform.translation.y = (((192.0f*(0.5f+mouseY)) - cam.translation.y) * cam.scale.y);
     }
     std::shared_ptr<Belt> beltToPlace = nullptr;
     if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) && beltPlannerOn) {
-        std::cout << beltStartX << " " << beltStartY << " " << mouseX << " " << mouseY << std::endl;
-        std::cout << beltPlannerPreviews.size() << std::endl;
         placeBeltSFX->Play();
         for (auto& bp: beltPlannerPreviews) {
-            try {
-                beltToPlace = std::make_shared<Belt>(bp.x, bp.y, bp.r, bp.type);
-                beltToPlace->Init();
-                m_Root.AddChild(beltToPlace);
-                LstMachines.push_back(beltToPlace);
+            std::shared_ptr<Machine> MachineToRemove = MapMachines[{bp->x, bp->y}];
+            if (MachineToRemove != nullptr && MachineToRemove->getName() != MachineName::BELT) {continue;}
+            if (MachineToRemove != nullptr && MachineToRemove->getName() == MachineName::BELT) {
+                m_Root.RemoveChild(MachineToRemove);
+                LstMachines.erase(std::remove(LstMachines.begin(), LstMachines.end(), MachineToRemove), LstMachines.end());
+                MachineToRemove->Delete();
+                if (MachineToRemove.use_count() != 1) {throw std::invalid_argument("machine not properly removed");}
+                MachineToRemove = nullptr;
             }
-            catch (...) {}
+            beltToPlace = std::make_shared<Belt>(bp->x, bp->y, bp->r, bp->type);
+            beltToPlace->Init();
+            m_Root.AddChild(beltToPlace);
+            LstMachines.push_back(beltToPlace);
         }
     }
-    beltPlannerOn = Util::Input::IsKeyPressed(Util::Keycode::LSHIFT) && (heldMachine == MachineName::BELT);
-    if (beltPlannerOn) {
-        if (beltStartX == mouseX) {beltPrefersXAxis = false;}
-        if (beltStartY == mouseY) {beltPrefersXAxis = true;}
-    }
+
 
     UserSelectMachine();
     if (Util::Input::IsKeyDown(Util::Keycode::R)) {heldR = (heldR + 3) % 4;}

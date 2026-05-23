@@ -15,22 +15,15 @@
 #include "UIelement/Notification.hpp"
 #include "Util/BGM.hpp"
 
-class BeltPlannerPreview {
+class BeltPlannerPreview: public OptiObject {
 public:
     int x, y, r;
     BeltType type;
     std::shared_ptr<OptiObject> arrow = nullptr;
-    static inline std::shared_ptr<OptiImage> arrowTexture = nullptr;
-    static inline std::shared_ptr<OptiImage> lineTexture = nullptr;
-    static inline std::shared_ptr<OptiImage> startTexture = nullptr;
-    static inline std::shared_ptr<OptiImage> endTexture = nullptr;
+    static inline std::shared_ptr<OptiImage> arrowTexture = nullptr; // the arrow
+    static inline std::shared_ptr<OptiImage> lineTexture = nullptr;  // 1px line
 
-    BeltPlannerPreview(int x, int y, int r, BeltType type) {
-        this->x = x;
-        this->y = y;
-        this->r = r;
-        this->type = type;
-    };
+    BeltPlannerPreview(int x, int y, int r, BeltType type);
 };
 
 class PlaceState { // unused currently
@@ -62,7 +55,10 @@ class GameScene: public Scene {
     int beltStartX = 0, beltStartY = 0;
     bool beltPlannerOn = false;
     bool beltPrefersXAxis = true;
-    std::vector<BeltPlannerPreview> beltPlannerPreviews;
+    bool beltPreferenceSet = false;
+    std::shared_ptr<OptiObject> beltPlannerStart, beltPlannerEnd;
+
+    std::vector<std::shared_ptr<BeltPlannerPreview>> beltPlannerPreviews;
     std::shared_ptr<OptiObject> heldPreview = nullptr;
     int saveCooldown = 0; // auto saves every 2 minutes
     std::shared_ptr<Notification> notification;

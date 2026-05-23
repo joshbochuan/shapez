@@ -91,6 +91,8 @@ void AssetLoader::loadTextures() {
     Cell::cellTextureRed = std::make_shared<OptiImage>("../Resources/1px/background_red.png");
     Cell::cellTextureGreen = std::make_shared<OptiImage>("../Resources/1px/background_green.png");
     Cell::cellTextureBlue = std::make_shared<OptiImage>("../Resources/1px/background_blue.png");
+    BeltPlannerPreview::lineTexture = std::make_shared<OptiImage>("../Resources/1px/belt_planner_line.png");
+    BeltPlannerPreview::arrowTexture = std::make_shared<OptiImage>("../Resources/sprites/blueprints/belt_planner_arrow.png");
 }
 
 void AssetLoader::loadAudio() {
