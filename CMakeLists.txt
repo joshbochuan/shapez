@@ -125,6 +125,8 @@ add_executable(${PROJECT_NAME}
         src/UIelement/TextInput.cpp
         include/scenes/PauseScene.hpp
         src/scenes/PauseScene.cpp
+        include/UIelement/ItemPin.hpp
+        src/UIelement/ItemPin.cpp
 )
 
 if(MSVC)

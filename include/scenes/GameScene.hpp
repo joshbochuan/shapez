@@ -12,6 +12,7 @@
 #include "Util/SFX.hpp"
 #include "../Opti/OptiObject.hpp"
 #include "UIelement/Button.hpp"
+#include "UIelement/ItemPin.hpp"
 #include "UIelement/Notification.hpp"
 #include "Util/BGM.hpp"
 
@@ -69,6 +70,8 @@ class GameScene: public Scene {
 
     glm::vec2 movingMarker = {0, 0};
     int movingMarkerCooldown = 0; // for how many frames the player can't move
+
+    std::vector<std::shared_ptr<ItemPin>> itemPins;
 
     void UserMoveCamera();
     void UserSelectMachine();

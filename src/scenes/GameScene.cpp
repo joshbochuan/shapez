@@ -585,6 +585,10 @@ GameScene::GameScene() {
     beltPlannerEnd->SetZIndex(83);
     AddChild(beltPlannerEnd);
 
+    itemPins.push_back(std::make_shared<ItemPin>(hub->targetItem->copy(), hub->targetAmount, true));
+    itemPins.back()->Update();
+    AddChild(itemPins.back());
+
     shapezBGM->Play();
 }
 
@@ -628,6 +632,18 @@ std::shared_ptr<Scene> GameScene::Update() {
     fpsText->SetVisible(toggleDebug);
     TickTimeText->SetVisible(toggleDebug);
     versionText->SetVisible(toggleDebug);
+
+    for (auto& ip: itemPins) {ip->Update();}
+    for (int i=itemPins.size()-1; i>=0; i--) {
+        if (!itemPins[i]->unpinButton->released) {continue;}
+        itemPins.erase(itemPins.begin()+i);
+        break;
+    }
+    for (int i=0; i<itemPins.size(); i++) {
+        itemPins[i]->m_Transform.translation.x = -static_cast<float>(WINDOW_WIDTH >> 1) + 75.0f * windowPercent;
+        itemPins[i]->m_Transform.translation.y = static_cast<float>(WINDOW_HEIGHT >> 1) - (400.0f + 100.0f * i) * windowPercent;
+        itemPins[i]->Update();
+    }
 
     if (subScene != nullptr) {
         auto next = subScene->Update();
