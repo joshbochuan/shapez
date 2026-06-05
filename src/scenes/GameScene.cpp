@@ -91,6 +91,23 @@ void GameScene::UserMoveCamera() {
     lastMousePos = cursorPos;
 }
 
+std::string displayFloat(float value)
+{
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(2) << value;
+
+    std::string str = oss.str();
+
+    // Remove trailing zeros
+    str.erase(str.find_last_not_of('0') + 1);
+
+    // Remove trailing decimal point if needed
+    if (!str.empty() && str.back() == '.')
+        str.pop_back();
+
+    return str;
+}
+
 void GameScene::UserSelectMachine() {
     bool unselectMachine = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB);
     for (auto& btn : buttons) {unselectMachine |= (btn->released && !btn->selected);}
@@ -99,6 +116,11 @@ void GameScene::UserSelectMachine() {
         heldMachine = MachineName::NONE;
         heldR = 0;
         heldPreview->SetVisible(false);
+
+        heldMachineTitleBackground->SetVisible(false);
+        heldMachineTitle->SetVisible(false);
+        heldMachineSpeedTxt->SetVisible(false);
+        heldMachineRateTxt->SetVisible(false);
     }
 
     bool isMachineSelected = false;
@@ -142,6 +164,42 @@ void GameScene::UserSelectMachine() {
         MachineName::PAINTER,
         MachineName::TRASH
     };
+    std::vector<std::string> displayNames = {
+        "CONVEYER BELT",
+        "BALANCER",
+        "TUNNEL",
+        "EXTRACTOR",
+        "CUTTER",
+        "ROTATOR",
+        "STACKER",
+        "MIXER",
+        "PAINTER",
+        "TRASH"
+    };
+    std::vector<float> displayRates = {
+        2.0f,
+        4.0f,
+        2.0f,
+        0.4f,
+        0.5f,
+        1.0f,
+        0.25f,
+        0.4f,
+        0.33f,
+        2.0f
+    };
+    std::vector<float*> multipliers = {
+        &MULTIPLIER_BELT,
+        &MULTIPLIER_BELT,
+        &MULTIPLIER_BELT,
+        &MULTIPLIER_MINE,
+        &MULTIPLIER_PROCESS,
+        &MULTIPLIER_PROCESS,
+        &MULTIPLIER_PROCESS,
+        &MULTIPLIER_PAINT,
+        &MULTIPLIER_PAINT,
+        &MULTIPLIER_BELT,
+    };
     std::vector<std::string> previewImagePaths = {
         "../Resources/sprites/blueprints/belt_top.png",
         "../Resources/sprites/blueprints/balancer.png",
@@ -173,6 +231,18 @@ void GameScene::UserSelectMachine() {
     }
     heldPreview->SetPivot(previewPivots[heldIdx]);
     heldPreview->SetVisible(true);
+
+    heldMachineTitleBackground->SetVisible(true);
+
+    heldMachineTitle->SetText(displayNames[heldIdx]);
+    heldMachineTitle->AlignToLeft();
+    heldMachineTitle->SetVisible(true);
+
+    heldMachineSpeedTxt->SetVisible(true);
+
+    heldMachineRateTxt->SetText(displayFloat(*(multipliers[heldIdx]) * displayRates[heldIdx]) + " items / s");
+    heldMachineRateTxt->AlignToLeft();
+    heldMachineRateTxt->SetVisible(true);
 }
 
 void SelectBeltVariant(std::shared_ptr<OptiObject>& m_MachineHeldPreview, BeltType& beltType) {
@@ -588,6 +658,37 @@ GameScene::GameScene() {
     itemPins.push_back(std::make_shared<ItemPin>(hub->targetItem->copy(), hub->targetAmount, true));
     itemPins.back()->Update();
     AddChild(itemPins.back());
+
+    heldMachineTitleBackground = std::make_shared<OptiObject>();
+    heldMachineTitleBackground->SetVisible(false);
+    heldMachineTitleBackground->SetZIndex(85);
+    heldMachineTitleBackground->m_Transform.scale = {windowPercent, windowPercent};
+    AddChild(heldMachineTitleBackground);
+
+    heldMachineTitle = std::make_shared<Text>(" ", 36, Util::Color::FromRGB(255, 255, 255));
+    heldMachineTitle->SetZIndex(86);
+    heldMachineTitle->SetVisible(false);
+    heldMachineTitle->m_Transform.scale = {windowPercent, windowPercent};
+    heldMachineTitle->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 300.0f * windowPercent;
+    heldMachineTitle->m_Transform.translation.y = (WINDOW_HEIGHT >> 1) - 250.0f * windowPercent;
+    AddChild(heldMachineTitle);
+
+    heldMachineSpeedTxt = std::make_shared<Text>("Speed:", 28, Util::Color::FromRGB(102, 187, 106));
+    heldMachineSpeedTxt->SetZIndex(86);
+    heldMachineSpeedTxt->SetVisible(false);
+    heldMachineSpeedTxt->AlignToLeft();
+    heldMachineSpeedTxt->m_Transform.scale = {windowPercent, windowPercent};
+    heldMachineSpeedTxt->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 300.0f * windowPercent;
+    heldMachineSpeedTxt->m_Transform.translation.y = (WINDOW_HEIGHT >> 1) - 300.0f * windowPercent;
+    AddChild(heldMachineSpeedTxt);
+
+    heldMachineRateTxt = std::make_shared<Text>(" ", 28, Util::Color::FromRGB(187, 187, 187));
+    heldMachineRateTxt->SetZIndex(86);
+    heldMachineRateTxt->SetVisible(false);
+    heldMachineRateTxt->m_Transform.scale = {windowPercent, windowPercent};
+    heldMachineRateTxt->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 200.0f * windowPercent;
+    heldMachineRateTxt->m_Transform.translation.y = (WINDOW_HEIGHT >> 1) - 300.0f * windowPercent;
+    AddChild(heldMachineRateTxt);
 
     shapezBGM->Play();
 }

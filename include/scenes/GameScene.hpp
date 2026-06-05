@@ -73,6 +73,9 @@ class GameScene: public Scene {
 
     std::vector<std::shared_ptr<ItemPin>> itemPins;
 
+    std::shared_ptr<OptiObject> heldMachineTitleBackground;
+    std::shared_ptr<Text> heldMachineTitle, heldMachineSpeedTxt, heldMachineRateTxt;
+
     void UserMoveCamera();
     void UserSelectMachine();
     void UserSelectVariant();

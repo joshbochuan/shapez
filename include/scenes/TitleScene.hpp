@@ -10,6 +10,7 @@
 #include "../Opti/OptiObject.hpp"
 #include "UIelement/TextInput.hpp"
 #include "Util/BGM.hpp"
+#include "UIelement/Notification.hpp"
 
 class SaveBlob: public OptiObject {
 public:
@@ -40,6 +41,7 @@ public:
     std::shared_ptr<Text> titleTxt, renameTxt;
     std::shared_ptr<TextInput> inputBox;
     std::shared_ptr<Button> cancelButton, okButton;
+    int enterCount = 0; // used for counting amount of enter key pressed to enable/disable cheats
     RenameBlob(std::string name);
     bool Update();
 };
@@ -54,6 +56,7 @@ private:
     std::shared_ptr<DeleteBlob> deleteBlob;
     std::shared_ptr<RenameBlob> renameBlob;
     std::shared_ptr<Button> closeButton;
+    std::shared_ptr<Notification> notification = nullptr; // used for display enable/disable cheats
 
 public:
     static inline std::shared_ptr<Util::BGM> titleBGM;

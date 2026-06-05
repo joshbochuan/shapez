@@ -20,6 +20,10 @@ public:
             color);
         SetDrawable(m_Text);
     };
+
+    void AlignToLeft() {SetPivot({-0.5f * m_Text->GetSize().x, 0});}
+    void AlignToRight() {SetPivot({0.5f * m_Text->GetSize().x, 0});}
+    void SetText(const std::string &text) const {m_Text->SetText(text);}
 };
 
 #endif //REPLACE_WITH_YOUR_PROJECT_NAME_TEXT_HPP

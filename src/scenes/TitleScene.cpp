@@ -274,10 +274,70 @@ bool validateSaveName(std::string str) {
     return true;
 }
 
+int getCheatsValue(const std::string& filename)
+{
+    std::ifstream file(filename);
+    std::string line;
+
+    while (std::getline(file, line))
+    {
+        if (line.rfind("CHEATS ", 0) == 0)
+        {
+            return std::stoi(line.substr(7));
+        }
+    }
+
+    return -1; // CHEATS not found
+}
+
+bool setCheatsValue(const std::string& filename, int value)
+{
+    if (value != 0 && value != 1)
+        return false;
+
+    std::ifstream inFile(filename);
+    if (!inFile)
+        return false;
+
+    std::vector<std::string> lines;
+    std::string line;
+    bool found = false;
+
+    while (std::getline(inFile, line))
+    {
+        if (line.rfind("CHEATS ", 0) == 0)
+        {
+            line = "CHEATS " + std::to_string(value);
+            found = true;
+        }
+
+        lines.push_back(line);
+    }
+
+    inFile.close();
+
+    if (!found)
+        return false;
+
+    std::ofstream outFile(filename, std::ios::trunc);
+
+    for (const auto& l : lines)
+    {
+        outFile << l << '\n';
+    }
+
+    return true;
+}
+
 bool RenameBlob::Update() {
     inputBox->Update();
     cancelButton->Update();
     okButton->Update();
+
+    if (Util::Input::IsKeyDown(Util::Keycode::KP_ENTER)) {
+        enterCount++;
+        std::cout << enterCount << std::endl;
+    }
 
     bool valid = validateSaveName(inputBox->text);
     if (valid) {inputBox->background->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/blobs/renameDialog.png"));}
@@ -576,13 +636,50 @@ std::shared_ptr<Scene> TitleScene::Update() {
         return shared_from_this();
     }
     if (renameBlob != nullptr) {
-        if (!renameBlob->Update()) {return shared_from_this();}
+        int returnVal = renameBlob->Update();
+        if (renameBlob->enterCount >= 10) {
+            renameBlob->enterCount = 0;
+            int currentCheatEnabled = getCheatsValue("../Saves/" + renameBlob->name + ".txt");
+            setCheatsValue("../Saves/" + renameBlob->name + ".txt", !currentCheatEnabled);
+
+            if (notification != nullptr) {
+                RemoveChild(notification);
+                notification = nullptr;
+            }
+            if (currentCheatEnabled) {
+                notification = std::make_shared<Notification>(
+                    "cheats disabled",
+                    std::make_shared<Util::Image>("../Resources/ui/icons/notification_info.png"));
+            }
+            else {
+                notification = std::make_shared<Notification>(
+                    "cheats enabled",
+                    std::make_shared<Util::Image>("../Resources/ui/icons/notification_info.png"));
+            }
+
+            AddChild(notification);
+        }
+        if (!returnVal) {
+            if (notification != nullptr) {notification->Update();}
+            if ((notification != nullptr) && (notification->frameToLive <= 0)) {
+                RemoveChild(notification);
+                notification = nullptr;
+            }
+            return shared_from_this();
+        }
         RemoveChild(renameBlob);
         renameBlob = nullptr;
         Refresh();
         Update();
         return shared_from_this();
     }
+
+    if (notification != nullptr) {notification->Update();}
+    if ((notification != nullptr) && (notification->frameToLive <= 0)) {
+        RemoveChild(notification);
+        notification = nullptr;
+    }
+
     playButton->Update();
     newGameButton->Update();
     importButton->Update();
@@ -618,7 +715,7 @@ std::shared_ptr<Scene> TitleScene::Update() {
         LoadWorld("../Saves/" + WORLD_NAME + ".txt");
         return std::make_shared<GameScene>();
     }
-    if ((playButton->released) && (saveBlobs.empty()) || (newGameButton->released)) {
+    if (((playButton->released) && (saveBlobs.empty())) || (newGameButton->released)) {
         CreateWorld("Unnamed");
         return std::make_shared<GameScene>();
     }
