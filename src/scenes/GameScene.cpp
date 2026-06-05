@@ -663,14 +663,17 @@ GameScene::GameScene() {
     heldMachineTitleBackground->SetVisible(false);
     heldMachineTitleBackground->SetZIndex(85);
     heldMachineTitleBackground->m_Transform.scale = {windowPercent, windowPercent};
+    heldMachineTitleBackground->SetDrawable(std::make_shared<Util::Image>("../Resources/ui/blobs/ratePreviewBlob.png"));
+    heldMachineTitleBackground->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 200.0f * windowPercent;
+    heldMachineTitleBackground->m_Transform.translation.y = (WINDOW_HEIGHT >> 1) - 300.0f * windowPercent;
     AddChild(heldMachineTitleBackground);
 
     heldMachineTitle = std::make_shared<Text>(" ", 36, Util::Color::FromRGB(255, 255, 255));
     heldMachineTitle->SetZIndex(86);
     heldMachineTitle->SetVisible(false);
     heldMachineTitle->m_Transform.scale = {windowPercent, windowPercent};
-    heldMachineTitle->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 300.0f * windowPercent;
-    heldMachineTitle->m_Transform.translation.y = (WINDOW_HEIGHT >> 1) - 250.0f * windowPercent;
+    heldMachineTitle->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 365.0f * windowPercent;
+    heldMachineTitle->m_Transform.translation.y = (WINDOW_HEIGHT >> 1) - 280.0f * windowPercent;
     AddChild(heldMachineTitle);
 
     heldMachineSpeedTxt = std::make_shared<Text>("Speed:", 28, Util::Color::FromRGB(102, 187, 106));
@@ -678,16 +681,16 @@ GameScene::GameScene() {
     heldMachineSpeedTxt->SetVisible(false);
     heldMachineSpeedTxt->AlignToLeft();
     heldMachineSpeedTxt->m_Transform.scale = {windowPercent, windowPercent};
-    heldMachineSpeedTxt->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 300.0f * windowPercent;
-    heldMachineSpeedTxt->m_Transform.translation.y = (WINDOW_HEIGHT >> 1) - 300.0f * windowPercent;
+    heldMachineSpeedTxt->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 365.0f * windowPercent;
+    heldMachineSpeedTxt->m_Transform.translation.y = (WINDOW_HEIGHT >> 1) - 325.0f * windowPercent;
     AddChild(heldMachineSpeedTxt);
 
     heldMachineRateTxt = std::make_shared<Text>(" ", 28, Util::Color::FromRGB(187, 187, 187));
     heldMachineRateTxt->SetZIndex(86);
     heldMachineRateTxt->SetVisible(false);
     heldMachineRateTxt->m_Transform.scale = {windowPercent, windowPercent};
-    heldMachineRateTxt->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 200.0f * windowPercent;
-    heldMachineRateTxt->m_Transform.translation.y = (WINDOW_HEIGHT >> 1) - 300.0f * windowPercent;
+    heldMachineRateTxt->m_Transform.translation.x = (WINDOW_WIDTH >> 1) - 265.0f * windowPercent;
+    heldMachineRateTxt->m_Transform.translation.y = (WINDOW_HEIGHT >> 1) - 325.0f * windowPercent;
     AddChild(heldMachineRateTxt);
 
     shapezBGM->Play();
