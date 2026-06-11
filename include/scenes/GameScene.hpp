@@ -59,6 +59,9 @@ class GameScene: public Scene {
     bool beltPreferenceSet = false;
     std::shared_ptr<OptiObject> beltPlannerStart, beltPlannerEnd;
 
+    std::vector<std::shared_ptr<OptiObject>> previewArrows;
+    std::shared_ptr<OptiObject> previewBorder;
+
     std::vector<std::shared_ptr<BeltPlannerPreview>> beltPlannerPreviews;
     std::shared_ptr<OptiObject> heldPreview = nullptr;
     int saveCooldown = 0; // auto saves every 2 minutes

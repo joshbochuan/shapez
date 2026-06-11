@@ -116,6 +116,7 @@ void GameScene::UserSelectMachine() {
         heldMachine = MachineName::NONE;
         heldR = 0;
         heldPreview->SetVisible(false);
+        previewBorder->SetVisible(false);
 
         heldMachineTitleBackground->SetVisible(false);
         heldMachineTitle->SetVisible(false);
@@ -224,6 +225,37 @@ void GameScene::UserSelectMachine() {
         {-84, 0},
         {0, 0}
     };
+    std::vector<int> previewWidth = {1, 2, 1, 1, 2, 1, 2, 2, 2, 1};
+    std::vector<std::vector<glm::vec2>> previewInArrows = {
+        {{0, -1}},
+        {{0, -1}, {1, -1}},
+        {{0, -1}},
+        {},
+        {{0, -1}},
+        {{0, -1}},
+        {{0, -1}, {1, -1}},
+        {{0, -1}, {1, -1}},
+        {{-1, 0}, {1, 1}},
+        {{0, -1}, {1, 0}, {0, 1}, {-1, 0}}
+    };
+    std::vector<std::vector<float>> previewInArrowsRotation = {
+        {0},
+        {0, 0},
+        {0},
+        {},
+        {0},
+        {0},
+        {0, 0},
+        {0, 0},
+        {3, 2},
+        {0, 1, 2, 3}
+    };
+    std::vector<std::vector<glm::vec2>> previewOutArrows = {
+        {{0, 1}},
+        {{0, 1}, {1, 1}},
+        {}
+    };
+
     heldMachine = previewNames[heldIdx];
     heldPreview->SetDrawable(std::make_shared<Util::Image>(previewImagePaths[heldIdx]));
     if ((heldMachine == MachineName::MINER) && (minerChained)) {
@@ -231,6 +263,13 @@ void GameScene::UserSelectMachine() {
     }
     heldPreview->SetPivot(previewPivots[heldIdx]);
     heldPreview->SetVisible(true);
+
+    previewBorder->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/blueprints/green_border_1x" + std::to_string(previewWidth[heldIdx]) + ".png"));
+    if (previewWidth[heldIdx] == 2) {
+        previewBorder->SetPivot({-96, 0});
+    }
+    else {previewBorder->SetPivot({0, 0});}
+    previewBorder->SetVisible(true);
 
     heldMachineTitleBackground->SetVisible(true);
 
@@ -568,6 +607,11 @@ GameScene::GameScene() {
     heldPreview->SetZIndex(99);
     AddChild(heldPreview);
 
+    previewBorder = std::make_shared<OptiObject>();
+    previewBorder->SetVisible(false);
+    previewBorder->SetZIndex(98);
+    AddChild(previewBorder);
+
     pauseButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/icons/main_menu_settings_idle.png"));
     pauseButton->hoveredBackground = std::make_shared<Util::Image>("../Resources/ui/icons/main_menu_settings.png");
     pauseButton->keys.push_back(Util::Keycode::ESCAPE);
@@ -766,6 +810,7 @@ std::shared_ptr<Scene> GameScene::Update() {
         heldMachine = MachineName::NONE;
         heldR = 0;
         heldPreview->SetVisible(false);
+        previewBorder->SetVisible(false);
 
         subScene = std::make_shared<UpgradeScene>();
         AddChild(subScene);
@@ -775,6 +820,7 @@ std::shared_ptr<Scene> GameScene::Update() {
         heldMachine = MachineName::NONE;
         heldR = 0;
         heldPreview->SetVisible(false);
+        previewBorder->SetVisible(false);
 
         long long time = std::chrono::duration_cast<std::chrono::seconds>(
                       std::chrono::system_clock::now().time_since_epoch()
@@ -814,6 +860,7 @@ std::shared_ptr<Scene> GameScene::Update() {
         && (heldMachine == MachineName::BELT)
         && (!beltPlannerOn)) {
         beltPlannerOn = true;
+        previewBorder->SetVisible(false);
         heldPreview->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/blueprints/belt_planner_50px.png"));
         }
     if (beltStartX == mouseX && beltStartY == mouseY) {beltPreferenceSet = false;}
@@ -829,9 +876,11 @@ std::shared_ptr<Scene> GameScene::Update() {
     }
     if (beltPlannerOn && (heldMachine != MachineName::BELT)) {
         beltPlannerOn = false;
+        previewBorder->SetVisible(true);
     }
     if (beltPlannerOn && (!Util::Input::IsKeyPressed(Util::Keycode::LSHIFT))) {
         beltPlannerOn = false;
+        previewBorder->SetVisible(true);
         if (beltType == BeltType::LEFT) {
             heldPreview->SetDrawable(std::make_shared<Util::Image>(
             "../Resources/sprites/blueprints/belt_left.png"));
@@ -998,9 +1047,16 @@ std::shared_ptr<Scene> GameScene::Update() {
     UserSelectMachine();
     if (Util::Input::IsKeyDown(Util::Keycode::R)) {heldR = (heldR + 3) % 4;}
     if (Util::Input::IsKeyDown(Util::Keycode::T)) {UserSelectVariant();}
+
     heldPreview->m_Transform.translation = Util::Input::GetCursorPosition();
     heldPreview->m_Transform.rotation = 0.5 * M_PI * heldR;
     heldPreview->m_Transform.scale = World::cam.scale;
+
+    previewBorder->m_Transform.translation.x = (((192.0*(0.5+mouseX)) - cam.translation.x) * cam.scale.x);
+    previewBorder->m_Transform.translation.y = (((192.0*(0.5+mouseY)) - cam.translation.y) * cam.scale.y);
+    previewBorder->m_Transform.rotation = 0.5 * M_PI * heldR;
+    previewBorder->m_Transform.scale = World::cam.scale;
+
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) && !(toolbar->hovered)) {UserPlaceMachine(mouseX, mouseY);}
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_RB) && !(toolbar->hovered)) {UserRemoveMachine(mouseX, mouseY);}
 
