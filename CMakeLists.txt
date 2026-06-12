@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(shapez)
 
-set(APP_VERSION "v0.2")
+set(APP_VERSION "v0.3")
 set(APP_ENV "debug")
 
 # let claude cook

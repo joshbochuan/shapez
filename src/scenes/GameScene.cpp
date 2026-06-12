@@ -812,6 +812,11 @@ std::shared_ptr<Scene> GameScene::Update() {
         heldPreview->SetVisible(false);
         previewBorder->SetVisible(false);
 
+        heldMachineRateTxt->SetVisible(false);
+        heldMachineSpeedTxt->SetVisible(false);
+        heldMachineTitle->SetVisible(false);
+        heldMachineTitleBackground->SetVisible(false);
+
         subScene = std::make_shared<UpgradeScene>();
         AddChild(subScene);
     }
@@ -821,6 +826,11 @@ std::shared_ptr<Scene> GameScene::Update() {
         heldR = 0;
         heldPreview->SetVisible(false);
         previewBorder->SetVisible(false);
+
+        heldMachineRateTxt->SetVisible(false);
+        heldMachineSpeedTxt->SetVisible(false);
+        heldMachineTitle->SetVisible(false);
+        heldMachineTitleBackground->SetVisible(false);
 
         long long time = std::chrono::duration_cast<std::chrono::seconds>(
                       std::chrono::system_clock::now().time_since_epoch()
@@ -876,11 +886,12 @@ std::shared_ptr<Scene> GameScene::Update() {
     }
     if (beltPlannerOn && (heldMachine != MachineName::BELT)) {
         beltPlannerOn = false;
-        previewBorder->SetVisible(true);
+        if (heldPreview->m_Visible) {previewBorder->SetVisible(true);}
+
     }
     if (beltPlannerOn && (!Util::Input::IsKeyPressed(Util::Keycode::LSHIFT))) {
         beltPlannerOn = false;
-        previewBorder->SetVisible(true);
+        if (heldPreview->m_Visible) {previewBorder->SetVisible(true);}
         if (beltType == BeltType::LEFT) {
             heldPreview->SetDrawable(std::make_shared<Util::Image>(
             "../Resources/sprites/blueprints/belt_left.png"));

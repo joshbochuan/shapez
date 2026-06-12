@@ -169,8 +169,10 @@ void ItemEjector::Transfer() {
 }
 
 void ItemEjector::SetItem(std::shared_ptr<Item> item) {
-    if (item == nullptr) {throw std::invalid_argument("item cannot be set to a nullptr");}
-    if (this->item != nullptr) {throw std::invalid_argument("ItemEjector::SetItem called when there's already an item");}
+    // if (item == nullptr) {throw std::invalid_argument("item cannot be set to a nullptr");}
+    // if (this->item != nullptr) {throw std::invalid_argument("ItemEjector::SetItem called when there's already an item");}
+    if (item == nullptr) {return;}
+    if (this->item != nullptr) {return;}
     this->item = item;
     AddChild(item);
 }

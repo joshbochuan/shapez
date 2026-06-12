@@ -141,7 +141,9 @@ void ItemAcceptor::Promote() {
 }
 
 void ItemAcceptor::SetItem(std::shared_ptr<Item> item) {
-    if (item == nullptr) {throw std::invalid_argument("item cannot be set to a nullptr");}
+    // if (item == nullptr) {throw std::invalid_argument("item cannot be set to a nullptr");}
+    if (item == nullptr) {return;}
+    if (this->item != nullptr) {return;}
     this->item = item;
     AddChild(item);
 }

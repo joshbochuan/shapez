@@ -96,14 +96,17 @@ namespace World {
     inline int MERGER_LEVEL = 10;
     inline int STACKER_LEVEL = 11;
     inline int CHAIN_MINER_LEVEL = 12;
+    inline int TUNNEL_T2_LEVEL = 13;
+    inline int ROTATOR_180_LEVEL = 14;
+    inline int SPLITTER_LEVEL = 15;
+    /*
     inline int BLUEPRINT_LEVEL = 13;
-    inline int TUNNEL_T2_LEVEL = 14;
     inline int READER_LEVEL = 15;
     inline int STORAGE_LEVEL = 16;
     inline int QUAD_CUTTER_LEVEL = 17;
     inline int DOUBLE_PAINTER_LEVEL = 18;
-    inline int ROTATOR_180_LEVEL = 19;
-    inline int SPLITTER_LEVEL = 20;
+    */
+
 
     inline float BELT_RATE = 2.0/FPS_CAP;
     inline float MINE_RATE = 0.4/FPS_CAP;

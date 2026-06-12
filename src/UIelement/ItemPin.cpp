@@ -41,6 +41,8 @@ ItemPin::ItemPin(std::shared_ptr<Item> item, float targetAmount, bool isCurrentG
     infoButton->hoverScale = infoButton->idleScale;
     infoButton->selectScale = infoButton->idleScale;
     infoButton->SetZIndex(81);
+    infoButton->locked = true;
+    infoButton->SetVisible(false);
     AddChild(infoButton);
 
     progressText = std::make_shared<Text>("0", 32, Util::Color::FromRGB(51, 52, 56));
