@@ -34,14 +34,14 @@ public:
         {"CpCpCpCp",                            600, "Compact Merger"}, // og9
         {"ScScScSc",                            800, "Stacker"}, // level 10, og10
         {"CgScScCg",                            1000, "Chaining Extractor"}, // bp, og11
-        {"CbCbCbRb:CwCwCwCw",                   1000, "Next Level"}, // og12, originally blueprint
-        {"SrSrSrSr:CyCyCyCy:SwSwSwSw",          2500, "Tunnel Tier II"}, // og16
-        {"CbRbRbCb:CwCwCwCw:WbWbWbWb",          3800, "Next Level"}, // og17, originally belt reader
+        {"CbCbCbRb:CwCwCwCw",                   1000, "Tunnel Tier II"}, // og12, originally blueprint
+        {"SrSrSrSr:CyCyCyCy:SwSwSwSw",          2500, "Rotator (180)"}, // og16
+        {"CbRbRbCb:CwCwCwCw:WbWbWbWb",          3800, "Compact Splitter"}, // og17, originally belt reader
         {"Sg----Sg:CgCgCgCg:--CyCy--",          6000, "Next Level"}, // level 15, og18, originally storage
-        {"Cg----Cr:Cw----Cw:Sy------:Cy----Cy", 20000, "Quad Cutter"}, // og22
-        {"CcRcCcRc:RwCwRwCw:Sr--Sw--:CyCyCyCy", 20000, "Double Painter"}, // og24
-        {"Rg--Rg--:CwRwCwRw:--Rg--Rg"         , 25000, "Rotator (180)"}, // og25
-        {"CbCuCbCu:Sr------:--CrSrCr:CwCwCwCw", 25000, "Compact Splitter"}, // og26
+        {"Cg----Cr:Cw----Cw:Sy------:Cy----Cy", 20000, "Next Level"}, // og22
+        {"CcRcCcRc:RwCwRwCw:Sr--Sw--:CyCyCyCy", 20000, "Next Level"}, // og24
+        {"Rg--Rg--:CwRwCwRw:--Rg--Rg"         , 25000, "Next Level"}, // og25
+        {"CbCuCbCu:Sr------:--CrSrCr:CwCwCwCw", 25000, "Next Level"}, // og26
         {"RuCw--Cw:----Ru--",                   50000, "Freeplay"} // level 20, og20
     };
 

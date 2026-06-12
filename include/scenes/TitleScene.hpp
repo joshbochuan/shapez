@@ -57,6 +57,7 @@ private:
     std::shared_ptr<RenameBlob> renameBlob;
     std::shared_ptr<Button> closeButton;
     std::shared_ptr<Notification> notification = nullptr; // used for display enable/disable cheats
+    std::shared_ptr<Text> noSaveTextA, noSaveTextB;
 
 public:
     static inline std::shared_ptr<Util::BGM> titleBGM;

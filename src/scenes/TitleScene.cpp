@@ -423,6 +423,20 @@ TitleScene::TitleScene() {
     newGameButton->m_Transform.scale = glm::vec2(windowPercent, windowPercent);
     AddChild(newGameButton);
 
+    noSaveTextA = std::make_shared<Text>("No active savegames found", 36, Util::Color::FromRGB(168, 168, 168));
+    noSaveTextA->SetZIndex(93);
+    noSaveTextA->m_Transform.translation = titleWindow->m_Transform.translation;
+    noSaveTextA->m_Transform.translation.y -= windowPercent * 0.0f;
+    noSaveTextA->m_Transform.scale = glm::vec2(windowPercent, windowPercent);
+    AddChild(noSaveTextA);
+
+    noSaveTextB = std::make_shared<Text>("Click play to start a new game!", 36, Util::Color::FromRGB(168, 168, 168));
+    noSaveTextB->SetZIndex(93);
+    noSaveTextB->m_Transform.translation = titleWindow->m_Transform.translation;
+    noSaveTextB->m_Transform.translation.y -= windowPercent * 50.0f;
+    noSaveTextB->m_Transform.scale = glm::vec2(windowPercent, windowPercent);
+    AddChild(noSaveTextB);
+
     closeButton = std::make_shared<Button>(std::make_shared<Util::Image>("../Resources/ui/icons/closeButton.png"));
     closeButton->hoveredBackground = std::make_shared<Util::Image>("../Resources/ui/icons/closeButtonHovered.png");
     closeButton->m_Transform.translation.x = static_cast<float>(WINDOW_WIDTH >> 1) - 100.0f * windowPercent;
@@ -473,6 +487,8 @@ void TitleScene::Refresh() {
 
     if (!saveBlobs.empty()) {playButton->text->m_Text->SetText("CONTINUE");}
     else {playButton->text->m_Text->SetText("P L A Y");}
+    noSaveTextA->SetVisible(saveBlobs.empty());
+    noSaveTextB->SetVisible(saveBlobs.empty());
 }
 
 std::string openImportFileDialog() {
