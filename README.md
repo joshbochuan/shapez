@@ -10,3 +10,11 @@
 - 按下 Keypad 上的 Enter 可以得到產物為當前基地需求的礦機。
 - 按下 Keypad 上的 + 可以提升等級。
 - 在升級介面中可以無視形狀需求升級。
+
+## 修改解析度
+到`shapez/PTSD/include/config.hpp`中，修改：
+```cpp
+constexpr unsigned int WINDOW_WIDTH = 1280;
+constexpr unsigned int WINDOW_HEIGHT = 720;
+```
+並編譯。
