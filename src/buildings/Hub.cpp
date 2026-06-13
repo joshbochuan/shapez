@@ -193,7 +193,7 @@ void Hub::LoadState() { // properly update contents after loading a save
     else {
         targetItem = GenerateRandomTarget(SEED, LEVEL);
         targetAmount = -4.0f - 0.25f * static_cast<float>(LEVEL - 21);
-        if (targetAmount < -200) {targetAmount = -200;}
+        if (targetAmount < -160) {targetAmount = -160;}
         lockedItemTxt->m_Text->SetText("Next Level");
     }
     targetItem->MachineItemZIndex(51);

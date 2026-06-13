@@ -302,7 +302,7 @@ void SelectBeltVariant(std::shared_ptr<OptiObject>& m_MachineHeldPreview, BeltTy
     }
 }
 
-void SelectBalancerVariant(std::shared_ptr<OptiObject>& m_MachineHeldPreview, MachineName& m_MachineHeld, bool& previewMirrored) {
+void SelectBalancerVariant(std::shared_ptr<OptiObject>& m_MachineHeldPreview, MachineName& m_MachineHeld, bool& previewMirrored, std::shared_ptr<OptiObject>& previewBorder) {
     if (m_MachineHeld == MachineName::BALANCER && (LEVEL >= MERGER_LEVEL)) {
         m_MachineHeld = MachineName::MERGER;
         m_MachineHeldPreview->SetVisible(true);
@@ -310,22 +310,30 @@ void SelectBalancerVariant(std::shared_ptr<OptiObject>& m_MachineHeldPreview, Ma
         m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
             "../Resources/sprites/blueprints/balancer-merger.png"));
         m_MachineHeldPreview->SetPivot({0, 0});
+        previewBorder->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/blueprints/green_border_1x1.png"));
+        previewBorder->SetPivot({0, 0});
     }
     else if (m_MachineHeld == MachineName::MERGER && !previewMirrored) {
         previewMirrored = true;
         m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
             "../Resources/sprites/blueprints/balancer-merger-inverse.png"));
+        previewBorder->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/blueprints/green_border_1x1.png"));
+        previewBorder->SetPivot({0, 0});
     }
     else if (m_MachineHeld == MachineName::MERGER && (LEVEL >= SPLITTER_LEVEL)) {
         m_MachineHeld = MachineName::SPLITTER;
         previewMirrored = false;
         m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
             "../Resources/sprites/blueprints/balancer-splitter.png"));
+        previewBorder->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/blueprints/green_border_1x1.png"));
+        previewBorder->SetPivot({0, 0});
     }
     else if (m_MachineHeld == MachineName::SPLITTER && !previewMirrored) {
         previewMirrored = true;
         m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
             "../Resources/sprites/blueprints/balancer-splitter-inverse.png"));
+        previewBorder->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/blueprints/green_border_1x1.png"));
+        previewBorder->SetPivot({0, 0});
     }
     else {
         m_MachineHeld = MachineName::BALANCER;
@@ -333,6 +341,8 @@ void SelectBalancerVariant(std::shared_ptr<OptiObject>& m_MachineHeldPreview, Ma
         m_MachineHeldPreview->SetDrawable(std::make_shared<Util::Image>(
             "../Resources/sprites/blueprints/balancer.png"));
         m_MachineHeldPreview->SetPivot({-84, 0});
+        previewBorder->SetDrawable(std::make_shared<Util::Image>("../Resources/sprites/blueprints/green_border_1x2.png"));
+        previewBorder->SetPivot({-96, 0});
     }
 }
 
@@ -410,7 +420,7 @@ void SelectPainterVariant(std::shared_ptr<OptiObject>& heldPreview, bool& previe
 void GameScene::UserSelectVariant() {
     switch (heldIdx) {
         case 0: SelectBeltVariant(heldPreview, beltType); break;
-        case 1: SelectBalancerVariant(heldPreview, heldMachine, previewMirrored); break;
+        case 1: SelectBalancerVariant(heldPreview, heldMachine, previewMirrored, previewBorder); break;
         case 2: SelectTunnelVariant(heldPreview, tunnelType, tunnelUpgraded); break;
         case 3: break;
         case 4: SelectCutterVariant(heldPreview); break;
