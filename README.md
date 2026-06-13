@@ -1,24 +1,8 @@
-# PTSD Template
+# Shapez
+異形工廠是一款專注於自動化生產線的沙盒益智遊戲。玩家需要在無邊界的地圖上，開採、切割、旋轉、染色並組合不同形狀與顏色的幾何圖形，以滿足特定的交貨需求。
 
-This is a [PTSD](https://github.com/ntut-open-source-club/practical-tools-for-simple-design) framework template for students taking OOPL2024s.
+# 編譯
+在 Windows 上使用 Clion 編譯。
 
-## Quick Start
-
-1. Use this template to create a new repository
-   ![github screenshot](https://github.com/ntut-rick/ptsd-template/assets/126899559/ef62242f-03ed-481d-b858-12b730c09beb)
-
-2. Clone your repository
-
-   ```bash
-   git clone YOUR_GIT_URL --recursive
-   ```
-
-3. Build your project
-
-  > [!WARNING]
-  > Please build your project in `Debug` because our `Release` path is broken D:
-   
-   ```sh
-   cmake -DCMAKE_BUILD_TYPE=Debug -B build # -G Ninja
-   ```
-   better read [PTSD README](https://github.com/ntut-open-source-club/practical-tools-for-simple-design)
+# 作弊模式
+在標題畫面找到想要開啟/關閉作弊模式的存檔，進入該存檔的重新命名介面，按十下 Keypad 的 Enter 鍵，有看到通知代表成功開啟或關閉作弊模式。
