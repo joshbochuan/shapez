@@ -237,13 +237,18 @@ void UpgradeBlob::Update() {
         progressBars[i]->text->m_Text->SetText(BigNumStr(warehouse[itemTargets[i]->getCode()]) + " / " + BigNumStr(static_cast<int>(progressBars[i]->target)));
         progressBars[i]->Update();
     }
-    upgradeButton->locked = !upgradeAvailable;
+    upgradeButton->locked = (!upgradeAvailable) && (!CHEATS);
     upgradeButton->m_Transform.translation.x = 550*m_Transform.scale.x + m_Transform.translation.x;
     upgradeButton->m_Transform.translation.y = -25*m_Transform.scale.y + m_Transform.translation.y;
     upgradeButton->Update();
     if (!upgradeButton->released) {return;}
 
-    for (int i=0; i<itemTargets.size(); i++) {warehouse[itemTargets[i]->getCode()] -= progressBars[i]->target;}
+    int newVal;
+    for (int i=0; i<itemTargets.size(); i++) {
+        newVal = warehouse[itemTargets[i]->getCode()] - static_cast<int>(progressBars[i]->target);
+        if (newVal < 0) {newVal = 0;}
+        warehouse[itemTargets[i]->getCode()] = newVal;
+    }
     (*contextLevel)++;
     AddTargetsByLevel(shared_from_this(), *contextLevel);
     switch (type) {
